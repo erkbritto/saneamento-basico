@@ -1,0 +1,8 @@
+Informações básicas do sistema:
+
+(Sera utilizado arquitetura MVC)
+
+Linguagem: PYTHON (utilizando framework Flask)
+JavaScript: Biblioteca React
+Web: HTML 
+BD: MySql
