@@ -1,123 +1,154 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Dashboard Master{% endblock %}
+{% block title %}Dashboard{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-  <!-- Mensagens flash -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <p class="text-center mb-4 {{ 'text-red-500' if category == 'error' else 'text-green-500' }}">{{ message }}</p>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-  <header class="header flex justify-between items-center mb-8 animate-fade-in">
-    <div>
-      <h1 class="text-3xl font-bold text-gray-800">Dashboard Master</h1>
-      <p class="text-gray-600">Visão estratégica do sistema de saneamento municipal</p>
+<!-- Conteúdo do Dashboard -->
+<div id="dashboard-content">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Estatísticas comuns a todos -->
+    <div class="stat-card card p-6 text-center">
+      <div class="text-3xl font-bold text-blue-600 mb-2" id="active-users">0</div>
+      <div class="text-gray-600">Usuários Ativos</div>
     </div>
-    <div class="flex space-x-2">
-      <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-transform duration-200">Auditoria</button>
-      <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-transform duration-200">Relatório Executivo</button>
-      <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-transform duration-200">Configurações</button>
-      <button id="theme-toggle" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-transform duration-200">
-        <i class="fas fa-moon"></i>
-      </button>
-      <a href="{{ url_for('main.logout') }}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-transform duration-200">
-        <i class="fas fa-sign-out-alt mr-2"></i> Sair
-      </a>
+    
+    <div class="stat-card card p-6 text-center">
+      <div class="text-3xl font-bold text-green-600 mb-2" id="efficiency">0%</div>
+      <div class="text-gray-600">Eficiência Geral</div>
     </div>
-  </header>
-
-  <section class="stats-cards grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-fade-in">
-    <div class="card p-6 animate-scale-up">
-      <h3 class="text-sm text-gray-500 mb-2 flex items-center"><i class="fas fa-users mr-1"></i> Usuários Ativos</h3>
-      <div class="value text-2xl font-bold text-gray-800">47</div>
-      <div class="trend positive text-green-500 text-sm mt-2">+4% em relação ao mês anterior</div>
+    
+    <!-- Estatísticas apenas para Governante e Supervisor -->
+    <div class="stat-card card p-6 text-center" id="environment-impact-container">
+      <div class="text-3xl font-bold text-purple-600 mb-2" id="environment-impact">0%</div>
+      <div class="text-gray-600">Impacto Ambiental</div>
     </div>
-    <div class="card p-6 animate-scale-up">
-      <h3 class="text-sm text-gray-500 mb-2 flex items-center"><i class="fas fa-chart-line mr-1"></i> Eficiência Geral</h3>
-      <div class="value text-2xl font-bold text-gray-800">91%</div>
-      <div class="trend positive text-green-500 text-sm mt-2">+2% em relação ao mês anterior</div>
-    </div>
-    <div class="card p-6 animate-scale-up">
-      <h3 class="text-sm text-gray-500 mb-2 flex items-center"><i class="fas fa-leaf mr-1"></i> Impacto Ambiental</h3>
-      <div class="value text-2xl font-bold text-gray-800">Positivo</div>
-    </div>
-    <div class="card p-6 animate-scale-up">
-      <h3 class="text-sm text-gray-500 mb-2 flex items-center"><i class="fas fa-exclamation-triangle mr-1"></i> Alertas Críticos</h3>
-      <div class="value text-2xl font-bold text-gray-800">3</div>
-      <div class="trend negative text-red-500 text-sm mt-2">Requer ação imediata</div>
-    </div>
-  </section>
-
-  <section class="grid-two grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in">
-    <div class="card p-6">
-      <h3 class="text-sm text-gray-500 mb-4 flex items-center"><i class="fas fa-chart-pie mr-1"></i> Indicadores Ambientais</h3>
-      <div class="space-y-4">
-        <div>
-          <p class="text-gray-600">Qualidade do Ar: 85%</p>
-          <div class="progress-bar h-3 mt-2"><div class="bg-blue-600 h-full animate-progress" style="width:0%" data-width="85%"></div></div>
-        </div>
-        <div>
-          <p class="text-gray-600">Qualidade da Água: 92%</p>
-          <div class="progress-bar h-3 mt-2"><div class="bg-green-500 h-full animate-progress" style="width:0%" data-width="92%"></div></div>
-        </div>
-        <div>
-          <p class="text-gray-600">Gestão de Resíduos: 78%</p>
-          <div class="progress-bar h-3 mt-2"><div class="bg-yellow-500 h-full animate-progress" style="width:0%" data-width="78%"></div></div>
-        </div>
-        <div>
-          <p class="text-gray-600">Cobertura Verde: 65%</p>
-          <div class="progress-bar h-3 mt-2"><div class="bg-blue-600 h-full animate-progress" style="width:0%" data-width="65%"></div></div>
-        </div>
-      </div>
-      <canvas id="envChart" class="mt-6" height="200"></canvas>
-    </div>
-    <div class="card p-6">
-      <h3 class="text-sm text-gray-500 mb-4 flex items-center"><i class="fas fa-bell mr-1"></i> Alertas Críticos</h3>
-      <div class="space-y-4">
-        <div class="alert high flex justify-between items-center p-4 bg-red-50 border-l-4 border-red-500 rounded-lg transition-transform duration-200 hover:scale-105">
-          <span class="text-gray-800">Equipamento com falha no Setor B</span>
-          <button class="resolve-btn px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600">Resolver</button>
-        </div>
-        <div class="alert medium flex justify-between items-center p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg transition-transform duration-200 hover:scale-105">
-          <span class="text-gray-800">Meta de coleta não atingida - Zona Sul</span>
-          <button class="resolve-btn px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">Resolver</button>
-        </div>
-        <div class="alert low flex justify-between items-center p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg transition-transform duration-200 hover:scale-105">
-          <span class="text-gray-800">Novo funcionário aguarda aprovação</span>
-          <button class="resolve-btn px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600">Resolver</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div id="resolve-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white p-6 rounded-lg text-center">
-      <p class="text-green-600">Alerta resolvido com sucesso!</p>
+    
+    <div class="stat-card card p-6 text-center" id="critical-alerts-container">
+      <div class="text-3xl font-bold text-red-600 mb-2" id="critical-alerts">0</div>
+      <div class="text-gray-600">Alertas Críticos</div>
     </div>
   </div>
 
-  <script>
-    document.querySelectorAll('.animate-progress').forEach(bar => {
-      bar.style.width = bar.dataset.width;
-    });
+  <!-- Seção de Indicadores Ambientais -->
+  <div class="card p-6 mb-8" id="environment-section">
+    <h2 class="text-2xl font-bold mb-4">Indicadores Ambientais</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <div class="flex justify-between mb-2">
+          <span>Qualidade do Ar</span>
+          <span id="air-quality">85%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="air-quality-progress" class="progress-bar-fill bg-blue-600" style="width: 85%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between mb-2">
+          <span>Qualidade da Água</span>
+          <span id="water-quality">92%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="water-quality-progress" class="progress-bar-fill bg-green-600" style="width: 92%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between mb-2">
+          <span>Gestão de Resíduos</span>
+          <span id="waste-management">78%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="waste-management-progress" class="progress-bar-fill bg-yellow-600" style="width: 78%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between mb-2">
+          <span>Cobertura Verde</span>
+          <span id="green-coverage">65%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="green-coverage-progress" class="progress-bar-fill bg-purple-600" style="width: 65%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    const ctx = document.getElementById('envChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Ar', 'Água', 'Resíduos', 'Verde'],
-        datasets: [{
-          data: [85, 92, 78, 65],
-          backgroundColor: ['#2563eb', '#22c55e', '#facc15', '#3b82f6']
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: 'top' } }
-      }
-    });
-  </script>
+  <!-- Seção de Alertas Críticos -->
+  <div class="card p-6 mb-8" id="alerts-section">
+    <h2 class="text-2xl font-bold mb-4">Alertas Críticos</h2>
+    <div class="space-y-4">
+      <div class="alert alert-critical">
+        <i class="fas fa-exclamation-circle text-red-500 mt-1 mr-3"></i>
+        <div>
+          <p class="font-medium">Equipamento com falha no Setor B</p>
+          <p class="text-sm text-gray-600">Há 2 horas • Prioridade: Alta</p>
+        </div>
+      </div>
+      <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-3"></i>
+        <div>
+          <p class="font-medium">Meta de coleta não atingida - Zona Sul</p>
+          <p class="text-sm text-gray-600">Hoje • Prioridade: Média</p>
+        </div>
+      </div>
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle text-blue-500 mt-1 mr-3"></i>
+        <div>
+          <p class="font-medium">Novo funcionário aguarda aprovação</p>
+          <p class="text-sm text-gray-600">Há 1 dia • Prioridade: Baixa</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conteúdo específico para Funcionário -->
+  <div class="card p-6 mb-8" id="employee-section">
+    <h2 class="text-2xl font-bold mb-4">Minhas Tarefas</h2>
+    <div class="space-y-4">
+      <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+        <div>
+          <p class="font-medium">Inspeção de qualidade da água</p>
+          <p class="text-sm text-gray-600">Setor Norte • Prazo: Hoje</p>
+        </div>
+        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Pendente</span>
+      </div>
+      <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+        <div>
+          <p class="font-medium">Relatório de atividades semanais</p>
+          <p class="text-sm text-gray-600">Administrativo • Prazo: Amanhã</p>
+        </div>
+        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Em andamento</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Carregar dados do dashboard quando a página estiver carregada
+document.addEventListener('DOMContentLoaded', function() {
+  // Simulação de dados do usuário (em um sistema real, isso viria do backend)
+  const userRole = "{{ session.get('user_role', 'FUNCIONARIO') }}"; // Você precisa definir isso na sessão
+  
+  // Esconder/mostrar elementos baseados no papel do usuário
+  if (userRole !== 'GOVERNANTE' && userRole !== 'SUPERVISOR') {
+    document.getElementById('environment-impact-container').classList.add('hidden');
+    document.getElementById('critical-alerts-container').classList.add('hidden');
+    document.getElementById('environment-section').classList.add('hidden');
+    document.getElementById('alerts-section').classList.add('hidden');
+  }
+  
+  if (userRole !== 'FUNCIONARIO') {
+    document.getElementById('employee-section').classList.add('hidden');
+  }
+  
+  // Simular dados (em um sistema real, você faria uma requisição AJAX)
+  document.getElementById('active-users').textContent = '42';
+  document.getElementById('efficiency').textContent = '87%';
+  document.getElementById('environment-impact').textContent = '76%';
+  document.getElementById('critical-alerts').textContent = '3';
+});
+</script>
 {% endblock %}
