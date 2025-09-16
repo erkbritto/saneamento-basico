@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Ponto Eletrônico - Sistema de Saneamento{% endblock %}
+
+{% block page_title %}Ponto Eletrônico{% endblock %}
+{% block page_subtitle %}Registro de entrada e saída dos funcionários{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Botão de Registro -->
+  <div class="bg-white p-6 rounded-xl shadow-md flex justify-between items-center">
+    <div>
+      <h2 class="text-lg font-semibold text-gray-800">Registrar Ponto</h2>
+      <p class="text-sm text-gray-600">Clique no botão abaixo para marcar entrada ou saída.</p>
+    </div>
+    <button id="btn-ponto"
+            class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+      <i class="fas fa-clock mr-2"></i>Bater Ponto
+    </button>
+  </div>
+
+  <!-- Tabela de Registros -->
+  <div class="bg-white p-5 rounded-xl shadow-md overflow-x-auto">
+    <h2 class="text-lg font-semibold text-gray-800 mb-4">Meus Registros</h2>
+    <table class="min-w-full table-auto border-collapse">
+      <thead>
+        <tr class="bg-gray-100 text-gray-700 text-sm">
+          <th class="px-4 py-2 text-left">Data</th>
+          <th class="px-4 py-2 text-left">Entrada</th>
+          <th class="px-4 py-2 text-left">Saída</th>
+          <th class="px-4 py-2 text-left">Total de Horas</th>
+        </tr>
+      </thead>
+      <tbody class="text-sm text-gray-600">
+        <tr class="border-b hover:bg-gray-50">
+          <td class="px-4 py-2">16/09/2025</td>
+          <td class="px-4 py-2">08:02</td>
+          <td class="px-4 py-2">17:11</td>
+          <td class="px-4 py-2">8h 59min</td>
+        </tr>
+        <tr class="border-b hover:bg-gray-50">
+          <td class="px-4 py-2">15/09/2025</td>
+          <td class="px-4 py-2">08:10</td>
+          <td class="px-4 py-2">17:00</td>
+          <td class="px-4 py-2">8h 50min</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Gráfico de Horas -->
+  <div class="bg-white p-5 rounded-xl shadow-md">
+    <h2 class="text-lg font-semibold text-gray-800 mb-4">Horas Semanais</h2>
+    <canvas id="pontoChart" height="120"></canvas>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Gráfico de horas semanais
+  const ctxPonto = document.getElementById('pontoChart').getContext('2d');
+  new Chart(ctxPonto, {
+    type: 'line',
+    data: {
+      labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'],
+      datasets: [{
+        label: 'Horas Trabalhadas',
+        data: [8.5, 9, 8.8, 8.6, 9.2],
+        borderColor: '#2563eb',
+        backgroundColor: '#93c5fd',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // Botão fictício de ponto
+  document.getElementById('btn-ponto').addEventListener('click', () => {
+    alert("Ponto registrado com sucesso!");
+  });
+</script>
+{% endblock %}
