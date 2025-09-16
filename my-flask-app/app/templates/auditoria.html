@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Auditoria - Sistema de Saneamento{% endblock %}
+
+{% block page_title %}Auditoria do Sistema{% endblock %}
+{% block page_subtitle %}Monitoramento de atividades e registros de acesso{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <!-- Filtros -->
+  <div class="bg-white p-5 rounded-xl shadow-md">
+    <h2 class="text-lg font-semibold text-gray-800 mb-4">Filtros de Pesquisa</h2>
+    <form class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Usuário</label>
+        <input type="text" placeholder="Digite o nome ou email"
+               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Data Inicial</label>
+        <input type="date"
+               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-600 mb-1">Data Final</label>
+        <input type="date"
+               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+      </div>
+      <div class="md:col-span-3 flex justify-end">
+        <button type="submit"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+          <i class="fas fa-search mr-2"></i>Pesquisar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabela de Auditoria -->
+  <div class="bg-white p-5 rounded-xl shadow-md overflow-x-auto">
+    <h2 class="text-lg font-semibold text-gray-800 mb-4">Registros Recentes</h2>
+    <table class="min-w-full table-auto border-collapse">
+      <thead>
+        <tr class="bg-gray-100 text-gray-700 text-sm">
+          <th class="px-4 py-2 text-left">Data/Hora</th>
+          <th class="px-4 py-2 text-left">Usuário</th>
+          <th class="px-4 py-2 text-left">Ação</th>
+          <th class="px-4 py-2 text-left">IP</th>
+          <th class="px-4 py-2 text-left">Status</th>
+        </tr>
+      </thead>
+      <tbody class="text-sm text-gray-600">
+        <!-- Exemplo de registros fixos -->
+        <tr class="border-b hover:bg-gray-50">
+          <td class="px-4 py-2">16/09/2025 14:32</td>
+          <td class="px-4 py-2">admin@gmail.com</td>
+          <td class="px-4 py-2">Login realizado</td>
+          <td class="px-4 py-2">127.0.0.1</td>
+          <td class="px-4 py-2"><span class="px-2 py-1 bg-green-100 text-green-700 rounded-lg">Sucesso</span></td>
+        </tr>
+        <tr class="border-b hover:bg-gray-50">
+          <td class="px-4 py-2">16/09/2025 13:12</td>
+          <td class="px-4 py-2">erick@teste.com</td>
+          <td class="px-4 py-2">Tentativa de login</td>
+          <td class="px-4 py-2">192.168.0.15</td>
+          <td class="px-4 py-2"><span class="px-2 py-1 bg-red-100 text-red-700 rounded-lg">Falha</span></td>
+        </tr>
+        <tr class="border-b hover:bg-gray-50">
+          <td class="px-4 py-2">15/09/2025 19:44</td>
+          <td class="px-4 py-2">supervisor@empresa.com</td>
+          <td class="px-4 py-2">Alteração em Tarefas</td>
+          <td class="px-4 py-2">10.0.0.5</td>
+          <td class="px-4 py-2"><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg">Info</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Gráfico de Auditoria -->
+  <div class="bg-white p-5 rounded-xl shadow-md">
+    <h2 class="text-lg font-semibold text-gray-800 mb-4">Estatísticas de Auditoria</h2>
+    <canvas id="auditChart" height="120"></canvas>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('auditChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Logins Sucesso', 'Logins Falha', 'Alterações', 'Consultas'],
+      datasets: [{
+        label: 'Registros',
+        data: [12, 5, 8, 15],
+        backgroundColor: ['#16a34a', '#dc2626', '#2563eb', '#f59e0b']
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+</script>
+{% endblock %}

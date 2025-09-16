@@ -1,0 +1,401 @@
+{% extends "base.html" %}
+
+{% block title %}Relatórios{% endblock %}
+
+{% block page_title %}Relatórios{% endblock %}
+{% block page_subtitle %}Análises e dados do sistema{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex flex-wrap gap-4">
+  <div class="relative">
+    <select id="report-period" class="input pr-10">
+      <option value="today">Hoje</option>
+      <option value="week" selected>Esta semana</option>
+      <option value="month">Este mês</option>
+      <option value="quarter">Este trimestre</option>
+      <option value="year">Este ano</option>
+      <option value="custom">Personalizado</option>
+    </select>
+    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+      <i class="fas fa-calendar text-gray-400"></i>
+    </div>
+  </div>
+  
+  <div class="relative" id="custom-date-range" style="display: none;">
+    <input type="text" id="date-range-picker" class="input pr-10" placeholder="Selecionar período">
+    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+      <i class="fas fa-calendar-alt text-gray-400"></i>
+    </div>
+  </div>
+  
+  <button class="btn btn-primary flex items-center">
+    <i class="fas fa-download mr-2"></i> Exportar
+  </button>
+  
+  <button class="btn bg-white border border-gray-300 hover:bg-gray-50 flex items-center ml-auto">
+    <i class="fas fa-sync-alt mr-2"></i> Atualizar Dados
+  </button>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+  <!-- Cartão de Resumo -->
+  <div class="card p-6 lg:col-span-1">
+    <h3 class="text-lg font-semibold mb-4">Resumo do Período</h3>
+    <div class="space-y-4">
+      <div>
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-gray-600">Tarefas Concluídas</span>
+          <span class="font-semibold">248</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill bg-green-600" style="width: 82%"></div>
+        </div>
+      </div>
+      
+      <div>
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-gray-600">Eficiência Operacional</span>
+          <span class="font-semibold">87%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill bg-blue-600" style="width: 87%"></div>
+        </div>
+      </div>
+      
+      <div>
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-gray-600">Indicador Ambiental</span>
+          <span class="font-semibold">76%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill bg-purple-600" style="width: 76%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Cartão de Métricas Chave -->
+  <div class="card p-6 lg:col-span-2">
+    <h3 class="text-lg font-semibold mb-4">Métricas Chave</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="text-center p-4 bg-blue-50 rounded-lg">
+        <div class="text-2xl font-bold text-blue-600">92%</div>
+        <div class="text-sm text-gray-600 mt-1">Qualidade Água</div>
+      </div>
+      
+      <div class="text-center p-4 bg-green-50 rounded-lg">
+        <div class="text-2xl font-bold text-green-600">85%</div>
+        <div class="text-sm text-gray-600 mt-1">Coleta Eficiente</div>
+      </div>
+      
+      <div class="text-center p-4 bg-yellow-50 rounded-lg">
+        <div class="text-2xl font-bold text-yellow-600">78%</div>
+        <div class="text-sm text-gray-600 mt-1">Tratamento</div>
+      </div>
+      
+      <div class="text-center p-4 bg-purple-50 rounded-lg">
+        <div class="text-2xl font-bold text-purple-600">94%</div>
+        <div class="text-sm text-gray-600 mt-1">Satisfação</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+  <!-- Gráfico de Tendências -->
+  <div class="card p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold">Tendência de Desempenho</h3>
+      <div class="flex space-x-2">
+        <button class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700">Semanal</button>
+        <button class="text-xs px-2 py-1 rounded bg-blue-100 text-blue-700">Mensal</button>
+      </div>
+    </div>
+    <div class="h-64 flex items-end justify-between pt-4">
+      <div class="flex flex-col items-center">
+        <div class="bg-blue-200 w-8 rounded-t" style="height: 120px;"></div>
+        <span class="text-xs mt-2">Seg</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="bg-blue-300 w-8 rounded-t" style="height: 160px;"></div>
+        <span class="text-xs mt-2">Ter</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="bg-blue-400 w-8 rounded-t" style="height: 200px;"></div>
+        <span class="text-xs mt-2">Qua</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="bg-blue-500 w-8 rounded-t" style="height: 180px;"></div>
+        <span class="text-xs mt-2">Qui</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="bg-blue-600 w-8 rounded-t" style="height: 220px;"></div>
+        <span class="text-xs mt-2">Sex</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="bg-blue-400 w-8 rounded-t" style="height: 140px;"></div>
+        <span class="text-xs mt-2">Sáb</span>
+      </div>
+      <div class="flex flex-col items-center">
+        <div class="bg-blue-300 w-8 rounded-t" style="height: 100px;"></div>
+        <span class="text-xs mt-2">Dom</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Distribuição por Região -->
+  <div class="card p-6">
+    <h3 class="text-lg font-semibold mb-4">Distribuição por Região</h3>
+    <div class="flex justify-center items-center">
+      <div class="relative w-40 h-40">
+        <!-- Gráfico de pizza simplificado -->
+        <div class="absolute inset-0 rounded-full border-8 border-blue-500" style="clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 100%, 50% 100%);"></div>
+        <div class="absolute inset-0 rounded-full border-8 border-green-500" style="clip-path: polygon(50% 50%, 100% 0, 100% 100%, 0 100%, 0 50%);"></div>
+        <div class="absolute inset-0 rounded-full border-8 border-yellow-500" style="clip-path: polygon(50% 50%, 0 50%, 0 0, 100% 0, 100% 50%);"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="text-center">
+            <div class="font-bold">100%</div>
+            <div class="text-xs text-gray-500">Total</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-6 space-y-2">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+          <span>Zona Norte</span>
+        </div>
+        <span class="font-semibold">35%</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+          <span>Zona Sul</span>
+        </div>
+        <span class="font-semibold">28%</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+          <span>Zona Leste</span>
+        </div>
+        <span class="font-semibold">22%</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-3 h-3 rounded-full bg-purple-500 mr-2"></div>
+          <span>Zona Oeste</span>
+        </div>
+        <span class="font-semibold">15%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabela de Relatórios Detalhados -->
+<div class="card p-6 mb-8">
+  <div class="flex justify-between items-center mb-6">
+    <h3 class="text-lg font-semibold">Relatórios Detalhados</h3>
+    <div class="relative">
+      <input type="text" placeholder="Buscar relatório..." class="input pr-10">
+      <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+        <i class="fas fa-search text-gray-400"></i>
+      </div>
+    </div>
+  </div>
+  
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead>
+        <tr class="border-b border-gray-200">
+          <th class="pb-3 text-left">Relatório</th>
+          <th class="pb-3 text-left">Período</th>
+          <th class="pb-3 text-left">Status</th>
+          <th class="pb-3 text-right">Ações</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr>
+          <td class="py-4">
+            <div class="font-medium">Relatório de Qualidade da Água</div>
+            <div class="text-sm text-gray-600">Análise mensal dos parâmetros</div>
+          </td>
+          <td class="py-4">Outubro 2023</td>
+          <td class="py-4">
+            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Concluído</span>
+          </td>
+          <td class="py-4 text-right">
+            <button class="text-blue-600 hover:text-blue-800 mr-3">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="text-gray-600 hover:text-gray-800">
+              <i class="fas fa-download"></i>
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td class="py-4">
+            <div class="font-medium">Relatório de Eficiência Operacional</div>
+            <div class="text-sm text-gray-600">Desempenho das equipes</div>
+          </td>
+          <td class="py-4">Semana 43</td>
+          <td class="py-4">
+            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Concluído</span>
+          </td>
+          <td class="py-4 text-right">
+            <button class="text-blue-600 hover:text-blue-800 mr-3">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="text-gray-600 hover:text-gray-800">
+              <i class="fas fa-download"></i>
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td class="py-4">
+            <div class="font-medium">Análise de Impacto Ambiental</div>
+            <div class="text-sm text-gray-600">Avaliação trimestral</div>
+          </td>
+          <td class="py-4">3º Trimestre 2023</td>
+          <td class="py-4">
+            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Em Andamento</span>
+          </td>
+          <td class="py-4 text-right">
+            <button class="text-blue-600 hover:text-blue-800 mr-3">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="text-gray-600 hover:text-gray-800">
+              <i class="fas fa-download"></i>
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td class="py-4">
+            <div class="font-medium">Relatório Financeiro</div>
+            <div class="text-sm text-gray-600">Custos e investimentos</div>
+          </td>
+          <td class="py-4">Setembro 2023</td>
+          <td class="py-4">
+            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pendente</span>
+          </td>
+          <td class="py-4 text-right">
+            <button class="text-blue-600 hover:text-blue-800 mr-3">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="text-gray-600 hover:text-gray-800">
+              <i class="fas fa-download"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="mt-6 flex justify-between items-center">
+    <div class="text-sm text-gray-600">Mostrando 4 de 24 resultados</div>
+    <div class="flex space-x-2">
+      <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="px-3 py-1 rounded bg-blue-500 text-white">1</button>
+      <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">2</button>
+      <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">3</button>
+      <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Relatórios Pré-formatados -->
+<div class="card p-6">
+  <h3 class="text-lg font-semibold mb-4">Relatórios Pré-formatados</h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+      <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+        <i class="fas fa-tint text-blue-600"></i>
+      </div>
+      <h4 class="font-medium mb-1">Qualidade da Água</h4>
+      <p class="text-sm text-gray-600 mb-3">Relatório diário de parâmetros</p>
+      <button class="text-sm text-blue-600 hover:text-blue-800">Gerar relatório</button>
+    </div>
+    
+    <div class="border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+      <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+        <i class="fas fa-recycle text-green-600"></i>
+      </div>
+      <h4 class="font-medium mb-1">Controle de Resíduos</h4>
+      <p class="text-sm text-gray-600 mb-3">Relatório semanal de coleta</p>
+      <button class="text-sm text-blue-600 hover:text-blue-800">Gerar relatório</button>
+    </div>
+    
+    <div class="border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+      <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+        <i class="fas fa-chart-line text-purple-600"></i>
+      </div>
+      <h4 class="font-medium mb-1">Desempenho</h4>
+      <p class="text-sm text-gray-600 mb-3">Relatório mensal de KPIs</p>
+      <button class="text-sm text-blue-600 hover:text-blue-800">Gerar relatório</button>
+    </div>
+    
+    <div class="border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+      <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+        <i class="fas fa-file-invoice-dollar text-yellow-600"></i>
+      </div>
+      <h4 class="font-medium mb-1">Financeiro</h4>
+      <p class="text-sm text-gray-600 mb-3">Relatório mensal de custos</p>
+      <button class="text-sm text-blue-600 hover:text-blue-800">Gerar relatório</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Controle do seletor de período
+  const periodSelect = document.getElementById('report-period');
+  const customDateRange = document.getElementById('custom-date-range');
+  
+  periodSelect.addEventListener('change', function() {
+    if (this.value === 'custom') {
+      customDateRange.style.display = 'block';
+    } else {
+      customDateRange.style.display = 'none';
+    }
+  });
+  
+  // Simulação de gráficos - em um sistema real, usaria uma biblioteca como Chart.js
+  simulateCharts();
+  
+  // Simular carregamento de dados
+  loadReportData();
+});
+
+function simulateCharts() {
+  console.log('Gráficos simulados carregados');
+  // Em implementação real, aqui inicializariamos Chart.js ou outra biblioteca
+}
+
+async function loadReportData() {
+  try {
+    // Simular carregamento de dados
+    console.log('Carregando dados de relatórios...');
+    
+    // Em um sistema real, faríamos uma requisição para a API
+    // const response = await fetch('/api/reports');
+    // const data = await response.json();
+    
+    // Simular um atraso de rede
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Atualizar a interface com os dados
+    console.log('Dados de relatórios carregados com sucesso');
+    
+  } catch (error) {
+    console.error('Erro ao carregar dados de relatórios:', error);
+  }
+}
+</script>
+{% endblock %}
