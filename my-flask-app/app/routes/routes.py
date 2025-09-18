@@ -1,7 +1,35 @@
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 import time
 
+from app.models.models import criar_usuario
+
+
 main = Blueprint('main', __name__)
+
+
+# Rota para criar conta (GET exibe formulário, POST processa cadastro)
+@main.route('/criarconta', methods=['GET', 'POST'])
+def criarconta():
+    if request.method == 'POST':
+        nome = request.form.get('nome')
+        email = request.form.get('email')
+        senha = request.form.get('senha')
+        departamento = request.form.get('departamento')
+        rosto = request.form.get('rosto')
+        cargo = 'FUNCIONARIO'
+        if not all([nome, email, senha, departamento]):
+            flash('Preencha todos os campos obrigatórios', 'error')
+            return render_template('criarconta.html')
+        try:
+            from app.models.models import criar_usuario
+            criar_usuario(nome, email, senha, cargo, departamento, rosto)
+            flash('Conta criada com sucesso! Faça login.', 'success')
+            return redirect(url_for('main.login'))
+        except Exception as e:
+            flash(f'Erro ao criar conta: {str(e)}', 'error')
+            return render_template('criarconta.html')
+    return render_template('criarconta.html')
 
 @main.route('/')
 def home():
@@ -125,6 +153,25 @@ def usuarios():
         flash('Acesso não autorizado', 'error')
         return redirect(url_for('main.dashboard'))
     return render_template('usuarios.html')
+
+# Rota para cadastrar usuário
+@main.route('/usuarios/cadastrar', methods=['POST'])
+def cadastrar_usuario():
+    if 'user' not in session or session.get('user_role') != 'GOVERNANTE':
+        return jsonify({'error': 'Acesso não autorizado'}), 403
+    nome = request.form.get('nome')
+    email = request.form.get('email')
+    senha = request.form.get('senha')
+    cargo = request.form.get('cargo')
+    departamento = request.form.get('departamento')
+    rosto = request.form.get('rosto')  # opcional
+    if not all([nome, email, senha, cargo]):
+        return jsonify({'error': 'Preencha todos os campos obrigatórios'}), 400
+    try:
+        criar_usuario(nome, email, senha, cargo, departamento, rosto)
+        return jsonify({'success': True, 'message': 'Usuário cadastrado com sucesso!'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @main.route('/meio-ambiente')
 def meio_ambiente():
