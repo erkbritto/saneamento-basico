@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Conta - Saneamento</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/face-api.js/0.22.2/face-api.min.js"></script>
+  <script defer src="{{ url_for('static', filename='js/login.js') }}"></script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100 transition-colors duration-300" data-theme="light">
+  <div class="login-container bg-white p-8 rounded-xl shadow-2xl w-full max-w-md animate-fade-in">
+    <h2 class="text-2xl font-bold text-blue-600 mb-6 text-center flex items-center justify-center">
+      <i class="fas fa-user-plus mr-2"></i> Criar Conta
+    </h2>
+    <form id="criarContaForm" method="POST" class="space-y-4">
+      <div>
+        <label for="nome" class="block text-sm text-gray-600 mb-1">Nome</label>
+        <input type="text" id="nome" name="nome" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+      </div>
+      <div>
+        <label for="email" class="block text-sm text-gray-600 mb-1">Email</label>
+        <input type="email" id="email" name="email" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+      </div>
+      <div>
+        <label for="senha" class="block text-sm text-gray-600 mb-1">Senha</label>
+        <input type="password" id="senha" name="senha" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+      </div>
+      <div>
+        <label for="departamento" class="block text-sm text-gray-600 mb-1">Departamento</label>
+        <input type="text" id="departamento" name="departamento" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+      </div>
+      <button type="button" id="face-btn" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-transform duration-200 flex items-center justify-center">
+        <i class="fas fa-camera mr-2"></i> Capturar Rosto
+      </button>
+      <input type="hidden" id="rosto" name="rosto">
+      <button type="submit" id="criar-btn" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-transform duration-200 flex items-center justify-center mt-2">
+        <i class="fas fa-user-plus mr-2"></i> Criar Conta
+      </button>
+    </form>
+    <div class="mt-4 text-center">
+      <a href="/login" class="text-blue-600 hover:underline text-sm">Já tem conta? Entrar</a>
+    </div>
+    <div id="camera-container" class="mt-6 hidden">
+      <video id="video" width="100%" height="auto" autoplay playsinline class="rounded-lg"></video>
+      <p class="text-center text-gray-600 mt-2">Posicione seu rosto na câmera</p>
+    </div>
+  </div>
+  <script>
+    // JS para reconhecimento facial e envio do rosto
+    document.addEventListener('DOMContentLoaded', async () => {
+      await faceapi.nets.ssdMobilenetv1.loadFromUri('/static/models');
+      const faceBtn = document.getElementById('face-btn');
+      const cameraContainer = document.getElementById('camera-container');
+      const video = document.getElementById('video');
+      const rostoInput = document.getElementById('rosto');
+      faceBtn.addEventListener('click', async () => {
+        cameraContainer.classList.remove('hidden');
+        navigator.mediaDevices.getUserMedia({ video: true })
+          .then(stream => {
+            video.srcObject = stream;
+          });
+        setTimeout(async () => {
+          const detection = await faceapi.detectSingleFace(video);
+          if (detection) {
+            rostoInput.value = JSON.stringify(detection.box);
+            alert('Rosto capturado!');
+            cameraContainer.classList.add('hidden');
+            video.srcObject.getTracks().forEach(track => track.stop());
+          } else {
+            alert('Nenhum rosto detectado. Tente novamente.');
+          }
+        }, 5000);
+      });
+      document.getElementById('criarContaForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        formData.set('cargo', 'FUNCIONARIO'); // Sempre funcionário
+        fetch('/usuarios/cadastrar', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert('Conta criada com sucesso!');
+            window.location.href = '/login';
+          } else {
+            alert(data.error || 'Erro ao criar conta');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
