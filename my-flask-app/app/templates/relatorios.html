@@ -371,6 +371,87 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Simular carregamento de dados
   loadReportData();
+
+  // Botão Exportar
+  document.querySelectorAll('.btn-primary .fa-download').forEach(icon => {
+    icon.parentElement.addEventListener('click', function() {
+      window.dashboard.showLoading();
+      setTimeout(() => {
+        window.dashboard.showNotification('Relatório exportado!', 'success');
+        window.dashboard.hideLoading();
+      }, 1200);
+    });
+  });
+
+  // Botão Atualizar Dados
+  document.querySelectorAll('.btn .fa-sync-alt').forEach(icon => {
+    icon.parentElement.addEventListener('click', function() {
+      window.dashboard.showLoading();
+      setTimeout(() => {
+        window.dashboard.showNotification('Dados atualizados!', 'success');
+        window.dashboard.hideLoading();
+      }, 1000);
+    });
+  });
+
+  // Botões de ação na tabela (visualizar e baixar)
+  document.querySelectorAll('button .fa-eye').forEach(icon => {
+    icon.parentElement.addEventListener('click', function() {
+      window.dashboard.showNotification('Visualizando relatório!', 'info');
+    });
+  });
+  document.querySelectorAll('button .fa-download').forEach(icon => {
+    icon.parentElement.addEventListener('click', function() {
+      window.dashboard.showLoading();
+      setTimeout(() => {
+        window.dashboard.showNotification('Download iniciado!', 'success');
+        window.dashboard.hideLoading();
+      }, 1000);
+    });
+  });
+
+  // Paginação
+  document.querySelectorAll('.fa-chevron-left').forEach(icon => {
+    icon.parentElement.addEventListener('click', function() {
+      window.dashboard.showNotification('Página anterior!', 'info');
+    });
+  });
+  document.querySelectorAll('.fa-chevron-right').forEach(icon => {
+    icon.parentElement.addEventListener('click', function() {
+      window.dashboard.showNotification('Próxima página!', 'info');
+    });
+  });
+  document.querySelectorAll('.mt-6 .flex.space-x-2 button').forEach(btn => {
+    btn.addEventListener('click', function() {
+      if (!btn.querySelector('i')) {
+        window.dashboard.showNotification('Página ' + btn.textContent.trim() + ' selecionada!', 'info');
+      }
+    });
+  });
+
+  // Botões Gerar Relatório (pré-formatados)
+  document.querySelectorAll('.card .text-sm.text-blue-600').forEach(btn => {
+    btn.addEventListener('click', function() {
+      window.dashboard.showLoading();
+      setTimeout(() => {
+        window.dashboard.showNotification('Relatório gerado!', 'success');
+        window.dashboard.hideLoading();
+      }, 1500);
+    });
+  });
+
+  // Links internos (se houver)
+  document.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', function(e) {
+      if (link.getAttribute('href') && !link.getAttribute('href').startsWith('#')) {
+        window.dashboard.showLoading();
+        setTimeout(() => {
+          window.dashboard.showNotification('Navegando para ' + link.getAttribute('href'), 'info');
+          window.dashboard.hideLoading();
+        }, 800);
+      }
+    });
+  });
 });
 
 function simulateCharts() {

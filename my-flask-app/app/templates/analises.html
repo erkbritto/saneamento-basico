@@ -452,5 +452,80 @@ function exportAnalysis(format) {
   console.log(`Exportando análise no formato: ${format}`);
   // Em implementação real, geraria o relatório no formato solicitado
 }
+
+// Executar Análise
+document.addEventListener('DOMContentLoaded', function() {
+  // Executar Análise
+  const execAnalysisBtn = document.querySelector('.btn-primary .fa-play-circle')?.parentElement;
+  if (execAnalysisBtn) {
+    execAnalysisBtn.addEventListener('click', function() {
+      window.dashboard.showLoading();
+      setTimeout(() => {
+        window.dashboard.showNotification('Análise executada com sucesso!', 'success');
+        window.dashboard.hideLoading();
+        // Simulação: atualizar KPIs
+        const kpiValues = [
+          (90 + Math.random() * 10).toFixed(1) + '%',
+          (85 + Math.random() * 10).toFixed(1) + '%',
+          (75 + Math.random() * 10).toFixed(1) + '%',
+          (92 + Math.random() * 6).toFixed(1) + '%'
+        ];
+        document.querySelectorAll('.card .text-2xl').forEach((el, i) => {
+          el.textContent = kpiValues[i];
+        });
+      }, 1500);
+    });
+  }
+
+  // Compartilhar Análise (simulado)
+  const shareBtn = document.querySelector('.btn .fa-share-alt')?.parentElement;
+  if (shareBtn) {
+    shareBtn.addEventListener('click', function() {
+      window.dashboard.showLoading();
+      setTimeout(() => {
+        window.dashboard.showNotification('Análise compartilhada!', 'success');
+        window.dashboard.hideLoading();
+      }, 1200);
+    });
+  }
+
+  // Visualizar Análise (simulado)
+  document.querySelectorAll('.btn .fa-eye').forEach(icon => {
+    icon.parentElement.addEventListener('click', function() {
+      window.dashboard.showNotification('Visualizando análise!', 'info');
+    });
+  });
+
+  // Filtros avançados
+  document.querySelectorAll('.btn .fa-sliders-h').forEach(icon => {
+    icon.parentElement.addEventListener('click', function() {
+      window.dashboard.showNotification('Filtros avançados abertos!', 'info');
+    });
+  });
+
+  // Filtros de tipo, granularidade e período
+  const analysisType = document.getElementById('analysis-type');
+  const timeGranularity = document.getElementById('time-granularity');
+  const dateRange = document.getElementById('date-range-picker');
+  [analysisType, timeGranularity, dateRange].forEach(el => {
+    if (el) {
+      el.addEventListener('change', function() {
+        window.dashboard.showLoading();
+        setTimeout(() => {
+          window.dashboard.showNotification('Filtro aplicado!', 'info');
+          window.dashboard.hideLoading();
+        }, 800);
+      });
+    }
+  });
+
+  // Compartilhar por link (simulado)
+  document.querySelectorAll('a.share-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.dashboard.showNotification('Link de compartilhamento copiado!', 'success');
+    });
+  });
+});
 </script>
 {% endblock %}

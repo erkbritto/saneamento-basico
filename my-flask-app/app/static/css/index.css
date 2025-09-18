@@ -81,6 +81,126 @@ body {
   background: var(--primary);
 }
 
+/* Botões */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--card-shadow);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--primary-hover);
+  box-shadow: var(--shadow-hover);
+}
+.btn[disabled], .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Cards */
+.card {
+  background: var(--card-bg);
+  border-radius: 1rem;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+  transition: box-shadow 0.2s;
+}
+.card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+/* Inputs */
+.input {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+.input:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* Tabelas */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+th, td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+th {
+  background: var(--hover-bg);
+  color: var(--primary);
+  font-weight: 600;
+}
+tr {
+  transition: background 0.2s;
+}
+tr:hover {
+  background: var(--hover-bg);
+}
+
+/* Progress Bar */
+.progress-bar {
+  background: var(--hover-bg);
+  border-radius: 0.5rem;
+  height: 0.75rem;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 0.5rem;
+  transition: width 0.5s;
+}
+
+/* Animações */
+.animate-fade-in {
+  animation: fadeIn 0.7s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tooltips */
+.tooltip {
+  position: relative;
+  cursor: pointer;
+}
+.tooltip .tooltip-text {
+  visibility: hidden;
+  background: var(--dark-bg);
+  color: #fff;
+  text-align: center;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  position: absolute;
+  z-index: 10;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
 /* Sidebar */
 .sidebar {
   background-color: var(--sidebar-bg);

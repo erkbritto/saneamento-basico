@@ -533,5 +533,44 @@ function toggleUserStatus(userId, currentStatus) {
   console.log(`Alternando status do usuário ${userId}. Status atual: ${currentStatus}`);
   // Em implementação real, mostraria confirmação e faria requisição
 }
+
+// Filtros de busca, perfil e status
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.querySelector('input[placeholder="Buscar usuários..."]');
+  const roleFilter = document.getElementById('role-filter');
+  const statusFilter = document.getElementById('status-filter');
+  const userRows = document.querySelectorAll('tbody tr');
+
+  function filterUsers() {
+    const search = searchInput.value.toLowerCase();
+    const role = roleFilter.value;
+    const status = statusFilter.value;
+    userRows.forEach(row => {
+      const name = row.querySelector('.font-medium')?.textContent.toLowerCase() || '';
+      const email = row.querySelector('.text-sm.text-gray-600')?.textContent.toLowerCase() || '';
+      const roleText = row.querySelector('td:nth-child(2) span')?.textContent || '';
+      const statusText = row.querySelector('td:nth-child(4) span')?.textContent.toLowerCase() || '';
+      let show = true;
+      if (search && !name.includes(search) && !email.includes(search)) show = false;
+      if (role !== 'all' && roleText !== role) show = false;
+      if (status !== 'all' && !statusText.includes(status)) show = false;
+      row.style.display = show ? '' : 'none';
+    });
+  }
+  searchInput.addEventListener('input', filterUsers);
+  roleFilter.addEventListener('change', filterUsers);
+  statusFilter.addEventListener('change', filterUsers);
+
+  // Novo Usuário
+  const addUserBtn = document.getElementById('add-user-btn');
+  addUserBtn.addEventListener('click', function() {
+    window.dashboard.showLoading();
+    setTimeout(() => {
+      window.dashboard.showNotification('Formulário de novo usuário aberto!', 'info');
+      window.dashboard.hideLoading();
+      // Simulação: abrir modal (pode ser implementado depois)
+    }, 1000);
+  });
+});
 </script>
 {% endblock %}

@@ -305,6 +305,101 @@ window.dashboard = {
   hideLoading
 };
 
+// Funções para botões globais do sistema
+document.addEventListener('DOMContentLoaded', () => {
+  // Executar análise (analises.html)
+  const execAnalysisBtn = document.querySelector('.btn-primary i.fa-play-circle')?.parentElement;
+  if (execAnalysisBtn) {
+    execAnalysisBtn.addEventListener('click', () => {
+      dashboard.showLoading();
+      setTimeout(() => {
+        dashboard.showNotification('Análise executada com sucesso!', 'success');
+        dashboard.hideLoading();
+      }, 2000);
+    });
+  }
+
+  // Filtros avançados (analises, meio_ambiente)
+  document.querySelectorAll('.btn .fa-sliders-h').forEach(icon => {
+    icon.parentElement.addEventListener('click', () => {
+      dashboard.showNotification('Filtros avançados abertos!', 'info');
+    });
+  });
+
+  // Exportar relatório (meio_ambiente, relatorios)
+  document.querySelectorAll('.btn .fa-download').forEach(icon => {
+    icon.parentElement.addEventListener('click', () => {
+      dashboard.showLoading();
+      setTimeout(() => {
+        dashboard.showNotification('Relatório exportado!', 'success');
+        dashboard.hideLoading();
+      }, 1500);
+    });
+  });
+
+  // Atualizar dados (relatorios)
+  document.querySelectorAll('.btn .fa-sync-alt').forEach(icon => {
+    icon.parentElement.addEventListener('click', () => {
+      dashboard.showLoading();
+      setTimeout(() => {
+        dashboard.showNotification('Dados atualizados!', 'success');
+        dashboard.hideLoading();
+      }, 1200);
+    });
+  });
+
+  // Adicionar usuário (usuarios.html)
+  const addUserBtn = document.getElementById('add-user-btn');
+  if (addUserBtn) {
+    addUserBtn.addEventListener('click', () => {
+      dashboard.showNotification('Novo usuário: formulário aberto!', 'info');
+    });
+  }
+
+  // Adicionar tarefa (tarefas.html)
+  document.querySelectorAll('form button .fa-plus').forEach(icon => {
+    icon.parentElement.addEventListener('click', (e) => {
+      e.preventDefault();
+      dashboard.showLoading();
+      setTimeout(() => {
+        dashboard.showNotification('Tarefa adicionada!', 'success');
+        dashboard.hideLoading();
+      }, 1200);
+    });
+  });
+
+  // Editar tarefa (tarefas.html)
+  document.querySelectorAll('button .fa-edit').forEach(icon => {
+    icon.parentElement.addEventListener('click', () => {
+      dashboard.showNotification('Editar tarefa: formulário aberto!', 'info');
+    });
+  });
+
+  // Registrar ponto (ponto_eletronico.html)
+  const pontoBtn = document.getElementById('btn-ponto');
+  if (pontoBtn) {
+    pontoBtn.addEventListener('click', () => {
+      dashboard.showLoading();
+      setTimeout(() => {
+        dashboard.showNotification('Ponto registrado!', 'success');
+        dashboard.hideLoading();
+      }, 1000);
+    });
+  }
+
+  // Pesquisar auditoria (auditoria.html)
+  document.querySelectorAll('form button .fa-search').forEach(icon => {
+    icon.parentElement.addEventListener('click', (e) => {
+      e.preventDefault();
+      dashboard.showLoading();
+      setTimeout(() => {
+        dashboard.showNotification('Pesquisa realizada!', 'success');
+        dashboard.hideLoading();
+      }, 1000);
+    });
+  });
+});
+
 // Service Worker para PWA (opcional)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
