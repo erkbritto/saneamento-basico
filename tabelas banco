@@ -1,0 +1,54 @@
+CREATE TABLE usuario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    cargo ENUM('FUNCIONARIO', 'SUPERVISOR', 'MASTER') NOT NULL,
+    status ENUM('ATIVO', 'INATIVO', 'PENDENTE') DEFAULT 'ATIVO',
+    departamento VARCHAR(100),
+    ultimo_acesso DATETIME,
+    rosto BLOB,
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE tarefa (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    descricao TEXT,
+    status ENUM('PENDENTE', 'ANDAMENTO', 'CONCLUIDA') DEFAULT 'PENDENTE',
+    data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    data_conclusao DATETIME,
+    gerente_id INT,
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (gerente_id) REFERENCES usuario(id)
+);
+
+CREATE TABLE funcionario_tarefa (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tarefa_id INT NOT NULL,
+    funcionario_id INT NOT NULL,
+    FOREIGN KEY (tarefa_id) REFERENCES tarefa(id),
+    FOREIGN KEY (funcionario_id) REFERENCES usuario(id)
+);
+
+CREATE TABLE ponto (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    data DATE NOT NULL,
+    hora_entrada TIME,
+    hora_saida TIME,
+    total_horas TIME,
+    status ENUM('REGISTRADO', 'FALTA', 'JUSTIFICADO') DEFAULT 'REGISTRADO',
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+);
+
+CREATE TABLE auditoria (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    acao VARCHAR(100) NOT NULL,
+    data_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
+    ip VARCHAR(45),
+    status ENUM('SUCESSO', 'FALHA') DEFAULT 'SUCESSO',
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+);
