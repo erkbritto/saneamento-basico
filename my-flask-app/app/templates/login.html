@@ -9,6 +9,12 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/face-api.js/0.22.2/face-api.min.js"></script>
   <script defer src="{{ url_for('static', filename='js/login.js') }}"></script>
+    <script>
+      // Carregar modelos face-api.js ao iniciar login
+      document.addEventListener('DOMContentLoaded', async () => {
+        await faceapi.nets.ssdMobilenetv1.loadFromUri('/static/models');
+      });
+    </script>
 </head>
 <body class="flex items-center justify-center min-h-screen bg-gray-100 transition-colors duration-300" data-theme="light">
   <div class="login-container bg-white p-8 rounded-xl shadow-2xl w-full max-w-md animate-fade-in">

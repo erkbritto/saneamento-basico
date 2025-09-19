@@ -340,7 +340,7 @@
       <button class="btn bg-gray-200 text-gray-800 hover:bg-gray-300" id="cancel-add-user">
         Cancelar
       </button>
-      <button class="btn btn-primary">
+      <button class="btn btn-primary" id="save-user-btn">
         <i class="fas fa-save mr-2"></i> Salvar Usuário
       </button>
     </div>
@@ -444,28 +444,63 @@ document.addEventListener('DOMContentLoaded', function() {
   initUserControls();
   
   // Carregar dados de usuários
-  loadUserData();
+    loadUserData();
+    // Remover pop-up de carregamento e mensagem fake
+    if (window.dashboard?.hideLoading) window.dashboard.hideLoading();
+    if (window.dashboard?.showNotification) window.dashboard.showNotification('', 'info');
 });
 
 function initUserControls() {
-  // Controle do modal de adicionar usuário
   const addUserBtn = document.getElementById('add-user-btn');
   const addUserModal = document.getElementById('add-user-modal');
   const cancelAddUser = document.getElementById('cancel-add-user');
-  
+  const saveUserBtn = document.getElementById('save-user-btn');
   if (addUserBtn && addUserModal && cancelAddUser) {
     addUserBtn.addEventListener('click', function() {
       addUserModal.classList.remove('hidden');
     });
-    
     cancelAddUser.addEventListener('click', function() {
       addUserModal.classList.add('hidden');
     });
-    
-    // Fechar modal clicando fora dele
     addUserModal.addEventListener('click', function(e) {
       if (e.target === addUserModal) {
         addUserModal.classList.add('hidden');
+      }
+    });
+    // Submit do modal de novo usuário
+    saveUserBtn.addEventListener('click', async function() {
+      const modal = addUserModal;
+      const nome = modal.querySelector('input[type="text"]').value;
+      const email = modal.querySelector('input[type="email"]').value;
+      const cargo = modal.querySelector('select').value;
+      const departamento = modal.querySelectorAll('select')[1].value;
+      if (!nome || !email || !cargo || !departamento) {
+        showModalMessage('Preencha todos os campos!', 'error');
+        return;
+      }
+      showModalMessage('Cadastrando usuário...', 'info');
+      try {
+        const res = await fetch('/usuarios/cadastrar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome, email, cargo, departamento })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showModalMessage('Usuário criado com sucesso!', 'success');
+          setTimeout(() => {
+            addUserModal.classList.add('hidden');
+            modal.querySelector('input[type="text"]').value = '';
+            modal.querySelector('input[type="email"]').value = '';
+            modal.querySelector('select').value = '';
+            modal.querySelectorAll('select')[1].value = '';
+            location.reload();
+          }, 1200);
+        } else {
+          showModalMessage(data.error || 'Erro ao criar usuário', 'error');
+        }
+      } catch (err) {
+        showModalMessage('Erro de conexão com o servidor', 'error');
       }
     });
   }
@@ -496,24 +531,25 @@ function initUserControls() {
   });
 }
 
-async function loadUserData() {
-  try {
-    // Simular loading de dados
-    console.log('Carregando dados de usuários...');
-    
-    // Em um sistema real, faríamos uma requisição para a API
-    // const response = await fetch('/api/users');
-    // const data = await response.json();
-    
-    // Simular um atraso de rede
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    // Atualizar a interface com os dados
-    console.log('Dados de usuários carregados com sucesso');
-    
-  } catch (error) {
-    console.error('Erro ao carregar dados de usuários:', error);
+function showModalMessage(msg, type) {
+  let msgBox = document.getElementById('modal-msg-box');
+  if (!msgBox) {
+    msgBox = document.createElement('div');
+    msgBox.id = 'modal-msg-box';
+    msgBox.style.margin = '10px 0';
+    msgBox.style.textAlign = 'center';
+    document.querySelector('#add-user-modal .p-6.space-y-4').appendChild(msgBox);
   }
+  msgBox.textContent = msg;
+  msgBox.style.color = type === 'error' ? '#dc2626' : (type === 'success' ? '#16a34a' : '#2563eb');
+  // Se mensagem for vazia, ocultar box
+  if (!msg) msgBox.style.display = 'none';
+  else msgBox.style.display = 'block';
+}
+
+async function loadUserData() {
+  // Remover loading fake
+  // ...aqui pode ser implementado fetch real de usuários...
 }
 
 // Função para editar usuário
@@ -563,14 +599,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Novo Usuário
   const addUserBtn = document.getElementById('add-user-btn');
-  addUserBtn.addEventListener('click', function() {
-    window.dashboard.showLoading();
-    setTimeout(() => {
-      window.dashboard.showNotification('Formulário de novo usuário aberto!', 'info');
-      window.dashboard.hideLoading();
-      // Simulação: abrir modal (pode ser implementado depois)
-    }, 1000);
-  });
+  const addUserModal = document.getElementById('add-user-modal');
+  if (addUserBtn && addUserModal) {
+    addUserBtn.addEventListener('click', function() {
+      addUserModal.classList.remove('hidden');
+    });
+  }
 });
 </script>
 {% endblock %}
