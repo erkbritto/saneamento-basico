@@ -2,7 +2,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 import time
 
-from app.models.models import criar_usuario
+from app.models.models import criar_usuario, Usuario, atualizar_usuario, deletar_usuario
 
 
 main = Blueprint('main', __name__)
@@ -156,27 +156,71 @@ def usuarios():
 
 # Rota para cadastrar usuário
 @main.route('/usuarios/cadastrar', methods=['POST'])
-def cadastrar_usuario():
+def cadastrar_usuario_ajax():
     if 'user' not in session or session.get('user_role') != 'GOVERNANTE':
-        return jsonify({'error': 'Acesso não autorizado'}), 403
-    nome = request.form.get('nome')
-    email = request.form.get('email')
-    senha = request.form.get('senha')
-    cargo = request.form.get('cargo')
-    departamento = request.form.get('departamento')
-    rosto = request.form.get('rosto')  # opcional
-    if not all([nome, email, senha, cargo]):
-        return jsonify({'error': 'Preencha todos os campos obrigatórios'}), 400
+        return jsonify({'success': False, 'message': 'Acesso não autorizado'}), 403
+    data = request.get_json(force=True)
+    nome = data.get('nome')
+    email = data.get('email')
+    senha = data.get('senha')
+    cargo = data.get('cargo')
+    departamento = data.get('departamento')
+    status = data.get('status')
+    # Validação dos campos obrigatórios
+    if not nome or not email or not senha or not cargo or not departamento or not status:
+        return jsonify({'success': False, 'message': 'Preencha todos os campos obrigatórios.'}), 400
+    if cargo not in ['FUNCIONARIO', 'SUPERVISOR', 'MASTER']:
+        return jsonify({'success': False, 'message': 'Cargo inválido.'}), 400
+    if status not in ['ATIVO', 'INATIVO', 'PENDENTE']:
+        return jsonify({'success': False, 'message': 'Status inválido.'}), 400
+    # Validação simples de email
+    if '@' not in email or '.' not in email:
+        return jsonify({'success': False, 'message': 'Email inválido.'}), 400
+    if len(senha) < 6:
+        return jsonify({'success': False, 'message': 'A senha deve ter pelo menos 6 caracteres.'}), 400
     try:
-        criar_usuario(nome, email, senha, cargo, departamento, rosto)
+        criar_usuario(nome, email, senha, cargo, departamento)
         return jsonify({'success': True, 'message': 'Usuário cadastrado com sucesso!'})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'message': f'Erro ao cadastrar usuário: {str(e)}'}), 500
 
 @main.route('/meio-ambiente')
 def meio_ambiente():
     if 'user' not in session:
         return redirect(url_for('main.login'))
+    
+# Rota para listar usuários (JSON)
+@main.route('/usuarios/listar', methods=['GET'])
+def listar_usuarios():
+    try:
+        conn = Usuario.get_db()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id, nome, cargo, departamento FROM usuario")
+        usuarios = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return jsonify({'usuarios': usuarios})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# Rota para editar usuário
+@main.route('/usuarios/editar/<int:id>', methods=['POST'])
+def editar_usuario(id):
+    data = request.get_json()
+    try:
+        atualizar_usuario(id, **data)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+# Rota para excluir usuário
+@main.route('/usuarios/excluir/<int:id>', methods=['POST'])
+def excluir_usuario(id):
+    try:
+        deletar_usuario(id)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
     if session.get('user_role') != 'GOVERNANTE':
         flash('Acesso não autorizado', 'error')
         return redirect(url_for('main.dashboard'))

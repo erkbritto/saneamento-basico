@@ -21,48 +21,73 @@ def get_db():
         print(f"Erro ao conectar: {e}")
         return None
 
-# CRUD USUÁRIO
+
+# Classe Usuario
+class Usuario:
+    def __init__(self, nome, email, senha, cargo, departamento, rosto=None, id=None):
+        self.id = id
+        self.nome = nome
+        self.email = email
+        self.senha = senha
+        self.cargo = cargo
+        self.departamento = departamento
+        self.rosto = rosto
+
+    @staticmethod
+    def criar(nome, email, senha, cargo, departamento, rosto=None):
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO usuario (nome, email, senha, cargo, departamento, rosto)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (nome, email, senha, cargo, departamento, rosto))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+    @staticmethod
+    def buscar_por_email(email):
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM usuario WHERE email = %s", (email,))
+        user = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        if user:
+            return Usuario(**user)
+        return None
+
+    @staticmethod
+    def atualizar(id, **kwargs):
+        conn = get_db()
+        cursor = conn.cursor()
+        campos = ', '.join([f"{k}=%s" for k in kwargs.keys()])
+        valores = list(kwargs.values()) + [id]
+        cursor.execute(f"UPDATE usuario SET {campos} WHERE id=%s", valores)
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+    @staticmethod
+    def deletar(id):
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM usuario WHERE id=%s", (id,))
+        conn.commit()
+        cursor.close()
+        conn.close()
 
 def criar_usuario(nome, email, senha, cargo, departamento, rosto=None):
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO usuario (nome, email, senha, cargo, departamento, rosto)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    """, (nome, email, senha, cargo, departamento, rosto))
-    conn.commit()
-    cursor.close()
-    conn.close()
-
+    Usuario.criar(nome, email, senha, cargo, departamento, rosto)
 
 def buscar_usuario_por_email(email):
-    conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM usuario WHERE email = %s", (email,))
-    user = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    return user
-
+    return Usuario.buscar_por_email(email)
 
 def atualizar_usuario(id, **kwargs):
-    conn = get_db()
-    cursor = conn.cursor()
-    campos = ', '.join([f"{k}=%s" for k in kwargs.keys()])
-    valores = list(kwargs.values()) + [id]
-    cursor.execute(f"UPDATE usuario SET {campos} WHERE id=%s", valores)
-    conn.commit()
-    cursor.close()
-    conn.close()
-
+    Usuario.atualizar(id, **kwargs)
 
 def deletar_usuario(id):
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM usuario WHERE id=%s", (id,))
-    conn.commit()
-    cursor.close()
-    conn.close()
+    Usuario.deletar(id)
 
 # CRUD TAREFA
 

@@ -39,6 +39,61 @@ function updateThemeIcon() {
   }
 }
 
+
+  // Abrir modal de cadastro de usuário
+  const addUserBtn = document.getElementById('add-user-btn');
+  const userModal = document.getElementById('user-modal');
+  const closeUserModal = document.getElementById('close-user-modal');
+  if (addUserBtn && userModal && closeUserModal) {
+    addUserBtn.addEventListener('click', () => {
+      userModal.classList.remove('hidden');
+    });
+    closeUserModal.addEventListener('click', () => {
+      userModal.classList.add('hidden');
+    });
+    // Fechar modal ao clicar fora do conteúdo
+    userModal.addEventListener('click', (e) => {
+      if (e.target === userModal) {
+        userModal.classList.add('hidden');
+      }
+    });
+  }
+
+  // Envio do formulário de cadastro de usuário
+    const userForm = document.getElementById('user-form');
+    if (userForm) {
+      userForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = {
+          nome: userForm.nome.value,
+          email: userForm.email.value,
+          senha: userForm.senha.value,
+          cargo: userForm.cargo.value,
+          departamento: userForm.departamento.value,
+          status: userForm.status.value
+        };
+        try {
+          const response = await fetch('/usuarios/cadastrar', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+          });
+          const result = await response.json();
+          if (result.success) {
+            showNotification(result.message || 'Usuário cadastrado com sucesso!', 'success');
+            userModal.classList.add('hidden');
+            userForm.reset();
+            // TODO: Atualizar lista de usuários
+          } else {
+            showNotification(result.message || 'Erro ao cadastrar usuário', 'error');
+          }
+        } catch (err) {
+          showNotification('Erro ao cadastrar usuário', 'error');
+        }
+      });
+    }
 // Atualizar meta theme-color para mobile
 function updateMetaTheme() {
   const themeColor = currentTheme === 'dark' ? '#0f172a' : '#f8fafc';
@@ -82,6 +137,104 @@ function setupEventListeners() {
       }
     });
   });
+
+    // Carregar e renderizar usuários
+    async function carregarUsuarios() {
+      try {
+        const response = await fetch('/usuarios/listar');
+        const data = await response.json();
+        const tbody = document.getElementById('usuarios-tbody');
+        tbody.innerHTML = '';
+        if (data.usuarios && Array.isArray(data.usuarios)) {
+          data.usuarios.forEach(usuario => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td class="py-4">
+                <label class="flex items-center">
+                  <input type="checkbox" class="form-checkbox rounded text-blue-600">
+                  <div class="ml-3">
+                    <div class="font-medium">${usuario.nome}</div>
+                    <div class="text-sm text-gray-600">${usuario.email || ''}</div>
+                  </div>
+                </label>
+              </td>
+              <td class="py-4">
+                <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">${usuario.cargo}</span>
+              </td>
+              <td class="py-4">${usuario.departamento}</td>
+              <td class="py-4">
+                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Ativo</span>
+              </td>
+              <td class="py-4">-</td>
+              <td class="py-4 text-right">
+                <div class="flex justify-end space-x-2">
+                  <button class="text-blue-600 hover:text-blue-800 editar-usuario-btn" data-id="${usuario.id}" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="text-red-600 hover:text-red-800 excluir-usuario-btn" data-id="${usuario.id}" title="Excluir">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+      } catch (err) {
+        showNotification('Erro ao carregar usuários', 'error');
+      }
+    }
+
+    // Chamar ao iniciar
+    carregarUsuarios();
+
+    // Excluir usuário
+    document.addEventListener('click', async function(e) {
+      if (e.target.closest('.excluir-usuario-btn')) {
+        const btn = e.target.closest('.excluir-usuario-btn');
+        const id = btn.getAttribute('data-id');
+        if (confirm('Deseja realmente excluir este usuário?')) {
+          try {
+            const response = await fetch(`/usuarios/excluir/${id}`, {
+              method: 'POST'
+            });
+            const result = await response.json();
+            if (result.success) {
+              showNotification('Usuário excluído com sucesso!', 'success');
+              carregarUsuarios();
+            } else {
+              showNotification(result.message || 'Erro ao excluir usuário', 'error');
+            }
+          } catch (err) {
+            showNotification('Erro ao excluir usuário', 'error');
+          }
+        }
+      }
+    });
+
+    // Editar usuário (exemplo: abrir modal, implementar conforme necessário)
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.editar-usuario-btn')) {
+        const btn = e.target.closest('.editar-usuario-btn');
+        const id = btn.getAttribute('data-id');
+        showNotification('Funcionalidade de edição em desenvolvimento.', 'info');
+        // TODO: Implementar modal de edição e integração
+      }
+    });
+
+    // Atualizar lista após cadastro
+    if (userForm) {
+      userForm.addEventListener('submit', async function(e) {
+        // ...existing code...
+        if (result.success) {
+          showNotification('Usuário cadastrado com sucesso!', 'success');
+          userModal.classList.add('hidden');
+          userForm.reset();
+          carregarUsuarios();
+        }
+        // ...existing code...
+      });
+    }
 }
 
 // Setup de animações

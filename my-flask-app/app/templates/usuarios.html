@@ -44,6 +44,51 @@
   </button>
 </div>
 
+<!-- Modal de Cadastro de Usuário -->
+<div id="user-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+    <button id="close-user-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
+    <h2 class="text-xl font-bold mb-4">Cadastrar Novo Usuário</h2>
+    <form id="user-form">
+        <div class="mb-4">
+          <label for="nome" class="block font-semibold mb-1">Nome completo</label>
+          <input type="text" id="nome" name="nome" class="input w-full" required>
+        </div>
+        <div class="mb-4">
+          <label for="email" class="block font-semibold mb-1">Email</label>
+          <input type="email" id="email" name="email" class="input w-full" required>
+        </div>
+        <div class="mb-4">
+          <label for="senha" class="block font-semibold mb-1">Senha</label>
+          <input type="password" id="senha" name="senha" class="input w-full" required>
+        </div>
+        <div class="mb-4">
+          <label for="cargo" class="block font-semibold mb-1">Cargo</label>
+          <select id="cargo" name="cargo" class="input w-full" required>
+            <option value="FUNCIONARIO">Funcionário</option>
+            <option value="SUPERVISOR">Supervisor</option>
+            <option value="MASTER">Master</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="departamento" class="block font-semibold mb-1">Departamento</label>
+          <input type="text" id="departamento" name="departamento" class="input w-full" required>
+        </div>
+        <div class="mb-4">
+          <label for="status" class="block font-semibold mb-1">Status</label>
+          <select id="status" name="status" class="input w-full" required>
+            <option value="ATIVO">Ativo</option>
+            <option value="INATIVO">Inativo</option>
+            <option value="PENDENTE">Pendente</option>
+          </select>
+        </div>
+      <div class="flex justify-end">
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Estatísticas Rápidas -->
 <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
   <div class="card p-5 text-center">
@@ -95,137 +140,8 @@
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
-        <tr>
-          <td class="py-4">
-            <label class="flex items-center">
-              <input type="checkbox" class="form-checkbox rounded text-blue-600">
-              <div class="ml-3">
-                <div class="font-medium">Maria Silva</div>
-                <div class="text-sm text-gray-600">maria.silva@empresa.com</div>
-              </div>
-            </label>
-          </td>
-          <td class="py-4">
-            <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">GOVERNANTE</span>
-          </td>
-          <td class="py-4">Administração</td>
-          <td class="py-4">
-            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Ativo</span>
-          </td>
-          <td class="py-4">12/10/2023 14:32</td>
-          <td class="py-4 text-right">
-            <div class="flex justify-end space-x-2">
-              <button class="text-blue-600 hover:text-blue-800" title="Editar">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="text-yellow-600 hover:text-yellow-800" title="Redefinir Senha">
-                <i class="fas fa-key"></i>
-              </button>
-              <button class="text-gray-600 hover:text-gray-800" title="Desativar">
-                <i class="fas fa-user-slash"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="py-4">
-            <label class="flex items-center">
-              <input type="checkbox" class="form-checkbox rounded text-blue-600">
-              <div class="ml-3">
-                <div class="font-medium">João Santos</div>
-                <div class="text-sm text-gray-600">joao.santos@empresa.com</div>
-              </div>
-            </label>
-          </td>
-          <td class="py-4">
-            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">SUPERVISOR</span>
-          </td>
-          <td class="py-4">Operações</td>
-          <td class="py-4">
-            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Ativo</span>
-          </td>
-          <td class="py-4">13/10/2023 09:15</td>
-          <td class="py-4 text-right">
-            <div class="flex justify-end space-x-2">
-              <button class="text-blue-600 hover:text-blue-800" title="Editar">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="text-yellow-600 hover:text-yellow-800" title="Redefinir Senha">
-                <i class="fas fa-key"></i>
-              </button>
-              <button class="text-gray-600 hover:text-gray-800" title="Desativar">
-                <i class="fas fa-user-slash"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="py-4">
-            <label class="flex items-center">
-              <input type="checkbox" class="form-checkbox rounded text-blue-600">
-              <div class="ml-3">
-                <div class="font-medium">Ana Costa</div>
-                <div class="text-sm text-gray-600">ana.costa@empresa.com</div>
-              </div>
-            </label>
-          </td>
-          <td class="py-4">
-            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">SUPERVISOR</span>
-          </td>
-          <td class="py-4">Meio Ambiente</td>
-          <td class="py-4">
-            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Ativo</span>
-          </td>
-          <td class="py-4">12/10/2023 16:45</td>
-          <td class="py-4 text-right">
-            <div class="flex justify-end space-x-2">
-              <button class="text-blue-600 hover:text-blue-800" title="Editar">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="text-yellow-600 hover:text-yellow-800" title="Redefinir Senha">
-                <i class="fas fa-key"></i>
-              </button>
-              <button class="text-gray-600 hover:text-gray-800" title="Desativar">
-                <i class="fas fa-user-slash"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-        
-        <tr>
-          <td class="py-4">
-            <label class="flex items-center">
-              <input type="checkbox" class="form-checkbox rounded text-blue-600">
-              <div class="ml-3">
-                <div class="font-medium">Pedro Almeida</div>
-                <div class="text-sm text-gray-600">pedro.almeida@empresa.com</div>
-              </div>
-            </label>
-          </td>
-          <td class="py-4">
-            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">FUNCIONARIO</span>
-          </td>
-          <td class="py-4">Operações</td>
-          <td class="py-4">
-            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Ativo</span>
-          </td>
-          <td class="py-4">13/10/2023 07:58</td>
-          <td class="py-4 text-right">
-            <div class="flex justify-end space-x-2">
-              <button class="text-blue-600 hover:text-blue-800" title="Editar">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="text-yellow-600 hover:text-yellow-800" title="Redefinir Senha">
-                <i class="fas fa-key"></i>
-              </button>
-              <button class="text-gray-600 hover:text-gray-800" title="Desativar">
-                <i class="fas fa-user-slash"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
+          <!-- Usuários dinâmicos -->
+          <tbody id="usuarios-tbody"></tbody>
         
         <tr>
           <td class="py-4">
@@ -313,7 +229,10 @@
         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
         <input type="email" class="input w-full" placeholder="Digite o email">
       </div>
-      
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+        <input type="password" class="input w-full" placeholder="Digite a senha">
+      </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Perfil de acesso</label>
         <select class="input w-full">
@@ -323,7 +242,6 @@
           <option value="FUNCIONARIO">Funcionário</option>
         </select>
       </div>
-      
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Departamento</label>
         <select class="input w-full">
@@ -472,9 +390,10 @@ function initUserControls() {
       const modal = addUserModal;
       const nome = modal.querySelector('input[type="text"]').value;
       const email = modal.querySelector('input[type="email"]').value;
+      const senha = modal.querySelector('input[type="password"]').value;
       const cargo = modal.querySelector('select').value;
       const departamento = modal.querySelectorAll('select')[1].value;
-      if (!nome || !email || !cargo || !departamento) {
+      if (!nome || !email || !senha || !cargo || !departamento) {
         showModalMessage('Preencha todos os campos!', 'error');
         return;
       }
@@ -483,7 +402,7 @@ function initUserControls() {
         const res = await fetch('/usuarios/cadastrar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nome, email, cargo, departamento })
+          body: JSON.stringify({ nome, email, senha, cargo, departamento })
         });
         const data = await res.json();
         if (data.success) {
@@ -492,6 +411,7 @@ function initUserControls() {
             addUserModal.classList.add('hidden');
             modal.querySelector('input[type="text"]').value = '';
             modal.querySelector('input[type="email"]').value = '';
+            modal.querySelector('input[type="password"]').value = '';
             modal.querySelector('select').value = '';
             modal.querySelectorAll('select')[1].value = '';
             location.reload();
