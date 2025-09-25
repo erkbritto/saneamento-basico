@@ -185,8 +185,10 @@ function setupEventListeners() {
       }
     }
 
-    // Chamar ao iniciar
-    carregarUsuarios();
+    // Chamar ao iniciar apenas se existir a tabela de usuários
+    if (document.getElementById('usuarios-tbody')) {
+      carregarUsuarios();
+    }
 
     // Excluir usuário
     document.addEventListener('click', async function(e) {
@@ -508,6 +510,42 @@ document.addEventListener('DOMContentLoaded', () => {
       dashboard.showNotification('Novo usuário: formulário aberto!', 'info');
     });
   }
+
+    // Exportar relatório principal (relatorios.html)
+    const exportBtn = document.querySelector('.btn-primary .fa-download')?.parentElement;
+    if (exportBtn) {
+      exportBtn.addEventListener('click', async () => {
+        dashboard.showLoading();
+        // Obter filtro selecionado
+        const period = document.getElementById('report-period').value;
+        let startDate = null, endDate = null;
+        if (period === 'custom') {
+          // Implemente aqui a lógica para pegar datas do input customizado
+          // Exemplo: startDate = ...; endDate = ...;
+        }
+        // Montar URL de exportação
+        let url = `/relatorios/exportar?period=${period}`;
+        if (startDate && endDate) {
+          url += `&start=${startDate}&end=${endDate}`;
+        }
+        // Baixar arquivo
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error('Erro ao exportar relatório');
+          const blob = await response.blob();
+          const link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          link.download = 'relatorio.xlsx';
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          dashboard.showNotification('Relatório exportado!', 'success');
+        } catch (err) {
+          dashboard.showNotification('Erro ao exportar relatório', 'error');
+        }
+        dashboard.hideLoading();
+      });
+    }
 
   // Adicionar tarefa (tarefas.html)
   document.querySelectorAll('form button .fa-plus').forEach(icon => {

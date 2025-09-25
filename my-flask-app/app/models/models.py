@@ -1,11 +1,11 @@
 # models.py - Operações CRUD para todas as entidades do sistema
 
 import os
-from database.db_connection import main as get_connection
+from dotenv import load_dotenv
 import mysql.connector
 from mysql.connector import Error
 
-# Função utilitária para obter conexão
+load_dotenv()
 
 def get_db():
     try:

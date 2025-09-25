@@ -197,14 +197,20 @@ def meio_ambiente():
 def listar_usuarios():
     try:
         conn = Usuario.get_db()
+        if not conn:
+            return jsonify({'error': 'Falha na conexão com o banco de dados.'}), 500
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT id, nome, cargo, departamento FROM usuario")
-        usuarios = cursor.fetchall()
-        cursor.close()
-        conn.close()
+        try:
+            cursor.execute("SELECT id, nome, cargo, departamento FROM usuario")
+            usuarios = cursor.fetchall()
+        except Exception as db_err:
+            return jsonify({'error': f'Erro na consulta SQL: {str(db_err)}'}), 500
+        finally:
+            cursor.close()
+            conn.close()
         return jsonify({'usuarios': usuarios})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': f'Erro geral: {str(e)}'}), 500
 
 # Rota para editar usuário
 @main.route('/usuarios/editar/<int:id>', methods=['POST'])
@@ -237,3 +243,60 @@ def auditoria():
         flash('Acesso não autorizado', 'error')
         return redirect(url_for('main.dashboard'))
     return render_template('auditoria.html')
+
+# Rota para exportar relatório Excel
+import pandas as pd
+from flask import send_file
+from io import BytesIO
+
+@main.route('/relatorios/exportar')
+def exportar_relatorio():
+    from datetime import datetime, timedelta
+    period = request.args.get('period', 'week')
+    start = request.args.get('start')
+    end = request.args.get('end')
+    now = datetime.now()
+    # Definir intervalo de datas
+    if period == 'today':
+        start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = now
+    elif period == 'week':
+        start_date = now - timedelta(days=now.weekday())
+        end_date = now
+    elif period == 'month':
+        start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_date = now
+    elif period == 'year':
+        start_date = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_date = now
+    elif period == 'custom' and start and end:
+        start_date = datetime.strptime(start, '%Y-%m-%d')
+        end_date = datetime.strptime(end, '%Y-%m-%d')
+    else:
+        start_date = now - timedelta(days=7)
+        end_date = now
+
+    # Exemplo: buscar tarefas concluídas no período
+    conn = None
+    try:
+        conn = Usuario.get_db()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT t.id, t.titulo, t.status, t.data_criacao, t.data_conclusao, u.nome as gerente
+            FROM tarefa t
+            LEFT JOIN usuario u ON t.gerente_id = u.id
+            WHERE t.data_criacao >= %s AND t.data_criacao <= %s
+        """, (start_date, end_date))
+        tarefas = cursor.fetchall()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        return f'Erro ao gerar relatório: {str(e)}', 500
+
+    # Montar DataFrame
+    df = pd.DataFrame(tarefas)
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Tarefas')
+    output.seek(0)
+    return send_file(output, download_name='relatorio.xlsx', as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
