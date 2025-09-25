@@ -188,7 +188,10 @@ def cadastrar_usuario_ajax():
 def meio_ambiente():
     if 'user' not in session:
         return redirect(url_for('main.login'))
-    
+    if session.get('user_role') != 'GOVERNANTE':
+        flash('Acesso não autorizado', 'error')
+        return redirect(url_for('main.dashboard'))
+    return render_template('meio_ambiente.html')
 # Rota para listar usuários (JSON)
 @main.route('/usuarios/listar', methods=['GET'])
 def listar_usuarios():
