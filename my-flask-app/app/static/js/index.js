@@ -51,7 +51,6 @@ function updateThemeIcon() {
     closeUserModal.addEventListener('click', () => {
       userModal.classList.add('hidden');
     });
-    // Fechar modal ao clicar fora do conteúdo
     userModal.addEventListener('click', (e) => {
       if (e.target === userModal) {
         userModal.classList.add('hidden');
@@ -85,7 +84,7 @@ function updateThemeIcon() {
             showNotification(result.message || 'Usuário cadastrado com sucesso!', 'success');
             userModal.classList.add('hidden');
             userForm.reset();
-            // TODO: Atualizar lista de usuários
+            carregarUsuarios();
           } else {
             showNotification(result.message || 'Erro ao cadastrar usuário', 'error');
           }
@@ -163,7 +162,7 @@ function setupEventListeners() {
               </td>
               <td class="py-4">${usuario.departamento}</td>
               <td class="py-4">
-                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Ativo</span>
+                <span class="px-2 py-1 ${usuario.status === 'Ativo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded-full text-xs">${usuario.status}</span>
               </td>
               <td class="py-4">-</td>
               <td class="py-4 text-right">
@@ -225,18 +224,7 @@ function setupEventListeners() {
     });
 
     // Atualizar lista após cadastro
-    if (userForm) {
-      userForm.addEventListener('submit', async function(e) {
-        // ...existing code...
-        if (result.success) {
-          showNotification('Usuário cadastrado com sucesso!', 'success');
-          userModal.classList.add('hidden');
-          userForm.reset();
-          carregarUsuarios();
-        }
-        // ...existing code...
-      });
-    }
+    // Removido: duplicação do listener, já tratado acima
 }
 
 // Setup de animações
@@ -548,16 +536,73 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
   // Adicionar tarefa (tarefas.html)
-  document.querySelectorAll('form button .fa-plus').forEach(icon => {
-    icon.parentElement.addEventListener('click', (e) => {
-      e.preventDefault();
-      dashboard.showLoading();
-      setTimeout(() => {
-        dashboard.showNotification('Tarefa adicionada!', 'success');
-        dashboard.hideLoading();
-      }, 1200);
-    });
-  });
+  const tarefaForm = document.querySelector('form.grid');
+  const tarefaList = document.querySelector('.bg-white ul.space-y-3');
+  async function adicionarTarefa(e) {
+    e.preventDefault();
+    dashboard.showLoading();
+    try {
+      const usuarioId = window.currentUserId || sessionStorage.getItem('usuario_id');
+      const titulo = tarefaForm.querySelector('input[type="text"]').value;
+      const status = tarefaForm.querySelector('select').value;
+      const payload = {
+        usuario_id: usuarioId,
+        titulo: titulo,
+        status: status
+      };
+      const response = await fetch('/api/tarefas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+      if (result.success) {
+        dashboard.showNotification(result.message || 'Tarefa adicionada!', 'success');
+        tarefaForm.reset();
+        await carregarTarefas(usuarioId);
+      } else {
+        dashboard.showNotification(result.message || 'Erro ao adicionar tarefa', 'error');
+      }
+    } catch (err) {
+      dashboard.showNotification('Erro ao adicionar tarefa', 'error');
+    }
+    dashboard.hideLoading();
+  }
+
+  async function carregarTarefas(usuarioId) {
+    try {
+      const response = await fetch(`/api/tarefas?usuario_id=${usuarioId}`);
+      const data = await response.json();
+      if (data.tarefas && Array.isArray(data.tarefas) && tarefaList) {
+        tarefaList.innerHTML = '';
+        data.tarefas.forEach(tarefa => {
+          const li = document.createElement('li');
+          li.className = 'p-4 rounded-lg border flex justify-between items-center hover:bg-gray-50';
+          let statusClass = 'text-yellow-600 bg-yellow-100';
+          if (tarefa.status === 'Em Andamento') statusClass = 'text-blue-600 bg-blue-100';
+          if (tarefa.status === 'Concluída') statusClass = 'text-green-600 bg-green-100';
+          li.innerHTML = `
+            <div>
+              <p class="font-medium text-gray-800">${tarefa.titulo}</p>
+              <span class="text-xs ${statusClass} px-2 py-1 rounded-full">${tarefa.status}</span>
+            </div>
+            <button class="text-blue-600 hover:text-blue-800 transition"><i class="fas fa-edit"></i></button>
+          `;
+          tarefaList.appendChild(li);
+        });
+      }
+    } catch (err) {
+      dashboard.showNotification('Erro ao carregar tarefas', 'error');
+    }
+  }
+
+  if (tarefaForm) {
+    tarefaForm.addEventListener('submit', adicionarTarefa);
+    const usuarioId = window.currentUserId || sessionStorage.getItem('usuario_id');
+    if (usuarioId) {
+      carregarTarefas(usuarioId);
+    }
+  }
 
   // Editar tarefa (tarefas.html)
   document.querySelectorAll('button .fa-edit').forEach(icon => {
@@ -568,27 +613,118 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Registrar ponto (ponto_eletronico.html)
   const pontoBtn = document.getElementById('btn-ponto');
+  const pontoTableBody = document.querySelector('table tbody');
+  async function registrarPonto() {
+    dashboard.showLoading();
+    try {
+      // Exemplo: obter dados do usuário logado
+      const usuarioId = window.currentUserId || sessionStorage.getItem('usuario_id');
+      const now = new Date();
+      const data = now.toISOString().slice(0, 10);
+      const horaEntrada = now.toTimeString().slice(0, 8);
+      // Opcional: obter localização
+      const payload = {
+        usuario_id: usuarioId,
+        data: data,
+        hora_entrada: horaEntrada,
+        localizacao: null
+      };
+      const response = await fetch('/api/ponto/registrar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+      if (result.success) {
+        dashboard.showNotification(result.message || 'Ponto registrado com sucesso!', 'success');
+        await carregarHistoricoPonto(usuarioId);
+      } else {
+        dashboard.showNotification(result.message || 'Erro ao registrar ponto', 'error');
+      }
+    } catch (err) {
+      dashboard.showNotification('Erro ao registrar ponto', 'error');
+    }
+    dashboard.hideLoading();
+  }
+
+  async function carregarHistoricoPonto(usuarioId) {
+    try {
+      const response = await fetch(`/api/ponto/historico?usuario_id=${usuarioId}`);
+      const data = await response.json();
+      if (data.historico && Array.isArray(data.historico) && pontoTableBody) {
+        pontoTableBody.innerHTML = '';
+        data.historico.forEach(ponto => {
+          const tr = document.createElement('tr');
+          tr.className = 'border-b hover:bg-gray-50';
+          tr.innerHTML = `
+            <td class="px-4 py-2">${ponto.data}</td>
+            <td class="px-4 py-2">${ponto.hora_entrada || '-'}</td>
+            <td class="px-4 py-2">${ponto.hora_saida || '-'}</td>
+            <td class="px-4 py-2">${ponto.total_horas || '-'}</td>
+          `;
+          pontoTableBody.appendChild(tr);
+        });
+      }
+    } catch (err) {
+      dashboard.showNotification('Erro ao carregar histórico de ponto', 'error');
+    }
+  }
+
   if (pontoBtn) {
-    pontoBtn.addEventListener('click', () => {
-      dashboard.showLoading();
-      setTimeout(() => {
-        dashboard.showNotification('Ponto registrado!', 'success');
-        dashboard.hideLoading();
-      }, 1000);
-    });
+    pontoBtn.addEventListener('click', registrarPonto);
+    // Carregar histórico ao abrir página
+    const usuarioId = window.currentUserId || sessionStorage.getItem('usuario_id');
+    if (usuarioId) {
+      carregarHistoricoPonto(usuarioId);
+    }
   }
 
   // Pesquisar auditoria (auditoria.html)
-  document.querySelectorAll('form button .fa-search').forEach(icon => {
-    icon.parentElement.addEventListener('click', (e) => {
-      e.preventDefault();
-      dashboard.showLoading();
-      setTimeout(() => {
+  const auditoriaForm = document.querySelector('form.grid');
+  const auditoriaTableBody = document.querySelector('.bg-white table tbody');
+  async function pesquisarAuditoria(e) {
+    e.preventDefault();
+    dashboard.showLoading();
+    try {
+      const usuario = auditoriaForm.querySelector('input[type="text"]').value;
+      const dataInicial = auditoriaForm.querySelectorAll('input[type="date"]')[0].value;
+      const dataFinal = auditoriaForm.querySelectorAll('input[type="date"]')[1].value;
+      const params = new URLSearchParams();
+      if (usuario) params.append('usuario', usuario);
+      if (dataInicial) params.append('data_inicial', dataInicial);
+      if (dataFinal) params.append('data_final', dataFinal);
+      const response = await fetch(`/api/auditoria?${params.toString()}`);
+      const data = await response.json();
+      if (data.registros && Array.isArray(data.registros) && auditoriaTableBody) {
+        auditoriaTableBody.innerHTML = '';
+        data.registros.forEach(registro => {
+          const tr = document.createElement('tr');
+          tr.className = 'border-b hover:bg-gray-50';
+          let statusClass = 'bg-blue-100 text-blue-700';
+          if (registro.status === 'Sucesso') statusClass = 'bg-green-100 text-green-700';
+          if (registro.status === 'Falha') statusClass = 'bg-red-100 text-red-700';
+          tr.innerHTML = `
+            <td class="px-4 py-2">${registro.data_hora}</td>
+            <td class="px-4 py-2">${registro.usuario}</td>
+            <td class="px-4 py-2">${registro.acao}</td>
+            <td class="px-4 py-2">${registro.ip}</td>
+            <td class="px-4 py-2"><span class="px-2 py-1 ${statusClass} rounded-lg">${registro.status}</span></td>
+          `;
+          auditoriaTableBody.appendChild(tr);
+        });
         dashboard.showNotification('Pesquisa realizada!', 'success');
-        dashboard.hideLoading();
-      }, 1000);
-    });
-  });
+      } else {
+        dashboard.showNotification('Nenhum registro encontrado.', 'info');
+      }
+    } catch (err) {
+      dashboard.showNotification('Erro ao pesquisar auditoria', 'error');
+    }
+    dashboard.hideLoading();
+  }
+
+  if (auditoriaForm) {
+    auditoriaForm.addEventListener('submit', pesquisarAuditoria);
+  }
 });
 
 // Service Worker para PWA (opcional)

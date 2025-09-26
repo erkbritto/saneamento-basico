@@ -8,103 +8,51 @@
 {% block content %}
 <!-- Filtros e Controles -->
 <div class="mb-6 flex flex-wrap gap-4 items-center">
-  <div class="relative flex-1 min-w-64">
-    <input type="text" placeholder="Buscar usuários..." class="input pr-10">
-    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-      <i class="fas fa-search text-gray-400"></i>
-    </div>
-  </div>
-  
-  <div class="relative">
-    <select id="role-filter" class="input pr-10">
-      <option value="all">Todos os perfis</option>
-      <option value="GOVERNANTE">Governante</option>
-      <option value="SUPERVISOR">Supervisor</option>
-      <option value="FUNCIONARIO">Funcionário</option>
-    </select>
-    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-      <i class="fas fa-user-tag text-gray-400"></i>
-    </div>
-  </div>
-  
-  <div class="relative">
-    <select id="status-filter" class="input pr-10">
-      <option value="all">Todos os status</option>
-      <option value="active">Ativo</option>
-      <option value="inactive">Inativo</option>
-      <option value="pending">Pendente</option>
-    </select>
-    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-      <i class="fas fa-circle text-gray-400"></i>
-    </div>
-  </div>
-  
-  <button class="btn btn-primary flex items-center" id="add-user-btn">
-    <i class="fas fa-user-plus mr-2"></i> Novo Usuário
-  </button>
-</div>
 
-<!-- Modal de Cadastro de Usuário -->
-<div id="user-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-  <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
-    <button id="close-user-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
-    <h2 class="text-xl font-bold mb-4">Cadastrar Novo Usuário</h2>
-    <form id="user-form">
-        <div class="mb-4">
-          <label for="nome" class="block font-semibold mb-1">Nome completo</label>
-          <input type="text" id="nome" name="nome" class="input w-full" required>
+  <!-- Modal de Cadastro de Usuário Unificado -->
+  <div id="user-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
+      <button id="close-user-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
+      <h2 class="text-xl font-bold mb-4">Cadastrar Novo Usuário</h2>
+      <form id="user-form">
+          <div class="mb-4">
+            <label for="nome" class="block font-semibold mb-1">Nome completo</label>
+            <input type="text" id="nome" name="nome" class="input w-full" required>
+          </div>
+          <div class="mb-4">
+            <label for="email" class="block font-semibold mb-1">Email</label>
+            <input type="email" id="email" name="email" class="input w-full" required>
+          </div>
+          <div class="mb-4">
+            <label for="senha" class="block font-semibold mb-1">Senha</label>
+            <input type="password" id="senha" name="senha" class="input w-full" required>
+          </div>
+          <div class="mb-4">
+            <label for="cargo" class="block font-semibold mb-1">Cargo</label>
+            <select id="cargo" name="cargo" class="input w-full" required>
+              <option value="FUNCIONARIO">Funcionário</option>
+              <option value="SUPERVISOR">Supervisor</option>
+              <option value="MASTER">Master</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="departamento" class="block font-semibold mb-1">Departamento</label>
+            <input type="text" id="departamento" name="departamento" class="input w-full" required>
+          </div>
+          <div class="mb-4">
+            <label for="status" class="block font-semibold mb-1">Status</label>
+            <select id="status" name="status" class="input w-full" required>
+              <option value="ATIVO">Ativo</option>
+              <option value="INATIVO">Inativo</option>
+              <option value="PENDENTE">Pendente</option>
+            </select>
+          </div>
+        <div class="flex justify-end">
+          <button type="submit" class="btn btn-primary">Salvar</button>
         </div>
-        <div class="mb-4">
-          <label for="email" class="block font-semibold mb-1">Email</label>
-          <input type="email" id="email" name="email" class="input w-full" required>
-        </div>
-        <div class="mb-4">
-          <label for="senha" class="block font-semibold mb-1">Senha</label>
-          <input type="password" id="senha" name="senha" class="input w-full" required>
-        </div>
-        <div class="mb-4">
-          <label for="cargo" class="block font-semibold mb-1">Cargo</label>
-          <select id="cargo" name="cargo" class="input w-full" required>
-            <option value="FUNCIONARIO">Funcionário</option>
-            <option value="SUPERVISOR">Supervisor</option>
-            <option value="MASTER">Master</option>
-          </select>
-        </div>
-        <div class="mb-4">
-          <label for="departamento" class="block font-semibold mb-1">Departamento</label>
-          <input type="text" id="departamento" name="departamento" class="input w-full" required>
-        </div>
-        <div class="mb-4">
-          <label for="status" class="block font-semibold mb-1">Status</label>
-          <select id="status" name="status" class="input w-full" required>
-            <option value="ATIVO">Ativo</option>
-            <option value="INATIVO">Inativo</option>
-            <option value="PENDENTE">Pendente</option>
-          </select>
-        </div>
-      <div class="flex justify-end">
-        <button type="submit" class="btn btn-primary">Salvar</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Estatísticas Rápidas -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-  <div class="card p-5 text-center">
-    <div class="text-2xl font-bold text-blue-600 mb-1">42</div>
-    <div class="text-sm text-gray-600">Total de Usuários</div>
-    <div class="text-xs text-green-500 mt-1 flex items-center justify-center">
-      <i class="fas fa-arrow-up mr-1"></i> 5 desde o último mês
+      </form>
     </div>
   </div>
-  
-  <div class="card p-5 text-center">
-    <div class="text-2xl font-bold text-green-600 mb-1">35</div>
-    <div class="text-sm text-gray-600">Usuários Ativos</div>
-    <div class="text-xs text-gray-500 mt-1">83% do total</div>
-  </div>
-  
   <div class="card p-5 text-center">
     <div class="text-2xl font-bold text-purple-600 mb-1">5</div>
     <div class="text-sm text-gray-600">Supervisores</div>
