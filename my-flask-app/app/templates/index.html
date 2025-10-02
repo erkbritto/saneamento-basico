@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Conteúdo do Dashboard -->
+<div id="dashboard-content">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Estatísticas comuns a todos -->
+    <div class="stat-card card p-6 text-center">
+      <div class="text-3xl font-bold text-blue-600 mb-2" id="active-users">0</div>
+      <div class="text-gray-600">Usuários Ativos</div>
+    </div>
+    
+    <div class="stat-card card p-6 text-center">
+      <div class="text-3xl font-bold text-green-600 mb-2" id="efficiency">0%</div>
+      <div class="text-gray-600">Eficiência Geral</div>
+    </div>
+    
+    <!-- Estatísticas apenas para Governante e Supervisor -->
+    <div class="stat-card card p-6 text-center" id="environment-impact-container">
+      <div class="text-3xl font-bold text-purple-600 mb-2" id="environment-impact">0%</div>
+      <div class="text-gray-600">Impacto Ambiental</div>
+    </div>
+    
+    <div class="stat-card card p-6 text-center" id="critical-alerts-container">
+      <div class="text-3xl font-bold text-red-600 mb-2" id="critical-alerts">0</div>
+      <div class="text-gray-600">Alertas Críticos</div>
+    </div>
+  </div>
+
+  <!-- Seção de Indicadores Ambientais -->
+  <div class="card p-6 mb-8" id="environment-section">
+    <h2 class="text-2xl font-bold mb-4">Indicadores Ambientais</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <div class="flex justify-between mb-2">
+          <span>Qualidade do Ar</span>
+          <span id="air-quality">85%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="air-quality-progress" class="progress-bar-fill bg-blue-600" style="width: 85%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between mb-2">
+          <span>Qualidade da Água</span>
+          <span id="water-quality">92%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="water-quality-progress" class="progress-bar-fill bg-green-600" style="width: 92%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between mb-2">
+          <span>Gestão de Resíduos</span>
+          <span id="waste-management">78%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="waste-management-progress" class="progress-bar-fill bg-yellow-600" style="width: 78%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between mb-2">
+          <span>Cobertura Verde</span>
+          <span id="green-coverage">65%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="green-coverage-progress" class="progress-bar-fill bg-purple-600" style="width: 65%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seção de Alertas Críticos -->
+  <div class="card p-6 mb-8" id="alerts-section">
+    <h2 class="text-2xl font-bold mb-4">Alertas Críticos</h2>
+    <div class="space-y-4">
+      <div class="alert alert-critical">
+        <i class="fas fa-exclamation-circle text-red-500 mt-1 mr-3"></i>
+        <div>
+          <p class="font-medium">Equipamento com falha no Setor B</p>
+          <p class="text-sm text-gray-600">Há 2 horas • Prioridade: Alta</p>
+        </div>
+      </div>
+      <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-3"></i>
+        <div>
+          <p class="font-medium">Meta de coleta não atingida - Zona Sul</p>
+          <p class="text-sm text-gray-600">Hoje • Prioridade: Média</p>
+        </div>
+      </div>
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle text-blue-500 mt-1 mr-3"></i>
+        <div>
+          <p class="font-medium">Novo funcionário aguarda aprovação</p>
+          <p class="text-sm text-gray-600">Há 1 dia • Prioridade: Baixa</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conteúdo específico para Funcionário -->
+  <div class="card p-6 mb-8" id="employee-section">
+    <h2 class="text-2xl font-bold mb-4">Minhas Tarefas</h2>
+    <div class="space-y-4">
+      <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+        <div>
+          <p class="font-medium">Inspeção de qualidade da água</p>
+          <p class="text-sm text-gray-600">Setor Norte • Prazo: Hoje</p>
+        </div>
+        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Pendente</span>
+      </div>
+      <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+        <div>
+          <p class="font-medium">Relatório de atividades semanais</p>
+          <p class="text-sm text-gray-600">Administrativo • Prazo: Amanhã</p>
+        </div>
+        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Em andamento</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Carregar dados do dashboard quando a página estiver carregada
+document.addEventListener('DOMContentLoaded', function() {
+  // Simulação de dados do usuário (em um sistema real, isso viria do backend)
+  const userRole = "{{ session.get('user_role', 'FUNCIONARIO') }}"; // Você precisa definir isso na sessão
+  
+  // Esconder/mostrar elementos baseados no papel do usuário
+  if (userRole !== 'GOVERNANTE' && userRole !== 'SUPERVISOR') {
+    document.getElementById('environment-impact-container').classList.add('hidden');
+    document.getElementById('critical-alerts-container').classList.add('hidden');
+    document.getElementById('environment-section').classList.add('hidden');
+    document.getElementById('alerts-section').classList.add('hidden');
+  }
+  
+  if (userRole !== 'FUNCIONARIO') {
+    document.getElementById('employee-section').classList.add('hidden');
+  }
+  
+  // Simular dados (em um sistema real, você faria uma requisição AJAX)
+  document.getElementById('active-users').textContent = '42';
+  document.getElementById('efficiency').textContent = '87%';
+  document.getElementById('environment-impact').textContent = '76%';
+  document.getElementById('critical-alerts').textContent = '3';
+});
+</script>
+{% endblock %}

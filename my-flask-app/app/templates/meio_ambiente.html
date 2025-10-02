@@ -1,0 +1,475 @@
+{% extends "base.html" %}
+
+{% block title %}Meio Ambiente{% endblock %}
+
+{% block page_title %}Meio Ambiente{% endblock %}
+{% block page_subtitle %}Monitoramento e gestão ambiental{% endblock %}
+
+{% block content %}
+<!-- Filtros e Controles -->
+<div class="mb-6 flex flex-wrap gap-4 items-center">
+  <div class="relative">
+    <select id="environment-metric" class="input pr-10">
+      <option value="all">Todas as métricas</option>
+      <option value="water_quality">Qualidade da Água</option>
+      <option value="air_quality">Qualidade do Ar</option>
+      <option value="waste_management">Gestão de Resíduos</option>
+      <option value="biodiversity">Biodiversidade</option>
+      <option value="emissions">Emissões</option>
+    </select>
+    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+      <i class="fas fa-filter text-gray-400"></i>
+    </div>
+  </div>
+  
+  <div class="relative">
+    <select id="time-period" class="input pr-10">
+      <option value="today">Hoje</option>
+      <option value="week">Esta semana</option>
+      <option value="month" selected>Este mês</option>
+      <option value="quarter">Este trimestre</option>
+      <option value="year">Este ano</option>
+    </select>
+    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+      <i class="fas fa-calendar text-gray-400"></i>
+    </div>
+  </div>
+  
+  <div class="relative">
+    <input type="text" id="location-filter" class="input pr-10" placeholder="Filtrar por localização">
+    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+      <i class="fas fa-map-marker-alt text-gray-400"></i>
+    </div>
+  </div>
+  
+  <button class="btn btn-primary flex items-center">
+    <i class="fas fa-download mr-2"></i> Exportar Relatório
+  </button>
+  
+  <button class="btn bg-white border border-gray-300 hover:bg-gray-50 flex items-center ml-auto">
+    <i class="fas fa-sliders-h mr-2"></i> Filtros Avançados
+  </button>
+</div>
+
+<!-- Indicadores Ambientais em Destaque -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+  <div class="card p-5 text-center">
+    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+      <i class="fas fa-tint text-blue-600 text-xl"></i>
+    </div>
+    <div class="text-2xl font-bold text-blue-600 mb-1">92.4%</div>
+    <div class="text-sm text-gray-600">Qualidade da Água</div>
+    <div class="text-xs text-green-500 mt-1 flex items-center justify-center">
+      <i class="fas fa-arrow-up mr-1"></i> 2.3% desde o último mês
+    </div>
+  </div>
+  
+  <div class="card p-5 text-center">
+    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+      <i class="fas fa-wind text-green-600 text-xl"></i>
+    </div>
+    <div class="text-2xl font-bold text-green-600 mb-1">87.6%</div>
+    <div class="text-sm text-gray-600">Qualidade do Ar</div>
+    <div class="text-xs text-green-500 mt-1 flex items-center justify-center">
+      <i class="fas fa-arrow-up mr-1"></i> 1.8% desde o último mês
+    </div>
+  </div>
+  
+  <div class="card p-5 text-center">
+    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+      <i class="fas fa-recycle text-purple-600 text-xl"></i>
+    </div>
+    <div class="text-2xl font-bold text-purple-600 mb-1">76.2%</div>
+    <div class="text-sm text-gray-600">Resíduos Reciclados</div>
+    <div class="text-xs text-red-500 mt-1 flex items-center justify-center">
+      <i class="fas fa-arrow-down mr-1"></i> 0.9% desde o último mês
+    </div>
+  </div>
+  
+  <div class="card p-5 text-center">
+    <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+      <i class="fas fa-leaf text-yellow-600 text-xl"></i>
+    </div>
+    <div class="text-2xl font-bold text-yellow-600 mb-1">94.1%</div>
+    <div class="text-sm text-gray-600">Áreas Preservadas</div>
+    <div class="text-xs text-green-500 mt-1 flex items-center justify-center">
+      <i class="fas fa-arrow-up mr-1"></i> 3.2% desde o último mês
+    </div>
+  </div>
+</div>
+
+<!-- Mapa de Monitoramento -->
+<div class="card p-6 mb-8">
+  <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+    <h3 class="text-lg font-semibold mb-2 md:mb-0">Monitoramento em Tempo Real</h3>
+    <div class="flex space-x-2">
+      <button class="text-xs px-2 py-1 rounded bg-blue-100 text-blue-700">Qualidade da Água</button>
+      <button class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200">Qualidade do Ar</button>
+      <button class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200">Pontos de Coleta</button>
+    </div>
+  </div>
+  
+  <div class="bg-gray-100 rounded-lg h-80 flex items-center justify-center relative">
+    <!-- Mapa simplificado - em implementação real seria um mapa interativo -->
+    <div class="text-center text-gray-500">
+      <i class="fas fa-map-marked-alt text-4xl mb-2"></i>
+      <p>Mapa de monitoramento ambiental</p>
+      <p class="text-sm">Mostrando 12 estações de monitoramento ativas</p>
+    </div>
+    
+    <!-- Marcadores do mapa (simulados) -->
+    <div class="absolute top-1/4 left-1/4 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+    <div class="absolute top-1/3 left-2/3 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+    <div class="absolute top-2/3 left-1/3 w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
+    <div class="absolute top-1/2 left-1/2 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+    <div class="absolute top-3/4 left-3/4 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+  </div>
+  
+  <div class="flex flex-wrap gap-4 mt-4">
+    <div class="flex items-center">
+      <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+      <span class="text-sm">Ótimo (90-100%)</span>
+    </div>
+    <div class="flex items-center">
+      <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+      <span class="text-sm">Bom (70-89%)</span>
+    </div>
+    <div class="flex items-center">
+      <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+      <span class="text-sm">Atenção (0-69%)</span>
+    </div>
+  </div>
+</div>
+
+<!-- Gráficos de Tendências Ambientais -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+  <!-- Qualidade da Água -->
+  <div class="card p-6">
+    <h3 class="text-lg font-semibold mb-4">Tendência da Qualidade da Água</h3>
+    <div class="h-64 flex items-end justify-between pt-4 pb-6 px-2">
+      <div class="flex-1 mx-1 flex flex-col items-center">
+        <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 85%"></div>
+        <span class="text-xs text-gray-500 mt-1">Jan</span>
+      </div>
+      <div class="flex-1 mx-1 flex flex-col items-center">
+        <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 82%"></div>
+        <span class="text-xs text-gray-500 mt-1">Fev</span>
+      </div>
+      <div class="flex-1 mx-1 flex flex-col items-center">
+        <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 88%"></div>
+        <span class="text-xs text-gray-500 mt-1">Mar</span>
+      </div>
+      <div class="flex-1 mx-1 flex flex-col items-center">
+        <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 90%"></div>
+        <span class="text-xs text-gray-500 mt-1">Abr</span>
+      </div>
+      <div class="flex-1 mx-1 flex flex-col items-center">
+        <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 87%"></div>
+        <span class="text-xs text-gray-500 mt-1">Mai</span>
+      </div>
+      <div class="flex-1 mx-1 flex flex-col items-center">
+        <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 92%"></div>
+        <span class="text-xs text-gray-500 mt-1">Jun</span>
+      </div>
+    </div>
+    <div class="flex justify-center mt-2">
+      <div class="flex items-center">
+        <div class="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+        <span class="text-sm">Qualidade da Água</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Gestão de Resíduos -->
+  <div class="card p-6">
+    <h3 class="text-lg font-semibold mb-4">Gestão de Resíduos</h3>
+    <div class="flex items-center justify-center mb-4">
+      <div class="relative w-40 h-40">
+        <!-- Gráfico de pizza simplificado -->
+        <div class="absolute inset-0 rounded-full border-8 border-green-500" style="clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 100%, 50% 100%);"></div>
+        <div class="absolute inset-0 rounded-full border-8 border-yellow-500" style="clip-path: polygon(50% 50%, 100% 0, 100% 100%, 0 100%, 0 50%);"></div>
+        <div class="absolute inset-0 rounded-full border-8 border-red-500" style="clip-path: polygon(50% 50%, 0 50%, 0 0, 100% 0, 100% 50%);"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="text-center">
+            <div class="font-bold">100%</div>
+            <div class="text-xs text-gray-500">Total</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-4 space-y-2">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+          <span>Reciclados</span>
+        </div>
+        <span class="font-semibold">76%</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+          <span>Reutilizáveis</span>
+        </div>
+        <span class="font-semibold">18%</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+          <span>Descarte</span>
+        </div>
+        <span class="font-semibold">6%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Alertas e Incidentes Ambientais -->
+<div class="card p-6 mb-8">
+  <div class="flex justify-between items-center mb-6">
+    <h3 class="text-lg font-semibold">Alertas Ambientais</h3>
+    <button class="btn bg-white border border-gray-300 hover:bg-gray-50 flex items-center text-sm py-2">
+      <i class="fas fa-plus mr-2"></i> Novo Alerta
+    </button>
+  </div>
+  
+  <div class="space-y-4">
+    <div class="flex items-start p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+      <div class="flex-shrink-0">
+        <i class="fas fa-exclamation-circle text-red-500 text-xl mt-1 mr-4"></i>
+      </div>
+      <div class="flex-1">
+        <h4 class="font-medium">Vazamento detectado - Estação Norte</h4>
+        <p class="text-sm text-gray-600 mt-1">Foi detectado um vazamento no setor de tratamento da estação norte. Equipe de resposta já foi acionada.</p>
+        <div class="flex items-center mt-2 text-xs text-gray-500">
+          <i class="fas fa-map-marker-alt mr-1"></i>
+          <span>Estação Norte - Setor B</span>
+          <span class="mx-2">•</span>
+          <i class="fas fa-clock mr-1"></i>
+          <span>Hoje, 14:32</span>
+          <span class="mx-2">•</span>
+          <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full">Alta Prioridade</span>
+        </div>
+      </div>
+      <button class="text-gray-400 hover:text-gray-600 ml-4">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="flex items-start p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg">
+      <div class="flex-shrink-0">
+        <i class="fas fa-exclamation-triangle text-yellow-500 text-xl mt-1 mr-4"></i>
+      </div>
+      <div class="flex-1">
+        <h4 class="font-medium">Qualidade da água abaixo do esperado</h4>
+        <p class="text-sm text-gray-600 mt-1">Parâmetros de pH e turbidez fora dos limites recomendados na estação central.</p>
+        <div class="flex items-center mt-2 text-xs text-gray-500">
+          <i class="fas fa-map-marker-alt mr-1"></i>
+          <span>Estação Central</span>
+          <span class="mx-2">•</span>
+          <i class="fas fa-clock mr-1"></i>
+          <span>Ontem, 09:15</span>
+          <span class="mx-2">•</span>
+          <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full">Média Prioridade</span>
+        </div>
+      </div>
+      <button class="text-gray-400 hover:text-gray-600 ml-4">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="flex items-start p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
+      <div class="flex-shrink-0">
+        <i class="fas fa-info-circle text-blue-500 text-xl mt-1 mr-4"></i>
+      </div>
+      <div class="flex-1">
+        <h4 class="font-medium">Manutenção preventiva programada</h4>
+        <p class="text-sm text-gray-600 mt-1">Manutenção preventiva agendada para o sistema de filtros da estação sul no próximo dia 25/10.</p>
+        <div class="flex items-center mt-2 text-xs text-gray-500">
+          <i class="fas fa-map-marker-alt mr-1"></i>
+          <span>Estação Sul</span>
+          <span class="mx-2">•</span>
+          <i class="fas fa-clock mr-1"></i>
+          <span>25/10/2023</span>
+          <span class="mx-2">•</span>
+          <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full">Baixa Prioridade</span>
+        </div>
+      </div>
+      <button class="text-gray-400 hover:text-gray-600 ml-4">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Metas e Sustentabilidade -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="card p-6">
+    <h3 class="text-lg font-semibold mb-4">Metas de Sustentabilidade</h3>
+    <div class="space-y-4">
+      <div>
+        <div class="flex justify-between mb-1">
+          <span class="text-sm">Redução de consumo de água</span>
+          <span class="text-sm font-medium">78%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill bg-green-600" style="width: 78%"></div>
+        </div>
+        <div class="flex justify-between text-xs text-gray-500 mt-1">
+          <span>Meta: 80% até Dez/2023</span>
+          <span class="text-green-500">+2% no último mês</span>
+        </div>
+      </div>
+      
+      <div>
+        <div class="flex justify-between mb-1">
+          <span class="text-sm">Energia de fontes renováveis</span>
+          <span class="text-sm font-medium">45%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill bg-blue-600" style="width: 45%"></div>
+        </div>
+        <div class="flex justify-between text-xs text-gray-500 mt-1">
+          <span>Meta: 50% até Jun/2024</span>
+          <span class="text-green-500">+5% no último trimestre</span>
+        </div>
+      </div>
+      
+      <div>
+        <div class="flex justify-between mb-1">
+          <span class="text-sm">Redução de emissões de CO₂</span>
+          <span class="text-sm font-medium">62%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill bg-purple-600" style="width: 62%"></div>
+        </div>
+        <div class="flex justify-between text-xs text-gray-500 mt-1">
+          <span>Meta: 70% até Dez/2024</span>
+          <span class="text-green-500">+3% no último mês</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card p-6">
+    <h3 class="text-lg font-semibold mb-4">Certificações Ambientais</h3>
+    <div class="space-y-4">
+      <div class="flex items-center p-3 bg-green-50 rounded-lg">
+        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+          <i class="fas fa-award text-green-600"></i>
+        </div>
+        <div>
+          <h4 class="font-medium">ISO 14001</h4>
+          <p class="text-sm text-gray-600">Certificação de Gestão Ambiental</p>
+          <p class="text-xs text-green-600 mt-1">Válida até: 15/08/2025</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center p-3 bg-blue-50 rounded-lg">
+        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+          <i class="fas fa-certificate text-blue-600"></i>
+        </div>
+        <div>
+          <h4 class="font-medium">Selo Verde</h4>
+          <p class="text-sm text-gray-600">Certificação de Sustentabilidade</p>
+          <p class="text-xs text-blue-600 mt-1">Renovação: Mar/2024</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center p-3 bg-yellow-50 rounded-lg">
+        <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
+          <i class="fas fa-leaf text-yellow-600"></i>
+        </div>
+        <div>
+          <h4 class="font-medium">Programa GHG Protocol</h4>
+          <p class="text-sm text-gray-600">Inventário de Emissões</p>
+          <p class="text-xs text-yellow-600 mt-1">Próxima verificação: Nov/2023</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Inicialização dos controles da página de meio ambiente
+  initEnvironmentControls();
+  
+  // Carregar dados ambientais
+  loadEnvironmentData();
+});
+
+function initEnvironmentControls() {
+  // Controle dos botões de toggle do mapa
+  const mapButtons = document.querySelectorAll('.bg-gray-100, .bg-blue-100');
+  mapButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      mapButtons.forEach(btn => {
+        btn.classList.remove('bg-blue-100', 'text-blue-700');
+        btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+      });
+      this.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+      this.classList.add('bg-blue-100', 'text-blue-700');
+    });
+  });
+  
+  // Simulação de atualização em tempo real dos indicadores
+  simulateRealTimeUpdates();
+}
+
+async function loadEnvironmentData() {
+  try {
+    // Simular loading de dados
+    console.log('Carregando dados ambientais...');
+    
+    // Em um sistema real, faríamos requisições para a API
+    // const waterQuality = await fetch('/api/environment/water-quality');
+    // const airQuality = await fetch('/api/environment/air-quality');
+    // const wasteData = await fetch('/api/environment/waste-management');
+    
+    // Simular um atraso de rede
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Atualizar a interface com os dados
+    console.log('Dados ambientais carregados com sucesso');
+    
+  } catch (error) {
+    console.error('Erro ao carregar dados ambientais:', error);
+  }
+}
+
+function simulateRealTimeUpdates() {
+  // Simular atualizações em tempo real dos indicadores
+  setInterval(() => {
+    // Em implementação real, atualizaria os valores com dados do servidor
+    const indicators = document.querySelectorAll('.text-2xl.font-bold');
+    indicators.forEach(indicator => {
+      // Pequena variação para simular dados em tempo real
+      const currentValue = parseFloat(indicator.textContent);
+      const variation = (Math.random() * 0.5) - 0.25; // Variação de -0.25 a +0.25
+      const newValue = Math.max(0, Math.min(100, currentValue + variation));
+      indicator.textContent = newValue.toFixed(1) + '%';
+    });
+  }, 10000); // Atualizar a cada 10 segundos
+}
+
+// Função para visualizar detalhes de estação
+function viewStationDetails(stationId) {
+  console.log(`Visualizando detalhes da estação: ${stationId}`);
+  // Em implementação real, mostraria um modal ou redirecionaria para detalhes
+}
+
+// Função para gerar relatório ambiental
+function generateEnvironmentReport(type) {
+  console.log(`Gerando relatório: ${type}`);
+  // Em implementação real, faria requisição para gerar o relatório
+}
+
+// Função para registrar alerta ambiental
+function registerEnvironmentalAlert() {
+  console.log('Registrando novo alerta ambiental');
+  // Em implementação real, abriria um modal de registro
+}
+</script>
+{% endblock %}

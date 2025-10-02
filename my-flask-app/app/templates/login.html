@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Saneamento</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/face-api.js/0.22.2/face-api.min.js"></script>
+  <script defer src="{{ url_for('static', filename='js/login.js') }}"></script>
+    <script>
+      // Carregar modelos face-api.js ao iniciar login
+      document.addEventListener('DOMContentLoaded', async () => {
+        await faceapi.nets.ssdMobilenetv1.loadFromUri('/static/models');
+      });
+    </script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100 transition-colors duration-300" data-theme="light">
+  <div class="login-container bg-white p-8 rounded-xl shadow-2xl w-full max-w-md animate-fade-in">
+    <h2 class="text-2xl font-bold text-blue-600 mb-6 text-center flex items-center justify-center">
+      <i class="fas fa-lock mr-2"></i> Login
+    </h2>
+    <!-- Mensagens flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <p class="text-center mb-4 {{ 'text-red-500' if category == 'error' else 'text-green-500' }}">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <form id="loginForm" method="POST" class="space-y-4">
+      <div>
+        <label for="email" class="block text-sm text-gray-600 mb-1">Email</label>
+        <input type="email" id="email" name="email" placeholder="seu@email.com" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+      </div>
+      <div>
+        <label for="password" class="block text-sm text-gray-600 mb-1">Senha</label>
+        <input type="password" id="password" name="password" placeholder="********" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+      </div>
+      <button type="submit" id="login-btn" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-transform duration-200 flex items-center justify-center">
+        <i class="fas fa-sign-in-alt mr-2"></i> Entrar
+      </button>
+    </form>
+    <div class="mt-4 text-center space-y-2">
+      <a href="#" id="forgot-password" class="text-blue-600 hover:underline text-sm">Esqueci a Senha?</a>
+      <br>
+  <a href="/criarconta" class="text-blue-600 hover:underline text-sm">Criar Conta</a>
+    </div>
+    <!-- Área da câmera (escondida inicialmente) -->
+    <div id="camera-container" class="mt-6 hidden">
+      <video id="video" width="100%" height="auto" autoplay playsinline class="rounded-lg"></video>
+      <p class="text-center text-gray-600 mt-2">Posicione seu rosto na câmera</p>
+    </div>
+  </div>
+
+  <!-- Modal para Esqueci Senha -->
+  <div id="forgot-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white p-6 rounded-lg text-center max-w-sm w-full">
+      <h3 class="text-lg font-bold mb-4">Recuperar Senha</h3>
+      <input type="email" placeholder="seu@email.com" class="w-full px-4 py-2 border rounded-lg mb-4">
+      <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Enviar</button>
+      <button id="close-modal" class="mt-2 text-gray-600 hover:underline">Fechar</button>
+    </div>
+  </div>
+</body>
+</html>

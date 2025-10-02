@@ -1,1 +1,0 @@
-//isso é um comentário aqui vai o código do react.tsx

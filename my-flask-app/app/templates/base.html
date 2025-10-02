@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Sistema de Saneamento{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="flex min-h-screen bg-gray-50" data-theme="light">
+  <!-- Sidebar -->
+  <aside class="sidebar w-64 p-6 flex flex-col justify-between transition-all duration-300 bg-white shadow-lg">
+    <div>
+      <div class="flex items-center justify-center mb-8">
+        <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+          <i class="fas fa-water text-white text-2xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-blue-600 ml-3">Saneamento</h2>
+      </div>
+      
+      <div class="user mb-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center shadow-md">
+            <i class="fas fa-user-circle text-white text-xl"></i>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-semibold text-gray-800">{{ session.get('user', 'Usuário') }}</p>
+            <span class="text-xs role-badge role-{{ session.get('user_role', 'FUNCIONARIO') }} px-2 py-1 rounded-full">
+              {{ session.get('user_role', 'FUNCIONARIO') }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="space-y-1">
+        <a href="{{ url_for('main.dashboard') }}" class="nav-item flex items-center px-4 py-3 rounded-xl transition-all duration-200 group {% if request.path == url_for('main.dashboard') %}bg-blue-100 text-blue-600 border-r-4 border-blue-600{% else %}text-gray-600 hover:bg-blue-50 hover:text-blue-600{% endif %}">
+          <i class="fas fa-tachometer-alt w-5 text-center mr-3 group-hover:scale-110 transition-transform"></i>
+          <span class="sidebar-text font-medium">Dashboard</span>
+        </a>
+        
+        {% if session.get('user_role') in ['SUPERVISOR', 'FUNCIONARIO'] %}
+        <a href="{{ url_for('main.ponto_eletronico') }}" class="nav-item flex items-center px-4 py-3 rounded-xl transition-all duration-200 group {% if request.path == url_for('main.ponto_eletronico') %}bg-blue-100 text-blue-600 border-r-4 border-blue-600{% else %}text-gray-600 hover:bg-blue-50 hover:text-blue-600{% endif %}">
+          <i class="fas fa-clock w-5 text-center mr-3 group-hover:scale-110 transition-transform"></i>
+          <span class="sidebar-text font-medium">Ponto Eletrônico</span>
+        </a>
+        {% endif %}
+        
+        {% if session.get('user_role') in ['SUPERVISOR', 'FUNCIONARIO'] %}
+        <a href="{{ url_for('main.tarefas') }}" class="nav-item flex items-center px-4 py-3 rounded-xl transition-all duration-200 group {% if request.path == url_for('main.tarefas') %}bg-blue-100 text-blue-600 border-r-4 border-blue-600{% else %}text-gray-600 hover:bg-blue-50 hover:text-blue-600{% endif %}">
+          <i class="fas fa-tasks w-5 text-center mr-3 group-hover:scale-110 transition-transform"></i>
+          <span class="sidebar-text font-medium">Tarefas</span>
+        </a>
+        {% endif %}
+        
+        {% if session.get('user_role') in ['GOVERNANTE', 'SUPERVISOR'] %}
+        <a href="{{ url_for('main.relatorios') }}" class="nav-item flex items-center px-4 py-3 rounded-xl transition-all duration-200 group {% if request.path == url_for('main.relatorios') %}bg-blue-100 text-blue-600 border-r-4 border-blue-600{% else %}text-gray-600 hover:bg-blue-50 hover:text-blue-600{% endif %}">
+          <i class="fas fa-chart-bar w-5 text-center mr-3 group-hover:scale-110 transition-transform"></i>
+          <span class="sidebar-text font-medium">Relatórios</span>
+        </a>
+        {% endif %}
+        
+        {% if session.get('user_role') in ['GOVERNANTE', 'SUPERVISOR'] %}
+        <a href="{{ url_for('main.analises') }}" class="nav-item flex items-center px-4 py-3 rounded-xl transition-all duration-200 group {% if request.path == url_for('main.analises') %}bg-blue-100 text-blue-600 border-r-4 border-blue-600{% else %}text-gray-600 hover:bg-blue-50 hover:text-blue-600{% endif %}">
+          <i class="fas fa-analytics w-5 text-center mr-3 group-hover:scale-110 transition-transform"></i>
+          <span class="sidebar-text font-medium">Análises</span>
+        </a>
+        {% endif %}
+        
+        {% if session.get('user_role') == 'GOVERNANTE' %}
+        <a href="{{ url_for('main.usuarios') }}" class="nav-item flex items-center px-4 py-3 rounded-xl transition-all duration-200 group {% if request.path == url_for('main.usuarios') %}bg-blue-100 text-blue-600 border-r-4 border-blue-600{% else %}text-gray-600 hover:bg-blue-50 hover:text-blue-600{% endif %}">
+          <i class="fas fa-users w-5 text-center mr-3 group-hover:scale-110 transition-transform"></i>
+          <span class="sidebar-text font-medium">Usuários</span>
+        </a>
+        {% endif %}
+        
+        {% if session.get('user_role') == 'GOVERNANTE' %}
+        <a href="{{ url_for('main.meio_ambiente') }}" class="nav-item flex items-center px-4 py-3 rounded-xl transition-all duration-200 group {% if request.path == url_for('main.meio_ambiente') %}bg-blue-100 text-blue-600 border-r-4 border-blue-600{% else %}text-gray-600 hover:bg-blue-50 hover:text-blue-600{% endif %}">
+          <i class="fas fa-leaf w-5 text-center mr-3 group-hover:scale-110 transition-transform"></i>
+          <span class="sidebar-text font-medium">Meio Ambiente</span>
+        </a>
+        {% endif %}
+        
+        {% if session.get('user_role') == 'GOVERNANTE' %}
+        <a href="{{ url_for('main.auditoria') }}" class="nav-item flex items-center px-4 py-3 rounded-xl transition-all duration-200 group {% if request.path == url_for('main.auditoria') %}bg-blue-100 text-blue-600 border-r-4 border-blue-600{% else %}text-gray-600 hover:bg-blue-50 hover:text-blue-600{% endif %}">
+          <i class="fas fa-search w-5 text-center mr-3 group-hover:scale-110 transition-transform"></i>
+          <span class="sidebar-text font-medium">Auditoria</span>
+        </a>
+        {% endif %}
+      </nav>
+    </div>
+
+    <div>
+      {% if session.get('user') %}
+      <a href="{{ url_for('main.logout') }}" class="flex items-center px-4 py-3 rounded-xl transition-all duration-200 group text-red-600 hover:bg-red-50 hover:text-red-700 mt-4">
+        <i class="fas fa-sign-out-alt w-5 text-center mr-3 group-hover:scale-110 transition-transform"></i>
+        <span class="sidebar-text font-medium">Sair</span>
+      </a>
+      {% endif %}
+      
+      <footer class="text-xs text-gray-500 mt-6 p-3 bg-gray-50 rounded-lg text-center">
+        <div class="flex items-center justify-center mb-1">
+          <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse mr-2"></div>
+          <span>Sistema Online</span>
+        </div>
+        Versão 1.0.0
+      </footer>
+    </div>
+  </aside>
+
+  <!-- Conteúdo Principal -->
+  <main class="main flex-1 p-6 overflow-y-auto">
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-6 p-4 bg-white rounded-xl shadow-sm">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800" id="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+        <p class="text-sm text-gray-600 mt-1">{% block page_subtitle %}Visão geral do sistema{% endblock %}</p>
+      </div>
+      <div class="flex items-center space-x-3">
+        <div class="relative group">
+          <button class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors group">
+            <i class="fas fa-bell text-gray-600"></i>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+          </button>
+          <div class="absolute hidden group-hover:block right-0 mt-2 w-80 bg-white shadow-xl rounded-lg z-10">
+            <div class="p-4 border-b">
+              <h3 class="font-semibold">Notificações</h3>
+            </div>
+            <div class="max-h-60 overflow-y-auto">
+              <!-- Notificações -->
+            </div>
+          </div>
+        </div>
+        
+        <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors group">
+          <i class="fas fa-moon text-gray-600 group-hover:text-yellow-500"></i>
+        </button>
+        
+        <div class="w-8 h-8 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center shadow-md">
+          <span class="text-white text-sm font-semibold">{{ session.get('user', 'U')[0]|upper }}</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mensagens Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} p-4 rounded-xl border-l-4 flex items-start shadow-md transform transition-all duration-300 hover:scale-[1.02]">
+              <div class="flex items-start">
+                {% if category == 'error' %}
+                  <i class="fas fa-exclamation-circle text-red-500 text-lg mt-0.5 mr-3"></i>
+                {% elif category == 'success' %}
+                  <i class="fas fa-check-circle text-green-500 text-lg mt-0.5 mr-3"></i>
+                {% else %}
+                  <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5 mr-3"></i>
+                {% endif %}
+                <div>
+                  <span class="font-medium">{{ message }}</span>
+                  <button class="ml-4 text-gray-400 hover:text-gray-600" onclick="this.parentElement.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Conteúdo da Página -->
+    <div id="page-content" class="transition-all duration-300">
+      {% block content %}
+      {% endblock %}
+    </div>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
