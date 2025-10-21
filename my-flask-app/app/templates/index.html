@@ -11,23 +11,23 @@
     <!-- Estatísticas comuns a todos -->
     <div class="stat-card card p-6 text-center">
       <div class="text-3xl font-bold text-blue-600 mb-2" id="active-users">0</div>
-      <div class="text-gray-600">Usuários Ativos</div>
+      <div class="var(--text)">Usuários Ativos</div>
     </div>
     
     <div class="stat-card card p-6 text-center">
       <div class="text-3xl font-bold text-green-600 mb-2" id="efficiency">0%</div>
-      <div class="text-gray-600">Eficiência Geral</div>
+      <div class="var(--text)">Eficiência Geral</div>
     </div>
     
     <!-- Estatísticas apenas para Governante e Supervisor -->
     <div class="stat-card card p-6 text-center" id="environment-impact-container">
       <div class="text-3xl font-bold text-purple-600 mb-2" id="environment-impact">0%</div>
-      <div class="text-gray-600">Impacto Ambiental</div>
+      <div class="var(--text)">Impacto Ambiental</div>
     </div>
     
     <div class="stat-card card p-6 text-center" id="critical-alerts-container">
       <div class="text-3xl font-bold text-red-600 mb-2" id="critical-alerts">0</div>
-      <div class="text-gray-600">Alertas Críticos</div>
+      <div class="var(--text)">Alertas Críticos</div>
     </div>
   </div>
 
@@ -82,21 +82,21 @@
         <i class="fas fa-exclamation-circle text-red-500 mt-1 mr-3"></i>
         <div>
           <p class="font-medium">Equipamento com falha no Setor B</p>
-          <p class="text-sm text-gray-600">Há 2 horas • Prioridade: Alta</p>
+          <p class="text-sm var(--text)">Há 2 horas • Prioridade: Alta</p>
         </div>
       </div>
       <div class="alert alert-warning">
         <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-3"></i>
         <div>
           <p class="font-medium">Meta de coleta não atingida - Zona Sul</p>
-          <p class="text-sm text-gray-600">Hoje • Prioridade: Média</p>
+          <p class="text-sm var(--text)">Hoje • Prioridade: Média</p>
         </div>
       </div>
       <div class="alert alert-info">
         <i class="fas fa-info-circle text-blue-500 mt-1 mr-3"></i>
         <div>
           <p class="font-medium">Novo funcionário aguarda aprovação</p>
-          <p class="text-sm text-gray-600">Há 1 dia • Prioridade: Baixa</p>
+          <p class="text-sm var(--text)">Há 1 dia • Prioridade: Baixa</p>
         </div>
       </div>
     </div>
@@ -106,19 +106,19 @@
   <div class="card p-6 mb-8" id="employee-section">
     <h2 class="text-2xl font-bold mb-4">Minhas Tarefas</h2>
     <div class="space-y-4">
-      <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+      <div class="flex items-center justify-between p-4 rounded-lg" style="background: var(--card-bg); color: var(--card-text)">
         <div>
           <p class="font-medium">Inspeção de qualidade da água</p>
-          <p class="text-sm text-gray-600">Setor Norte • Prazo: Hoje</p>
+          <p class="text-sm var(--text)">Setor Norte • Prazo: Hoje</p>
         </div>
-        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Pendente</span>
+        <span class="px-3 py-1 style="background: rgba(59, 130, 246, 0.2);" text-blue-800 rounded-full text-sm">Pendente</span>
       </div>
-      <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+      <div class="flex items-center justify-between p-4 style="background: rgba(34, 197, 94, 0.1);" rounded-lg">
         <div>
           <p class="font-medium">Relatório de atividades semanais</p>
-          <p class="text-sm text-gray-600">Administrativo • Prazo: Amanhã</p>
+          <p class="text-sm var(--text)">Administrativo • Prazo: Amanhã</p>
         </div>
-        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Em andamento</span>
+        <span class="px-3 py-1 style="background: rgba(34, 197, 94, 0.2);" text-green-800 rounded-full text-sm">Em andamento</span>
       </div>
     </div>
   </div>

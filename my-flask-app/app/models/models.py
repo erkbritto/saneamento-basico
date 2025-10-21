@@ -56,6 +56,52 @@ class Usuario:
         if user:
             return Usuario(**user)
         return None
+    
+    @staticmethod
+    def buscar_por_id(user_id):
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM usuario WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        if user:
+            return Usuario(**user)
+        return None
+    
+    @staticmethod
+    def atualizar_face_encoding(user_id, face_encoding):
+        """Atualiza o encoding facial do usuário"""
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE usuario SET rosto = %s WHERE id = %s", (face_encoding, user_id))
+        conn.commit()
+        cursor.close()
+        conn.close()
+    
+    @staticmethod
+    def buscar_usuarios_com_faceid():
+        """Retorna todos os usuários que possuem FaceID cadastrado"""
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id, nome, email, rosto FROM usuario WHERE rosto IS NOT NULL AND rosto != ''")
+        users = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return users
+    
+    @staticmethod
+    def verificar_faceid_cadastrado(user_id):
+        """Verifica se o usuário tem FaceID cadastrado"""
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT rosto FROM usuario WHERE id = %s", (user_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        if result and result.get('rosto'):
+            return True
+        return False
 
     @staticmethod
     def atualizar(id, **kwargs):

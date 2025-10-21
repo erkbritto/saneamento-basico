@@ -16,7 +16,7 @@
       <option value="financial">Análise Financeira</option>
     </select>
     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-      <i class="fas fa-chart-bar text-gray-400"></i>
+      <i class="fas fa-chart-bar" style="color: var(--text); opacity: 0.6;"></i>
     </div>
   </div>
   
@@ -28,14 +28,14 @@
       <option value="quarterly">Trimestral</option>
     </select>
     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-      <i class="fas fa-calendar text-gray-400"></i>
+      <i class="fas fa-calendar" style="color: var(--text); opacity: 0.6;"></i>
     </div>
   </div>
   
   <div class="relative">
     <input type="text" id="date-range-picker" class="input pr-10" placeholder="Selecionar período">
     <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-      <i class="fas fa-calendar-alt text-gray-400"></i>
+      <i class="fas fa-calendar-alt" style="color: var(--text); opacity: 0.6;"></i>
     </div>
   </div>
   
@@ -43,7 +43,7 @@
     <i class="fas fa-play-circle mr-2"></i> Executar Análise
   </button>
   
-  <button class="btn bg-white border border-gray-300 hover:bg-gray-50 flex items-center ml-auto">
+  <button class="btn flex items-center ml-auto" style="background: var(--card-bg); border: 1px solid var(--border); color: var(--text);">
     <i class="fas fa-sliders-h mr-2"></i> Filtros Avançados
   </button>
 </div>
@@ -52,7 +52,7 @@
 <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
   <div class="card p-5 text-center">
     <div class="text-2xl font-bold text-blue-600 mb-1">92.4%</div>
-    <div class="text-sm text-gray-600">Qualidade da Água</div>
+    <div class="text-sm" style="color: var(--text); opacity: 0.7;">Qualidade da Água</div>
     <div class="text-xs text-green-500 mt-1 flex items-center justify-center">
       <i class="fas fa-arrow-up mr-1"></i> 2.3% desde o último mês
     </div>
@@ -60,7 +60,7 @@
   
   <div class="card p-5 text-center">
     <div class="text-2xl font-bold text-green-600 mb-1">87.6%</div>
-    <div class="text-sm text-gray-600">Eficiência Operacional</div>
+    <div class="text-sm" style="color: var(--text); opacity: 0.7;">Eficiência Operacional</div>
     <div class="text-xs text-green-500 mt-1 flex items-center justify-center">
       <i class="fas fa-arrow-up mr-1"></i> 1.8% desde o último mês
     </div>
@@ -68,7 +68,7 @@
   
   <div class="card p-5 text-center">
     <div class="text-2xl font-bold text-purple-600 mb-1">76.2%</div>
-    <div class="text-sm text-gray-600">Impacto Ambiental</div>
+    <div class="text-sm" style="color: var(--text); opacity: 0.7;">Impacto Ambiental</div>
     <div class="text-xs text-red-500 mt-1 flex items-center justify-center">
       <i class="fas fa-arrow-down mr-1"></i> 0.9% desde o último mês
     </div>
@@ -76,7 +76,7 @@
   
   <div class="card p-5 text-center">
     <div class="text-2xl font-bold text-yellow-600 mb-1">94.1%</div>
-    <div class="text-sm text-gray-600">Satisfação do Usuário</div>
+    <div class="text-sm" style="color: var(--text); opacity: 0.7;">Satisfação do Usuário</div>
     <div class="text-xs text-green-500 mt-1 flex items-center justify-center">
       <i class="fas fa-arrow-up mr-1"></i> 3.2% desde o último mês
     </div>
@@ -88,72 +88,72 @@
   <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
     <h3 class="text-lg font-semibold mb-2 md:mb-0">Tendência de Impacto Ambiental</h3>
     <div class="flex space-x-2">
-      <button class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200">6M</button>
-      <button class="text-xs px-2 py-1 rounded bg-blue-100 text-blue-700">1A</button>
-      <button class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200">2A</button>
-      <button class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200">Máx</button>
+      <button class="text-xs px-2 py-1 rounded" style="background: var(--hover); color: var(--text);">6M</button>
+      <button class="text-xs px-2 py-1 rounded style="background: rgba(59, 130, 246, 0.2);" text-blue-700">1A</button>
+      <button class="text-xs px-2 py-1 rounded" style="background: var(--hover); color: var(--text);">2A</button>
+      <button class="text-xs px-2 py-1 rounded" style="background: var(--hover); color: var(--text);">Máx</button>
     </div>
   </div>
   
   <div class="h-80 flex items-end justify-between pt-4 pb-6 px-2">
     <!-- Este seria um gráfico real com Chart.js em implementação completa -->
     <div class="flex-1 mx-1 flex flex-col items-center">
-      <div class="text-xs text-gray-500 mb-1">Jan</div>
+      <div class="text-xs mb-1" style="color: var(--text); opacity: 0.6;">Jan</div>
       <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 65%"></div>
     </div>
     <div class="flex-1 mx-1 flex flex-col items-center">
-      <div class="text-xs text-gray-500 mb-1">Fev</div>
+      <div class="text-xs mb-1" style="color: var(--text); opacity: 0.6;">Fev</div>
       <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 70%"></div>
     </div>
     <div class="flex-1 mx-1 flex flex-col items-center">
-      <div class="text-xs text-gray-500 mb-1">Mar</div>
+      <div class="text-xs mb-1" style="color: var(--text); opacity: 0.6;">Mar</div>
       <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 75%"></div>
     </div>
     <div class="flex-1 mx-1 flex flex-col items-center">
-      <div class="text-xs text-gray-500 mb-1">Abr</div>
+      <div class="text-xs mb-1" style="color: var(--text); opacity: 0.6;">Abr</div>
       <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 72%"></div>
     </div>
     <div class="flex-1 mx-1 flex flex-col items-center">
-      <div class="text-xs text-gray-500 mb-1">Mai</div>
+      <div class="text-xs mb-1" style="color: var(--text); opacity: 0.6;">Mai</div>
       <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 78%"></div>
     </div>
     <div class="flex-1 mx-1 flex flex-col items-center">
-      <div class="text-xs text-gray-500 mb-1">Jun</div>
+      <div class="text-xs mb-1" style="color: var(--text); opacity: 0.6;">Jun</div>
       <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 82%"></div>
     </div>
     <div class="flex-1 mx-1 flex flex-col items-center">
-      <div class="text-xs text-gray-500 mb-1">Jul</div>
+      <div class="text-xs mb-1" style="color: var(--text); opacity: 0.6;">Jul</div>
       <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 76%"></div>
     </div>
     <div class="flex-1 mx-1 flex flex-col items-center">
-      <div class="text-xs text-gray-500 mb-1">Ago</div>
+      <div class="text-xs mb-1" style="color: var(--text); opacity: 0.6;">Ago</div>
       <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 74%"></div>
     </div>
     <div class="flex-1 mx-1 flex flex-col items-center">
-      <div class="text-xs text-gray-500 mb-1">Set</div>
+      <div class="text-xs mb-1" style="color: var(--text); opacity: 0.6;">Set</div>
       <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 79%"></div>
     </div>
     <div class="flex-1 mx-1 flex flex-col items-center">
-      <div class="text-xs text-gray-500 mb-1">Out</div>
+      <div class="text-xs mb-1" style="color: var(--text); opacity: 0.6;">Out</div>
       <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 76%"></div>
     </div>
     <div class="flex-1 mx-1 flex flex-col items-center">
-      <div class="text-xs text-gray-500 mb-1">Nov</div>
+      <div class="text-xs mb-1" style="color: var(--text); opacity: 0.6;">Nov</div>
       <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 73%"></div>
     </div>
     <div class="flex-1 mx-1 flex flex-col items-center">
-      <div class="text-xs text-gray-500 mb-1">Dez</div>
+      <div class="text-xs mb-1" style="color: var(--text); opacity: 0.6;">Dez</div>
       <div class="w-full bg-gradient-to-t from-blue-400 to-blue-600 rounded-t" style="height: 75%"></div>
     </div>
   </div>
   
   <div class="flex justify-center mt-4">
     <div class="flex items-center mr-4">
-      <div class="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+      <div class="w-3 h-3 rounded-full style="background: rgba(59, 130, 246, 0.1);"0 mr-2"></div>
       <span class="text-sm">Impacto Ambiental</span>
     </div>
     <div class="flex items-center">
-      <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+      <div class="w-3 h-3 rounded-full style="background: rgba(34, 197, 94, 0.1);"0 mr-2"></div>
       <span class="text-sm">Meta</span>
     </div>
   </div>
@@ -170,14 +170,14 @@
         <div class="progress-bar">
           <div class="progress-bar-fill bg-blue-600" style="width: 35%"></div>
         </div>
-        <div class="text-xs text-gray-500 mt-1">35% das ocorrências</div>
+        <div class="text-xs mt-1" style="color: var(--text); opacity: 0.6;">35% das ocorrências</div>
       </div>
       <div class="flex-1 ml-4">
         <div class="text-sm font-medium mb-2">Zona Sul</div>
         <div class="progress-bar">
           <div class="progress-bar-fill bg-green-600" style="width: 28%"></div>
         </div>
-        <div class="text-xs text-gray-500 mt-1">28% das ocorrências</div>
+        <div class="text-xs mt-1" style="color: var(--text); opacity: 0.6;">28% das ocorrências</div>
       </div>
     </div>
     <div class="flex">
@@ -186,14 +186,14 @@
         <div class="progress-bar">
           <div class="progress-bar-fill bg-yellow-600" style="width: 22%"></div>
         </div>
-        <div class="text-xs text-gray-500 mt-1">22% das ocorrências</div>
+        <div class="text-xs mt-1" style="color: var(--text); opacity: 0.6;">22% das ocorrências</div>
       </div>
       <div class="flex-1 ml-4">
         <div class="text-sm font-medium mb-2">Zona Oeste</div>
         <div class="progress-bar">
           <div class="progress-bar-fill bg-purple-600" style="width: 15%"></div>
         </div>
-        <div class="text-xs text-gray-500 mt-1">15% das ocorrências</div>
+        <div class="text-xs mt-1" style="color: var(--text); opacity: 0.6;">15% das ocorrências</div>
       </div>
     </div>
   </div>
@@ -210,7 +210,7 @@
         <div class="progress-bar">
           <div class="progress-bar-fill bg-blue-600" style="width: 92.4%"></div>
         </div>
-        <div class="flex justify-between text-xs text-gray-500 mt-1">
+        <div class="flex justify-between text-xs mt-1" style="color: var(--text); opacity: 0.6;">
           <span>Média setor: 88.7%</span>
           <span class="text-green-500">+3.7%</span>
         </div>
@@ -224,7 +224,7 @@
         <div class="progress-bar">
           <div class="progress-bar-fill bg-green-600" style="width: 85.2%"></div>
         </div>
-        <div class="flex justify-between text-xs text-gray-500 mt-1">
+        <div class="flex justify-between text-xs mt-1" style="color: var(--text); opacity: 0.6;">
           <span>Média setor: 82.1%</span>
           <span class="text-green-500">+3.1%</span>
         </div>
@@ -238,7 +238,7 @@
         <div class="progress-bar">
           <div class="progress-bar-fill bg-purple-600" style="width: 78.9%"></div>
         </div>
-        <div class="flex justify-between text-xs text-gray-500 mt-1">
+        <div class="flex justify-between text-xs mt-1" style="color: var(--text); opacity: 0.6;">
           <span>Média setor: 75.3%</span>
           <span class="text-green-500">+3.6%</span>
         </div>
@@ -252,53 +252,53 @@
   <h3 class="text-lg font-semibold mb-4">Insights e Recomendações</h3>
   
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="bg-blue-50 p-4 rounded-lg">
+    <div class="p-4 rounded-lg" style="background: rgba(59, 130, 246, 0.1);">
       <div class="flex items-start mb-3">
-        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3" style="background: rgba(59, 130, 246, 0.2);">
           <i class="fas fa-lightbulb text-blue-600"></i>
         </div>
         <h4 class="font-medium">Oportunidade Identificada</h4>
       </div>
-      <p class="text-sm text-gray-700">
+      <p class="text-sm" style="color: var(--text);">
         A Zona Norte apresenta 22% mais consumo de energia por litro tratado. 
         Recomendamos auditoria nos equipamentos da estação de tratamento.
       </p>
     </div>
     
-    <div class="bg-green-50 p-4 rounded-lg">
+    <div class="p-4 rounded-lg" style="background: rgba(34, 197, 94, 0.1);">
       <div class="flex items-start mb-3">
-        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3" style="background: rgba(34, 197, 94, 0.2);">
           <i class="fas fa-chart-line text-green-600"></i>
         </div>
         <h4 class="font-medium">Tendência Positiva</h4>
       </div>
-      <p class="text-sm text-gray-700">
+      <p class="text-sm" style="color: var(--text);">
         A qualidade da água melhorou 5.2% no último trimestre após a implementação 
         do novo sistema de filtragem na estação central.
       </p>
     </div>
     
-    <div class="bg-yellow-50 p-4 rounded-lg">
+    <div class="p-4 rounded-lg" style="background: rgba(245, 158, 11, 0.1);">
       <div class="flex items-start mb-3">
-        <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3" style="background: rgba(245, 158, 11, 0.2);">
           <i class="fas fa-exclamation-triangle text-yellow-600"></i>
         </div>
         <h4 class="font-medium">Alerta de Performance</h4>
       </div>
-      <p class="text-sm text-gray-700">
+      <p class="text-sm" style="color: var(--text);">
         O índice de reclamações na Zona Oeste aumentou 15% no último mês. 
         Recomendamos verificar a equipe de manutenção da região.
       </p>
     </div>
     
-    <div class="bg-purple-50 p-4 rounded-lg">
+    <div class="p-4 rounded-lg" style="background: rgba(168, 85, 247, 0.1);">
       <div class="flex items-start mb-3">
-        <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3" style="background: rgba(168, 85, 247, 0.2);">
           <i class="fas fa-hand-holding-usd text-purple-600"></i>
         </div>
         <h4 class="font-medium">Oportunidade de Economia</h4>
       </div>
-      <p class="text-sm text-gray-700">
+      <p class="text-sm" style="color: var(--text);">
         A automação do processo de limpeza dos filtros pode reduzir custos 
         operacionais em até R$ 12.500 mensais com retorno em 6 meses.
       </p>
@@ -316,63 +316,63 @@
   </div>
   
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+    <div class="rounded-lg p-4 hover:shadow-md transition-shadow" style="border: 1px solid var(--border); background: var(--card-bg);">
       <div class="flex items-start justify-between mb-3">
         <h4 class="font-medium">Análise de Consumo Energético</h4>
-        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background: rgba(59, 130, 246, 0.2);">
           <i class="fas fa-bolt text-blue-600"></i>
         </div>
       </div>
-      <p class="text-sm text-gray-600 mb-4">Comparativo mensal de consumo por estação de tratamento</p>
+      <p class="text-sm mb-4" style="color: var(--text); opacity: 0.7;">Comparativo mensal de consumo por estação de tratamento</p>
       <div class="flex justify-between items-center">
-        <span class="text-xs text-gray-500">Atualizada: 12/10/2023</span>
+        <span class="text-xs" style="color: var(--text); opacity: 0.6;">Atualizada: 12/10/2023</span>
         <div class="flex space-x-2">
           <button class="text-blue-600 hover:text-blue-800">
             <i class="fas fa-play"></i>
           </button>
-          <button class="text-gray-600 hover:text-gray-800">
+          <button class="hover:style="color: var(--text);"" style="color: var(--text); opacity: 0.7;">
             <i class="fas fa-share-alt"></i>
           </button>
         </div>
       </div>
     </div>
     
-    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+    <div class="rounded-lg p-4 hover:shadow-md transition-shadow" style="border: 1px solid var(--border); background: var(--card-bg);">
       <div class="flex items-start justify-between mb-3">
         <h4 class="font-medium">Qualidade da Água por Bairro</h4>
-        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background: rgba(34, 197, 94, 0.2);">
           <i class="fas fa-tint text-green-600"></i>
         </div>
       </div>
-      <p class="text-sm text-gray-600 mb-4">Análise trimestral dos parâmetros de qualidade por região</p>
+      <p class="text-sm mb-4" style="color: var(--text); opacity: 0.7;">Análise trimestral dos parâmetros de qualidade por região</p>
       <div class="flex justify-between items-center">
-        <span class="text-xs text-gray-500">Atualizada: 05/10/2023</span>
+        <span class="text-xs" style="color: var(--text); opacity: 0.6;">Atualizada: 05/10/2023</span>
         <div class="flex space-x-2">
           <button class="text-blue-600 hover:text-blue-800">
             <i class="fas fa-play"></i>
           </button>
-          <button class="text-gray-600 hover:text-gray-800">
+          <button class="hover:style="color: var(--text);"" style="color: var(--text); opacity: 0.7;">
             <i class="fas fa-share-alt"></i>
           </button>
         </div>
       </div>
     </div>
     
-    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+    <div class="rounded-lg p-4 hover:shadow-md transition-shadow" style="border: 1px solid var(--border); background: var(--card-bg);">
       <div class="flex items-start justify-between mb-3">
         <h4 class="font-medium">Custos Operacionais</h4>
-        <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background: rgba(168, 85, 247, 0.2);">
           <i class="fas fa-dollar-sign text-purple-600"></i>
         </div>
       </div>
-      <p class="text-sm text-gray-600 mb-4">Análise de custos por metro cúbico tratado</p>
+      <p class="text-sm mb-4" style="color: var(--text); opacity: 0.7;">Análise de custos por metro cúbico tratado</p>
       <div class="flex justify-between items-center">
-        <span class="text-xs text-gray-500">Atualizada: 28/09/2023</span>
+        <span class="text-xs" style="color: var(--text); opacity: 0.6;">Atualizada: 28/09/2023</span>
         <div class="flex space-x-2">
           <button class="text-blue-600 hover:text-blue-800">
             <i class="fas fa-play"></i>
           </button>
-          <button class="text-gray-600 hover:text-gray-800">
+          <button class="hover:style="color: var(--text);"" style="color: var(--text); opacity: 0.7;">
             <i class="fas fa-share-alt"></i>
           </button>
         </div>
@@ -400,15 +400,17 @@ function initAnalysisControls() {
   }
   
   // Adicionar event listeners para os botões de período
-  const timeButtons = document.querySelectorAll('.bg-gray-100, .bg-blue-100');
+  const timeButtons = document.querySelectorAll('button.text-xs');
   timeButtons.forEach(button => {
     button.addEventListener('click', function() {
       timeButtons.forEach(btn => {
-        btn.classList.remove('bg-blue-100', 'text-blue-700');
-        btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+        btn.classList.remove('style="background: rgba(59, 130, 246, 0.2);"', 'text-blue-700');
+        btn.style.background = 'var(--hover)';
+        btn.style.color = 'var(--text)';
       });
-      this.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-      this.classList.add('bg-blue-100', 'text-blue-700');
+      this.classList.add('style="background: rgba(59, 130, 246, 0.2);"', 'text-blue-700');
+      this.style.background = '';
+      this.style.color = '';
     });
   });
 }
@@ -447,61 +449,33 @@ function updateAnalysisUI() {
   });
 }
 
-// Função para exportar análise (simulada)
-function exportAnalysis(format) {
-  console.log(`Exportando análise no formato: ${format}`);
-  // Em implementação real, geraria o relatório no formato solicitado
-}
-
 // Executar Análise
 document.addEventListener('DOMContentLoaded', function() {
   // Executar Análise
   const execAnalysisBtn = document.querySelector('.btn-primary .fa-play-circle')?.parentElement;
   if (execAnalysisBtn) {
     execAnalysisBtn.addEventListener('click', function() {
-      window.dashboard.showLoading();
-      setTimeout(() => {
-        window.dashboard.showNotification('Análise executada com sucesso!', 'success');
-        window.dashboard.hideLoading();
-        // Simulação: atualizar KPIs
-        const kpiValues = [
-          (90 + Math.random() * 10).toFixed(1) + '%',
-          (85 + Math.random() * 10).toFixed(1) + '%',
-          (75 + Math.random() * 10).toFixed(1) + '%',
-          (92 + Math.random() * 6).toFixed(1) + '%'
-        ];
-        document.querySelectorAll('.card .text-2xl').forEach((el, i) => {
-          el.textContent = kpiValues[i];
-        });
-      }, 1500);
+      // Simulação de execução de análise
+      console.log('Executando análise...');
+      // Em implementação real, faria uma requisição para o backend
     });
   }
 
   // Compartilhar Análise (simulado)
-  const shareBtn = document.querySelector('.btn .fa-share-alt')?.parentElement;
-  if (shareBtn) {
-    shareBtn.addEventListener('click', function() {
-      window.dashboard.showLoading();
-      setTimeout(() => {
-        window.dashboard.showNotification('Análise compartilhada!', 'success');
-        window.dashboard.hideLoading();
-      }, 1200);
-    });
-  }
-
-  // Visualizar Análise (simulado)
-  document.querySelectorAll('.btn .fa-eye').forEach(icon => {
-    icon.parentElement.addEventListener('click', function() {
-      window.dashboard.showNotification('Visualizando análise!', 'info');
+  const shareBtns = document.querySelectorAll('.fa-share-alt');
+  shareBtns.forEach(btn => {
+    btn.parentElement.addEventListener('click', function() {
+      console.log('Compartilhando análise...');
     });
   });
 
   // Filtros avançados
-  document.querySelectorAll('.btn .fa-sliders-h').forEach(icon => {
-    icon.parentElement.addEventListener('click', function() {
-      window.dashboard.showNotification('Filtros avançados abertos!', 'info');
+  const advancedFilterBtn = document.querySelector('.fa-sliders-h')?.parentElement;
+  if (advancedFilterBtn) {
+    advancedFilterBtn.addEventListener('click', function() {
+      console.log('Abrindo filtros avançados...');
     });
-  });
+  }
 
   // Filtros de tipo, granularidade e período
   const analysisType = document.getElementById('analysis-type');
@@ -510,21 +484,9 @@ document.addEventListener('DOMContentLoaded', function() {
   [analysisType, timeGranularity, dateRange].forEach(el => {
     if (el) {
       el.addEventListener('change', function() {
-        window.dashboard.showLoading();
-        setTimeout(() => {
-          window.dashboard.showNotification('Filtro aplicado!', 'info');
-          window.dashboard.hideLoading();
-        }, 800);
+        console.log('Filtro aplicado:', this.value);
       });
     }
-  });
-
-  // Compartilhar por link (simulado)
-  document.querySelectorAll('a.share-link').forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.dashboard.showNotification('Link de compartilhamento copiado!', 'success');
-    });
   });
 });
 </script>

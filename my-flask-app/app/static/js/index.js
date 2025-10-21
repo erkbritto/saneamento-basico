@@ -1,10 +1,42 @@
+// index.js — versão revisada e mais robusta
+
 // Estado da aplicação
 let currentTheme = localStorage.getItem('theme') || 'light';
 let isLoading = false;
 
-// Elementos DOM
-const themeToggle = document.getElementById('theme-toggle');
-const pageContent = document.getElementById('page-content');
+// Helper para obter elemento por id ou seletor seguro
+function $id(id) { return document.getElementById(id); }
+function resolveForm(preferredIds = [], fallbackSelector = null) {
+  for (const id of preferredIds) {
+    const f = document.getElementById(id);
+    if (f) return f;
+  }
+  if (fallbackSelector) {
+    const el = document.querySelector(fallbackSelector);
+    if (el) return el;
+  }
+  // último recurso: first form.grid
+  return document.querySelector('form.grid');
+}
+
+// Elementos DOM comuns (tente usar IDs/data-attrs no HTML para facilitar)
+const elements = {
+  themeToggle: $id('theme-toggle'),
+  pageContent: $id('page-content'),
+  userModal: $id('user-modal'),
+  closeUserModal: $id('close-user-modal'),
+  addUserBtn: $id('add-user-btn'),
+  userForm: $id('user-form'),
+  usuariosTbody: $id('usuarios-tbody'),
+  // resolver formulários/tables preferindo IDs
+  tarefaForm: resolveForm(['tarefa-form'], 'form[data-form="tarefa"]'),
+  tarefaList: document.querySelector('.var(--card-bg) ul.space-y-3'),
+  pontoBtn: $id('btn-ponto'),
+  pontoTableBody: $id('ponto-table-body') || document.querySelector('table[data-table="ponto"] tbody') || document.querySelector('table tbody'),
+  auditoriaForm: resolveForm(['auditoria-form'], 'form[data-form="auditoria"]'),
+  auditoriaTableBody: $id('auditoria-table-body') || document.querySelector('.var(--card-bg) table[data-table="auditoria"] tbody') || document.querySelector('.var(--card-bg) table tbody'),
+  reportPeriod: $id('report-period')
+};
 
 // Inicialização
 function init() {
@@ -12,433 +44,546 @@ function init() {
   setupEventListeners();
   setupAnimations();
   checkSystemStatus();
+  if (elements.usuariosTbody) carregarUsuarios();
+  const usuarioId = window.currentUserId || sessionStorage.getItem('usuario_id');
+  if (usuarioId) {
+    if (elements.tarefaForm) carregarTarefas(usuarioId);
+    if (elements.pontoBtn) carregarHistoricoPonto(usuarioId);
+  }
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => { /* não crítico */ });
+  }
 }
 
 // Aplicar tema
 function applyTheme() {
-  document.body.setAttribute('data-theme', currentTheme);
+  document.documentElement.setAttribute('data-theme', currentTheme);
   updateThemeIcon();
   updateMetaTheme();
 }
 
-// Atualizar ícone do tema
+// Atualizar ícone e classes do tema
 function updateThemeIcon() {
-  if (themeToggle) {
-    const icon = themeToggle.querySelector('i');
-    if (currentTheme === 'dark') {
-      icon.classList.remove('fa-moon');
-      icon.classList.add('fa-sun');
-      themeToggle.classList.add('bg-gray-700');
-      themeToggle.classList.remove('bg-gray-100');
-    } else {
-      icon.classList.remove('fa-sun');
-      icon.classList.add('fa-moon');
-      themeToggle.classList.remove('bg-gray-700');
-      themeToggle.classList.add('bg-gray-100');
-    }
-  }
+  if (!elements.themeToggle) return;
+  const icon = elements.themeToggle.querySelector('i');
+  if (!icon) return;
+  const isDark = currentTheme === 'dark';
+  // use classList para não sobrescrever outras classes do botão
+  icon.className = isDark ? 'fa fa-sun' : 'fa fa-moon';
+  elements.themeToggle.classList.remove('bg-gray-700', 'var(--hover)');
+  elements.themeToggle.classList.add(isDark ? 'bg-gray-700' : 'var(--hover)');
 }
 
-
-  // Abrir modal de cadastro de usuário
-  const addUserBtn = document.getElementById('add-user-btn');
-  const userModal = document.getElementById('user-modal');
-  const closeUserModal = document.getElementById('close-user-modal');
-  if (addUserBtn && userModal && closeUserModal) {
-    addUserBtn.addEventListener('click', () => {
-      userModal.classList.remove('hidden');
-    });
-    closeUserModal.addEventListener('click', () => {
-      userModal.classList.add('hidden');
-    });
-    userModal.addEventListener('click', (e) => {
-      if (e.target === userModal) {
-        userModal.classList.add('hidden');
-      }
-    });
-  }
-
-  // Envio do formulário de cadastro de usuário
-    const userForm = document.getElementById('user-form');
-    if (userForm) {
-      userForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const formData = {
-          nome: userForm.nome.value,
-          email: userForm.email.value,
-          senha: userForm.senha.value,
-          cargo: userForm.cargo.value,
-          departamento: userForm.departamento.value,
-          status: userForm.status.value
-        };
-        try {
-          const response = await fetch('/usuarios/cadastrar', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-          });
-          const result = await response.json();
-          if (result.success) {
-            showNotification(result.message || 'Usuário cadastrado com sucesso!', 'success');
-            userModal.classList.add('hidden');
-            userForm.reset();
-            carregarUsuarios();
-          } else {
-            showNotification(result.message || 'Erro ao cadastrar usuário', 'error');
-          }
-        } catch (err) {
-          showNotification('Erro ao cadastrar usuário', 'error');
-        }
-      });
-    }
-// Atualizar meta theme-color para mobile
+// Atualizar meta theme-color
 function updateMetaTheme() {
   const themeColor = currentTheme === 'dark' ? '#0f172a' : '#f8fafc';
   let metaTheme = document.querySelector('meta[name="theme-color"]');
-  
   if (!metaTheme) {
     metaTheme = document.createElement('meta');
     metaTheme.name = 'theme-color';
     document.head.appendChild(metaTheme);
   }
-  
   metaTheme.content = themeColor;
 }
 
 // Configurar event listeners
 function setupEventListeners() {
   // Toggle de tema
-  if (themeToggle) {
-    themeToggle.addEventListener('click', toggleTheme);
+  if (elements.themeToggle) {
+    elements.themeToggle.addEventListener('click', toggleTheme);
   }
-  
-  // Navegação suave
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        target.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }
+
+  // Modal de usuário
+  if (elements.addUserBtn && elements.userModal && elements.closeUserModal) {
+    elements.addUserBtn.addEventListener('click', () => {
+      elements.userModal.classList.remove('hidden');
+      elements.userModal.setAttribute('aria-hidden', 'false');
+      // foco acessível no primeiro input se existir
+      const foco = elements.userModal.querySelector('input, button, textarea, select');
+      if (foco) foco.focus();
     });
-  });
-  
-  // Loading state para links
+    elements.closeUserModal.addEventListener('click', () => {
+      elements.userModal.classList.add('hidden');
+      elements.userModal.setAttribute('aria-hidden', 'true');
+    });
+    elements.userModal.addEventListener('click', (e) => {
+      if (e.target === elements.userModal) elements.userModal.classList.add('hidden');
+    });
+  }
+
+  // Formulário de usuário
+  if (elements.userForm) {
+    elements.userForm.addEventListener('submit', handleUserSubmit);
+  }
+
+  // Navegação suave para anchors apenas
   document.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', function() {
-      if (this.getAttribute('href') && !this.getAttribute('href').startsWith('#')) {
-        showLoading();
+    const href = link.getAttribute('href');
+    if (!href) return;
+    // anchors internos
+    if (href.startsWith('#')) {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      return;
+    }
+    // não chame loading para links com target _blank, download ou rel=external
+    const isExternalTarget = link.target === '_blank' || link.hasAttribute('download') || (link.rel && link.rel.includes('external'));
+    if (!isExternalTarget) {
+      link.addEventListener('click', () => showLoading());
+    }
+  });
+
+  // Excluir usuário
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.excluir-usuario-btn');
+    if (btn) {
+      const id = btn.dataset.id;
+      if (!id) return showNotification('ID de usuário não encontrado', 'error');
+      if (confirm('Deseja realmente excluir este usuário?')) {
+        const res = await handleApiRequest(`/usuarios/excluir/${id}`, 'POST', {}, 'Usuário excluído com sucesso!');
+        if (res && res.success) carregarUsuarios();
+      }
+    }
+  });
+
+  // Editar usuário (placeholder)
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.editar-usuario-btn')) {
+      showNotification('Funcionalidade de edição em desenvolvimento.', 'info');
+    }
+  });
+
+  // Botões globais (mais robustos)
+  const execAnalysisBtn = document.querySelector('.btn-primary i.fa-play-circle')?.closest('.btn') || document.querySelector('.btn-primary');
+  if (execAnalysisBtn) {
+    execAnalysisBtn.addEventListener('click', () => simulateAction('Análise executada com sucesso!', 2000));
+  }
+  document.querySelectorAll('.btn .fa-sliders-h').forEach(icon => {
+    const btn = icon.closest('.btn');
+    if (btn) btn.addEventListener('click', () => showNotification('Filtros avançados abertos!', 'info'));
+  });
+  document.querySelectorAll('.btn .fa-download').forEach(icon => {
+    const btn = icon.closest('.btn');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      if (btn.classList.contains('btn-primary')) {
+        handleReportExport();
+      } else {
+        simulateAction('Relatório exportado!', 1500);
       }
     });
   });
+  document.querySelectorAll('.btn .fa-sync-alt').forEach(icon => {
+    const btn = icon.closest('.btn');
+    if (btn) btn.addEventListener('click', () => simulateAction('Dados atualizados!', 1200));
+  });
+  document.querySelectorAll('button .fa-edit').forEach(icon => {
+    const btn = icon.closest('button');
+    if (btn) btn.addEventListener('click', () => showNotification('Editar tarefa: formulário aberto!', 'info'));
+  });
 
-    // Carregar e renderizar usuários
-    async function carregarUsuarios() {
-      try {
-        const response = await fetch('/usuarios/listar');
-        const data = await response.json();
-        const tbody = document.getElementById('usuarios-tbody');
-        tbody.innerHTML = '';
-        if (data.usuarios && Array.isArray(data.usuarios)) {
-          data.usuarios.forEach(usuario => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td class="py-4">
-                <label class="flex items-center">
-                  <input type="checkbox" class="form-checkbox rounded text-blue-600">
-                  <div class="ml-3">
-                    <div class="font-medium">${usuario.nome}</div>
-                    <div class="text-sm text-gray-600">${usuario.email || ''}</div>
-                  </div>
-                </label>
-              </td>
-              <td class="py-4">
-                <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">${usuario.cargo}</span>
-              </td>
-              <td class="py-4">${usuario.departamento}</td>
-              <td class="py-4">
-                <span class="px-2 py-1 ${usuario.status === 'Ativo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded-full text-xs">${usuario.status}</span>
-              </td>
-              <td class="py-4">-</td>
-              <td class="py-4 text-right">
-                <div class="flex justify-end space-x-2">
-                  <button class="text-blue-600 hover:text-blue-800 editar-usuario-btn" data-id="${usuario.id}" title="Editar">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="text-red-600 hover:text-red-800 excluir-usuario-btn" data-id="${usuario.id}" title="Excluir">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </td>
-            `;
-            tbody.appendChild(tr);
-          });
-        }
-      } catch (err) {
-        showNotification('Erro ao carregar usuários', 'error');
-      }
-    }
+  // Formulário de tarefas
+  if (elements.tarefaForm) {
+    elements.tarefaForm.addEventListener('submit', handleTarefaSubmit);
+  }
 
-    // Chamar ao iniciar apenas se existir a tabela de usuários
-    if (document.getElementById('usuarios-tbody')) {
-      carregarUsuarios();
-    }
+  // Registrar ponto
+  if (elements.pontoBtn) {
+    elements.pontoBtn.addEventListener('click', handlePontoRegister);
+  }
 
-    // Excluir usuário
-    document.addEventListener('click', async function(e) {
-      if (e.target.closest('.excluir-usuario-btn')) {
-        const btn = e.target.closest('.excluir-usuario-btn');
-        const id = btn.getAttribute('data-id');
-        if (confirm('Deseja realmente excluir este usuário?')) {
-          try {
-            const response = await fetch(`/usuarios/excluir/${id}`, {
-              method: 'POST'
-            });
-            const result = await response.json();
-            if (result.success) {
-              showNotification('Usuário excluído com sucesso!', 'success');
-              carregarUsuarios();
-            } else {
-              showNotification(result.message || 'Erro ao excluir usuário', 'error');
-            }
-          } catch (err) {
-            showNotification('Erro ao excluir usuário', 'error');
-          }
-        }
-      }
-    });
-
-    // Editar usuário (exemplo: abrir modal, implementar conforme necessário)
-    document.addEventListener('click', function(e) {
-      if (e.target.closest('.editar-usuario-btn')) {
-        const btn = e.target.closest('.editar-usuario-btn');
-        const id = btn.getAttribute('data-id');
-        showNotification('Funcionalidade de edição em desenvolvimento.', 'info');
-        // TODO: Implementar modal de edição e integração
-      }
-    });
-
-    // Atualizar lista após cadastro
-    // Removido: duplicação do listener, já tratado acima
+  // Pesquisar auditoria
+  if (elements.auditoriaForm) {
+    elements.auditoriaForm.addEventListener('submit', handleAuditoriaSearch);
+  }
 }
 
-// Setup de animações
-function setupAnimations() {
-  // Intersection Observer para animações ao scroll
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  };
-  
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('animate-in');
-      }
-    });
-  }, observerOptions);
-  
-  // Observar elementos para animação
-  document.querySelectorAll('.card, .stat-card').forEach(el => {
-    observer.observe(el);
-  });
+// Função auxiliar para ações simuladas
+function simulateAction(message, delay) {
+  showLoading();
+  setTimeout(() => {
+    showNotification(message, 'success');
+    hideLoading();
+  }, delay);
+}
+
+// Função auxiliar para requests API (robusta)
+async function handleApiRequest(url, method = 'GET', body = null, successMsg = null) {
+  try {
+    const options = { method, headers: {} };
+    if (body) {
+      options.headers['Content-Type'] = 'application/json';
+      options.body = JSON.stringify(body);
+    }
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      throw new Error(`HTTP ${response.status} ${text}`);
+    }
+    const result = await response.json().catch(() => null);
+    if (!result) throw new Error('Resposta inválida do servidor');
+    if (result.success === false) {
+      showNotification(result.message || 'Erro na operação', 'error');
+      return result;
+    }
+    if (successMsg) showNotification(successMsg, 'success');
+    return result;
+  } catch (err) {
+    console.error('API request error', err);
+    showNotification('Erro na operação', 'error');
+    return null;
+  }
+}
+
+// Envio do formulário de usuário
+async function handleUserSubmit(e) {
+  e.preventDefault();
+  if (!elements.userForm) return;
+  const formData = Object.fromEntries(new FormData(elements.userForm));
+  await handleApiRequest('/usuarios/cadastrar', 'POST', formData, 'Usuário cadastrado com sucesso!');
+  if (elements.userModal) {
+    elements.userModal.classList.add('hidden');
+    elements.userModal.setAttribute('aria-hidden', 'true');
+  }
+  elements.userForm.reset();
+  carregarUsuarios();
+}
+
+// Carregar usuários
+async function carregarUsuarios() {
+  try {
+    const resp = await fetch('/usuarios/listar');
+    if (!resp.ok) throw new Error('Erro ao buscar usuários');
+    const json = await resp.json();
+    const usuarios = Array.isArray(json.usuarios) ? json.usuarios : [];
+    if (!elements.usuariosTbody) return;
+    elements.usuariosTbody.innerHTML = usuarios.map(usuario => `
+      <tr>
+        <td class="py-4">
+          <label class="flex items-center">
+            <input type="checkbox" class="form-checkbox rounded text-blue-600" />
+            <div class="ml-3">
+              <div class="font-medium">${usuario.nome || ''}</div>
+              <div class="text-sm var(--text)">${usuario.email || ''}</div>
+            </div>
+          </label>
+        </td>
+        <td class="py-4"><span class="px-2 py-1 var(--hover) style="color: var(--text);" rounded-full text-xs">${usuario.cargo || ''}</span></td>
+        <td class="py-4">${usuario.departamento || ''}</td>
+        <td class="py-4">
+          <span class="px-2 py-1 ${usuario.status === 'Ativo' ? 'style="background: rgba(34, 197, 94, 0.2);" text-green-800' : 'bg-red-100 text-red-800'} rounded-full text-xs">${usuario.status || ''}</span>
+        </td>
+        <td class="py-4">-</td>
+        <td class="py-4 text-right">
+          <div class="flex justify-end space-x-2">
+            <button class="text-blue-600 hover:text-blue-800 editar-usuario-btn" data-id="${usuario.id || ''}" title="Editar"><i class="fas fa-edit"></i></button>
+            <button class="text-red-600 hover:text-red-800 excluir-usuario-btn" data-id="${usuario.id || ''}" title="Excluir"><i class="fas fa-trash"></i></button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    console.error(err);
+    showNotification('Erro ao carregar usuários', 'error');
+  }
 }
 
 // Alternar tema
 function toggleTheme() {
   currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-  document.body.setAttribute('data-theme', currentTheme);
   localStorage.setItem('theme', currentTheme);
-  updateThemeIcon();
-  updateMetaTheme();
-  
-  // Animação de transição
   document.documentElement.style.transition = 'all 0.3s ease';
-  setTimeout(() => {
-    document.documentElement.style.transition = '';
-  }, 300);
+  applyTheme();
+  setTimeout(() => { document.documentElement.style.transition = ''; }, 300);
 }
 
-// Mostrar estado de loading
+// Loading (overlay com id fixo)
 function showLoading() {
   if (isLoading) return;
-  
   isLoading = true;
+  // se já existir, não recriar
+  if (document.getElementById('app-loading-overlay')) return;
   const overlay = document.createElement('div');
-  overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+  overlay.id = 'app-loading-overlay';
+  overlay.setAttribute('role', 'status');
+  overlay.className = 'fixed inset-0 flex items-center justify-center z-50';
+  overlay.style.backgroundColor = 'rgba(0,0,0,0.5)';
   overlay.innerHTML = `
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl flex items-center space-x-3">
-      <div class="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-      <span class="text-gray-800 dark:text-white">Carregando...</span>
+    <div class="var(--card-bg) dark:bg-gray-800 p-6 rounded-xl shadow-2xl flex items-center space-x-3">
+      <div class="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" aria-hidden="true"></div>
+      <span class="style="color: var(--text);" dark:text-white">Carregando...</span>
     </div>
   `;
-  
   document.body.appendChild(overlay);
-  
-  // Remover após 5s (timeout de segurança)
-  setTimeout(() => {
-    if (isLoading) {
-      hideLoading();
-    }
-  }, 5000);
+  // fallback hide em 10s
+  setTimeout(() => { if (isLoading) hideLoading(); }, 10000);
 }
 
-// Esconder loading
 function hideLoading() {
   isLoading = false;
-  const overlay = document.querySelector('.fixed.inset-0.bg-black');
-  if (overlay) {
-    overlay.remove();
-  }
+  const overlay = document.getElementById('app-loading-overlay');
+  if (overlay) overlay.remove();
 }
 
-// Verificar status do sistema
+// Status do sistema
 async function checkSystemStatus() {
   try {
-    const response = await fetch('/api/health');
-    const data = await response.json();
-    
-    if (data.status === 'ok') {
-      updateSystemStatus('online');
-    } else {
-      updateSystemStatus('offline');
-    }
-  } catch (error) {
+    const resp = await fetch('/api/health');
+    if (!resp.ok) throw new Error('Health check failed');
+    const json = await resp.json();
+    updateSystemStatus(json.status === 'ok' ? 'online' : 'offline');
+  } catch {
     updateSystemStatus('offline');
   }
 }
 
-// Atualizar indicador de status
 function updateSystemStatus(status) {
-  const statusIndicator = document.querySelector('.w-3.h-3.rounded-full');
-  if (statusIndicator) {
-    if (status === 'online') {
-      statusIndicator.classList.remove('bg-red-400', 'bg-gray-400');
-      statusIndicator.classList.add('bg-green-400');
-      statusIndicator.nextElementSibling.textContent = 'Sistema Online';
-    } else {
-      statusIndicator.classList.remove('bg-green-400', 'bg-gray-400');
-      statusIndicator.classList.add('bg-red-400');
-      statusIndicator.nextElementSibling.textContent = 'Sistema Offline';
-    }
-  }
+  const indicator = document.querySelector('.w-3.h-3.rounded-full');
+  if (!indicator) return;
+  const isOnline = status === 'online';
+  indicator.classList.remove('bg-green-400', 'bg-red-400');
+  indicator.classList.add(isOnline ? 'bg-green-400' : 'bg-red-400');
+  if (indicator.nextElementSibling) indicator.nextElementSibling.textContent = isOnline ? 'Sistema Online' : 'Sistema Offline';
 }
 
-// Função para mostrar notificação
+// Notificação com aria-live
 function showNotification(message, type = 'info') {
   const notification = document.createElement('div');
-  notification.className = `fixed top-4 right-4 p-4 rounded-xl shadow-lg transform transition-all duration-300 animate-fade-in ${
-    type === 'error' ? 'bg-red-500 text-white' :
-    type === 'success' ? 'bg-green-500 text-white' :
-    'bg-blue-500 text-white'
-  }`;
+  notification.setAttribute('role', 'status');
+  notification.setAttribute('aria-live', 'polite');
+  const baseClasses = 'fixed top-4 right-4 p-4 rounded-xl shadow-lg transform transition-all duration-300';
+  const colorClass = type === 'error' ? 'bg-red-500' : type === 'success' ? 'style="background: rgba(34, 197, 94, 0.1);"0' : 'style="background: rgba(59, 130, 246, 0.1);"0';
+  notification.className = `${baseClasses} ${colorClass} text-white z-60`;
   notification.innerHTML = `
-    <div class="flex items-center">
-      <i class="fas ${
-        type === 'error' ? 'fa-exclamation-circle' :
-        type === 'success' ? 'fa-check-circle' :
-        'fa-info-circle'
-      } mr-2"></i>
-      <span>${message}</span>
-      <button class="ml-4" onclick="this.parentElement.parentElement.remove()">
-        <i class="fas fa-times"></i>
-      </button>
+    <div class="flex items-center space-x-3">
+      <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
+      <div class="ml-2">${message}</div>
+      <button class="ml-4 close-notif" aria-label="Fechar notificação" title="Fechar"><i class="fas fa-times"></i></button>
     </div>
   `;
-  
   document.body.appendChild(notification);
-  
-  // Auto-remover após 5 segundos
-  setTimeout(() => {
-    if (notification.parentElement) {
-      notification.remove();
-    }
-  }, 5000);
+  const closeBtn = notification.querySelector('.close-notif');
+  if (closeBtn) closeBtn.addEventListener('click', () => notification.remove());
+  setTimeout(() => notification.remove(), 5000);
 }
 
-// Função para carregar dados do dashboard
+// Dashboard
 async function loadDashboardData() {
+  showLoading();
   try {
-    showLoading();
-    const response = await fetch('/api/dashboard-data');
-    const data = await response.json();
-    
-    // Atualizar estatísticas
+    const resp = await fetch('/api/dashboard-data');
+    if (!resp.ok) throw new Error('Erro ao carregar dashboard');
+    const data = await resp.json();
     updateDashboardStats(data);
-    hideLoading();
-    
   } catch (error) {
     console.error('Erro ao carregar dados do dashboard:', error);
     showNotification('Erro ao carregar dados', 'error');
+  } finally {
     hideLoading();
   }
 }
 
-// Atualizar estatísticas do dashboard
-function updateDashboardStats(data) {
+function updateDashboardStats(data = {}) {
   const stats = {
     'active-users': data.activeUsers,
     'efficiency': data.efficiency,
     'environment-impact': data.environmentImpact,
     'critical-alerts': data.criticalAlerts
   };
-  
   Object.entries(stats).forEach(([id, value]) => {
-    const element = document.getElementById(id);
-    if (element && value !== undefined) {
-      animateValue(element, 0, value, 1000);
-    }
+    const el = document.getElementById(id);
+    if (el && value !== undefined && value !== null) animateValue(el, 0, value, 1000);
   });
-  
-  // Atualizar progress bars
+
   const progressData = {
     'air-quality': data.airQuality,
     'water-quality': data.waterQuality,
     'waste-management': data.wasteManagement,
     'green-coverage': data.greenCoverage
   };
-  
   Object.entries(progressData).forEach(([id, value]) => {
     const progressBar = document.getElementById(`${id}-progress`);
-    const textElement = document.getElementById(id);
-    
-    if (progressBar && value !== undefined) {
+    const textEl = document.getElementById(id);
+    if (progressBar && (value !== undefined && value !== null)) {
       progressBar.style.width = '0%';
-      setTimeout(() => {
-        progressBar.style.width = `${value}%`;
-      }, 100);
+      setTimeout(() => { progressBar.style.width = `${value}%`; }, 100);
     }
-    
-    if (textElement && value !== undefined) {
-      textElement.textContent = `${value}%`;
-    }
+    if (textEl && (value !== undefined && value !== null)) textEl.textContent = `${value}%`;
   });
 }
 
-// Animação de contagem
 function animateValue(element, start, end, duration) {
   let startTimestamp = null;
   const step = (timestamp) => {
     if (!startTimestamp) startTimestamp = timestamp;
     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
     const value = Math.floor(progress * (end - start) + start);
-    element.textContent = element.id.includes('percent') ? `${value}%` : value;
-    if (progress < 1) {
-      window.requestAnimationFrame(step);
-    }
+    // se id sugerir percent ou dataset indicar, adiciona %
+    const isPercent = element.dataset && element.dataset.unit === 'percent' || element.id && element.id.includes('percent') || typeof end === 'number' && end > 100 === false;
+    element.textContent = isPercent ? `${value}%` : value;
+    if (progress < 1) window.requestAnimationFrame(step);
   };
   window.requestAnimationFrame(step);
 }
 
-// Inicializar quando o DOM estiver carregado
+// Tarefas
+async function handleTarefaSubmit(e) {
+  e.preventDefault();
+  const usuarioId = window.currentUserId || sessionStorage.getItem('usuario_id');
+  if (!usuarioId) return showNotification('Usuário não identificado', 'error');
+  if (!elements.tarefaForm) return showNotification('Formulário de tarefa não encontrado', 'error');
+  const formData = Object.fromEntries(new FormData(elements.tarefaForm));
+  formData.usuario_id = usuarioId;
+  await handleApiRequest('/api/tarefas', 'POST', formData, 'Tarefa adicionada!');
+  elements.tarefaForm.reset();
+  carregarTarefas(usuarioId);
+}
+
+async function carregarTarefas(usuarioId) {
+  try {
+    const resp = await fetch(`/api/tarefas?usuario_id=${encodeURIComponent(usuarioId)}`);
+    if (!resp.ok) throw new Error('Erro ao buscar tarefas');
+    const json = await resp.json();
+    const tarefas = Array.isArray(json.tarefas) ? json.tarefas : [];
+    if (!elements.tarefaList) return;
+    elements.tarefaList.innerHTML = tarefas.map(tarefa => {
+      const statusClass = tarefa.status === 'Em Andamento' ? 'text-blue-600 style="background: rgba(59, 130, 246, 0.2);"' :
+                          tarefa.status === 'Concluída' ? 'text-green-600 style="background: rgba(34, 197, 94, 0.2);"' : 'text-yellow-600 style="background: rgba(245, 158, 11, 0.2);"';
+      return `
+        <li class="p-4 rounded-lg border flex justify-between items-center hover:var(--hover)">
+          <div>
+            <p class="font-medium style="color: var(--text);"">${tarefa.titulo || ''}</p>
+            <span class="text-xs ${statusClass} px-2 py-1 rounded-full">${tarefa.status || ''}</span>
+          </div>
+          <button class="text-blue-600 hover:text-blue-800 transition"><i class="fas fa-edit"></i></button>
+        </li>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error(err);
+    showNotification('Erro ao carregar tarefas', 'error');
+  }
+}
+
+// Ponto Eletrônico
+async function handlePontoRegister() {
+  const usuarioId = window.currentUserId || sessionStorage.getItem('usuario_id');
+  if (!usuarioId) return showNotification('Usuário não identificado', 'error');
+  const now = new Date();
+  const payload = {
+    usuario_id: usuarioId,
+    data: now.toISOString().slice(0, 10),
+    hora_entrada: now.toTimeString().slice(0, 8),
+    localizacao: null
+  };
+  await handleApiRequest('/api/ponto/registrar', 'POST', payload, 'Ponto registrado com sucesso!');
+  carregarHistoricoPonto(usuarioId);
+}
+
+async function carregarHistoricoPonto(usuarioId) {
+  try {
+    const resp = await fetch(`/api/ponto/historico?usuario_id=${encodeURIComponent(usuarioId)}`);
+    if (!resp.ok) throw new Error('Erro ao buscar ponto');
+    const json = await resp.json();
+    const historico = Array.isArray(json.historico) ? json.historico : [];
+    if (!elements.pontoTableBody) return;
+    elements.pontoTableBody.innerHTML = historico.map(ponto => `
+      <tr class="border-b hover:var(--hover)">
+        <td class="px-4 py-2">${ponto.data || '-'}</td>
+        <td class="px-4 py-2">${ponto.hora_entrada || '-'}</td>
+        <td class="px-4 py-2">${ponto.hora_saida || '-'}</td>
+        <td class="px-4 py-2">${ponto.total_horas || '-'}</td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    console.error(err);
+    showNotification('Erro ao carregar histórico de ponto', 'error');
+  }
+}
+
+// Auditoria
+async function handleAuditoriaSearch(e) {
+  e.preventDefault();
+  if (!elements.auditoriaForm) return showNotification('Formulário de auditoria não encontrado', 'error');
+  const formData = Object.fromEntries(new FormData(elements.auditoriaForm));
+  const params = new URLSearchParams();
+  if (formData.usuario) params.append('usuario', formData.usuario);
+  if (formData.data_inicial) params.append('data_inicial', formData.data_inicial);
+  if (formData.data_final) params.append('data_final', formData.data_final);
+  showLoading();
+  try {
+    const resp = await fetch(`/api/auditoria?${params.toString()}`);
+    if (!resp.ok) throw new Error('Erro na pesquisa de auditoria');
+    const json = await resp.json();
+    const registros = Array.isArray(json.registros) ? json.registros : [];
+    if (!elements.auditoriaTableBody || registros.length === 0) {
+      showNotification('Nenhum registro encontrado.', 'info');
+      return;
+    }
+    elements.auditoriaTableBody.innerHTML = registros.map(registro => {
+      const statusClass = registro.status === 'Sucesso' ? 'style="background: rgba(34, 197, 94, 0.2);" text-green-700' :
+                          registro.status === 'Falha' ? 'bg-red-100 text-red-700' : 'style="background: rgba(59, 130, 246, 0.2);" text-blue-700';
+      return `
+        <tr class="border-b hover:var(--hover)">
+          <td class="px-4 py-2">${registro.data_hora || '-'}</td>
+          <td class="px-4 py-2">${registro.usuario || '-'}</td>
+          <td class="px-4 py-2">${registro.acao || '-'}</td>
+          <td class="px-4 py-2">${registro.ip || '-'}</td>
+          <td class="px-4 py-2"><span class="px-2 py-1 ${statusClass} rounded-lg">${registro.status || '-'}</span></td>
+        </tr>
+      `;
+    }).join('');
+    showNotification('Pesquisa realizada!', 'success');
+  } catch (err) {
+    console.error(err);
+    showNotification('Erro ao pesquisar auditoria', 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+// Exportar relatório
+async function handleReportExport() {
+  showLoading();
+  try {
+    const period = elements.reportPeriod?.value || 'all';
+    let url = `/relatorios/exportar?period=${encodeURIComponent(period)}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Erro ao exportar relatório');
+    const blob = await response.blob();
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'relatorio.xlsx';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    showNotification('Relatório exportado!', 'success');
+  } catch (err) {
+    console.error(err);
+    showNotification('Erro ao exportar relatório', 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+// Animações
+function setupAnimations() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('animate-in');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.card, .stat-card').forEach(el => observer.observe(el));
+  // opcional: guardar observer se quiser desconectar depois (ex: ao trocar de SPA)
+}
+
+// Inicializar
 document.addEventListener('DOMContentLoaded', init);
 
-// Exportar funções para uso global
+// Exportar para global
 window.dashboard = {
   init,
   toggleTheme,
@@ -447,291 +592,3 @@ window.dashboard = {
   showLoading,
   hideLoading
 };
-
-// Funções para botões globais do sistema
-document.addEventListener('DOMContentLoaded', () => {
-  // Executar análise (analises.html)
-  const execAnalysisBtn = document.querySelector('.btn-primary i.fa-play-circle')?.parentElement;
-  if (execAnalysisBtn) {
-    execAnalysisBtn.addEventListener('click', () => {
-      dashboard.showLoading();
-      setTimeout(() => {
-        dashboard.showNotification('Análise executada com sucesso!', 'success');
-        dashboard.hideLoading();
-      }, 2000);
-    });
-  }
-
-  // Filtros avançados (analises, meio_ambiente)
-  document.querySelectorAll('.btn .fa-sliders-h').forEach(icon => {
-    icon.parentElement.addEventListener('click', () => {
-      dashboard.showNotification('Filtros avançados abertos!', 'info');
-    });
-  });
-
-  // Exportar relatório (meio_ambiente, relatorios)
-  document.querySelectorAll('.btn .fa-download').forEach(icon => {
-    icon.parentElement.addEventListener('click', () => {
-      dashboard.showLoading();
-      setTimeout(() => {
-        dashboard.showNotification('Relatório exportado!', 'success');
-        dashboard.hideLoading();
-      }, 1500);
-    });
-  });
-
-  // Atualizar dados (relatorios)
-  document.querySelectorAll('.btn .fa-sync-alt').forEach(icon => {
-    icon.parentElement.addEventListener('click', () => {
-      dashboard.showLoading();
-      setTimeout(() => {
-        dashboard.showNotification('Dados atualizados!', 'success');
-        dashboard.hideLoading();
-      }, 1200);
-    });
-  });
-
-  // Adicionar usuário (usuarios.html)
-  const addUserBtn = document.getElementById('add-user-btn');
-  if (addUserBtn) {
-    addUserBtn.addEventListener('click', () => {
-      dashboard.showNotification('Novo usuário: formulário aberto!', 'info');
-    });
-  }
-
-    // Exportar relatório principal (relatorios.html)
-    const exportBtn = document.querySelector('.btn-primary .fa-download')?.parentElement;
-    if (exportBtn) {
-      exportBtn.addEventListener('click', async () => {
-        dashboard.showLoading();
-        // Obter filtro selecionado
-        const period = document.getElementById('report-period').value;
-        let startDate = null, endDate = null;
-        if (period === 'custom') {
-          // Implemente aqui a lógica para pegar datas do input customizado
-          // Exemplo: startDate = ...; endDate = ...;
-        }
-        // Montar URL de exportação
-        let url = `/relatorios/exportar?period=${period}`;
-        if (startDate && endDate) {
-          url += `&start=${startDate}&end=${endDate}`;
-        }
-        // Baixar arquivo
-        try {
-          const response = await fetch(url);
-          if (!response.ok) throw new Error('Erro ao exportar relatório');
-          const blob = await response.blob();
-          const link = document.createElement('a');
-          link.href = window.URL.createObjectURL(blob);
-          link.download = 'relatorio.xlsx';
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-          dashboard.showNotification('Relatório exportado!', 'success');
-        } catch (err) {
-          dashboard.showNotification('Erro ao exportar relatório', 'error');
-        }
-        dashboard.hideLoading();
-      });
-    }
-
-  // Adicionar tarefa (tarefas.html)
-  const tarefaForm = document.querySelector('form.grid');
-  const tarefaList = document.querySelector('.bg-white ul.space-y-3');
-  async function adicionarTarefa(e) {
-    e.preventDefault();
-    dashboard.showLoading();
-    try {
-      const usuarioId = window.currentUserId || sessionStorage.getItem('usuario_id');
-      const titulo = tarefaForm.querySelector('input[type="text"]').value;
-      const status = tarefaForm.querySelector('select').value;
-      const payload = {
-        usuario_id: usuarioId,
-        titulo: titulo,
-        status: status
-      };
-      const response = await fetch('/api/tarefas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const result = await response.json();
-      if (result.success) {
-        dashboard.showNotification(result.message || 'Tarefa adicionada!', 'success');
-        tarefaForm.reset();
-        await carregarTarefas(usuarioId);
-      } else {
-        dashboard.showNotification(result.message || 'Erro ao adicionar tarefa', 'error');
-      }
-    } catch (err) {
-      dashboard.showNotification('Erro ao adicionar tarefa', 'error');
-    }
-    dashboard.hideLoading();
-  }
-
-  async function carregarTarefas(usuarioId) {
-    try {
-      const response = await fetch(`/api/tarefas?usuario_id=${usuarioId}`);
-      const data = await response.json();
-      if (data.tarefas && Array.isArray(data.tarefas) && tarefaList) {
-        tarefaList.innerHTML = '';
-        data.tarefas.forEach(tarefa => {
-          const li = document.createElement('li');
-          li.className = 'p-4 rounded-lg border flex justify-between items-center hover:bg-gray-50';
-          let statusClass = 'text-yellow-600 bg-yellow-100';
-          if (tarefa.status === 'Em Andamento') statusClass = 'text-blue-600 bg-blue-100';
-          if (tarefa.status === 'Concluída') statusClass = 'text-green-600 bg-green-100';
-          li.innerHTML = `
-            <div>
-              <p class="font-medium text-gray-800">${tarefa.titulo}</p>
-              <span class="text-xs ${statusClass} px-2 py-1 rounded-full">${tarefa.status}</span>
-            </div>
-            <button class="text-blue-600 hover:text-blue-800 transition"><i class="fas fa-edit"></i></button>
-          `;
-          tarefaList.appendChild(li);
-        });
-      }
-    } catch (err) {
-      dashboard.showNotification('Erro ao carregar tarefas', 'error');
-    }
-  }
-
-  if (tarefaForm) {
-    tarefaForm.addEventListener('submit', adicionarTarefa);
-    const usuarioId = window.currentUserId || sessionStorage.getItem('usuario_id');
-    if (usuarioId) {
-      carregarTarefas(usuarioId);
-    }
-  }
-
-  // Editar tarefa (tarefas.html)
-  document.querySelectorAll('button .fa-edit').forEach(icon => {
-    icon.parentElement.addEventListener('click', () => {
-      dashboard.showNotification('Editar tarefa: formulário aberto!', 'info');
-    });
-  });
-
-  // Registrar ponto (ponto_eletronico.html)
-  const pontoBtn = document.getElementById('btn-ponto');
-  const pontoTableBody = document.querySelector('table tbody');
-  async function registrarPonto() {
-    dashboard.showLoading();
-    try {
-      // Exemplo: obter dados do usuário logado
-      const usuarioId = window.currentUserId || sessionStorage.getItem('usuario_id');
-      const now = new Date();
-      const data = now.toISOString().slice(0, 10);
-      const horaEntrada = now.toTimeString().slice(0, 8);
-      // Opcional: obter localização
-      const payload = {
-        usuario_id: usuarioId,
-        data: data,
-        hora_entrada: horaEntrada,
-        localizacao: null
-      };
-      const response = await fetch('/api/ponto/registrar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const result = await response.json();
-      if (result.success) {
-        dashboard.showNotification(result.message || 'Ponto registrado com sucesso!', 'success');
-        await carregarHistoricoPonto(usuarioId);
-      } else {
-        dashboard.showNotification(result.message || 'Erro ao registrar ponto', 'error');
-      }
-    } catch (err) {
-      dashboard.showNotification('Erro ao registrar ponto', 'error');
-    }
-    dashboard.hideLoading();
-  }
-
-  async function carregarHistoricoPonto(usuarioId) {
-    try {
-      const response = await fetch(`/api/ponto/historico?usuario_id=${usuarioId}`);
-      const data = await response.json();
-      if (data.historico && Array.isArray(data.historico) && pontoTableBody) {
-        pontoTableBody.innerHTML = '';
-        data.historico.forEach(ponto => {
-          const tr = document.createElement('tr');
-          tr.className = 'border-b hover:bg-gray-50';
-          tr.innerHTML = `
-            <td class="px-4 py-2">${ponto.data}</td>
-            <td class="px-4 py-2">${ponto.hora_entrada || '-'}</td>
-            <td class="px-4 py-2">${ponto.hora_saida || '-'}</td>
-            <td class="px-4 py-2">${ponto.total_horas || '-'}</td>
-          `;
-          pontoTableBody.appendChild(tr);
-        });
-      }
-    } catch (err) {
-      dashboard.showNotification('Erro ao carregar histórico de ponto', 'error');
-    }
-  }
-
-  if (pontoBtn) {
-    pontoBtn.addEventListener('click', registrarPonto);
-    // Carregar histórico ao abrir página
-    const usuarioId = window.currentUserId || sessionStorage.getItem('usuario_id');
-    if (usuarioId) {
-      carregarHistoricoPonto(usuarioId);
-    }
-  }
-
-  // Pesquisar auditoria (auditoria.html)
-  const auditoriaForm = document.querySelector('form.grid');
-  const auditoriaTableBody = document.querySelector('.bg-white table tbody');
-  async function pesquisarAuditoria(e) {
-    e.preventDefault();
-    dashboard.showLoading();
-    try {
-      const usuario = auditoriaForm.querySelector('input[type="text"]').value;
-      const dataInicial = auditoriaForm.querySelectorAll('input[type="date"]')[0].value;
-      const dataFinal = auditoriaForm.querySelectorAll('input[type="date"]')[1].value;
-      const params = new URLSearchParams();
-      if (usuario) params.append('usuario', usuario);
-      if (dataInicial) params.append('data_inicial', dataInicial);
-      if (dataFinal) params.append('data_final', dataFinal);
-      const response = await fetch(`/api/auditoria?${params.toString()}`);
-      const data = await response.json();
-      if (data.registros && Array.isArray(data.registros) && auditoriaTableBody) {
-        auditoriaTableBody.innerHTML = '';
-        data.registros.forEach(registro => {
-          const tr = document.createElement('tr');
-          tr.className = 'border-b hover:bg-gray-50';
-          let statusClass = 'bg-blue-100 text-blue-700';
-          if (registro.status === 'Sucesso') statusClass = 'bg-green-100 text-green-700';
-          if (registro.status === 'Falha') statusClass = 'bg-red-100 text-red-700';
-          tr.innerHTML = `
-            <td class="px-4 py-2">${registro.data_hora}</td>
-            <td class="px-4 py-2">${registro.usuario}</td>
-            <td class="px-4 py-2">${registro.acao}</td>
-            <td class="px-4 py-2">${registro.ip}</td>
-            <td class="px-4 py-2"><span class="px-2 py-1 ${statusClass} rounded-lg">${registro.status}</span></td>
-          `;
-          auditoriaTableBody.appendChild(tr);
-        });
-        dashboard.showNotification('Pesquisa realizada!', 'success');
-      } else {
-        dashboard.showNotification('Nenhum registro encontrado.', 'info');
-      }
-    } catch (err) {
-      dashboard.showNotification('Erro ao pesquisar auditoria', 'error');
-    }
-    dashboard.hideLoading();
-  }
-
-  if (auditoriaForm) {
-    auditoriaForm.addEventListener('submit', pesquisarAuditoria);
-  }
-});
-
-// Service Worker para PWA (opcional)
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(() => console.log('Service Worker registrado'))
-      .catch(() => console.log('Service Worker não suportado'));
-  });
-}

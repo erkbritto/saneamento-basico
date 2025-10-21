@@ -9,27 +9,26 @@
 <div class="space-y-6">
 
   <!-- Filtros -->
-  <div class="bg-white p-5 rounded-xl shadow-md">
-    <h2 class="text-lg font-semibold text-gray-800 mb-4">Filtros de Pesquisa</h2>
+  <div class="p-5 rounded-xl shadow-md" style="background: var(--card-bg);">
+    <h2 class="text-lg font-semibold mb-4" style="color: var(--text);">Filtros de Pesquisa</h2>
     <form class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-600 mb-1">Usuário</label>
+        <label class="block text-sm font-medium mb-1" style="color: var(--text);">Usuário</label>
         <input type="text" placeholder="Digite o nome ou email"
-               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+               class="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring focus:ring-blue-200" style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-600 mb-1">Data Inicial</label>
+        <label class="block text-sm font-medium mb-1" style="color: var(--text);">Data Inicial</label>
         <input type="date"
-               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+               class="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring focus:ring-blue-200" style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-600 mb-1">Data Final</label>
+        <label class="block text-sm font-medium mb-1" style="color: var(--text);">Data Final</label>
         <input type="date"
-               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+               class="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring focus:ring-blue-200" style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);">
       </div>
       <div class="md:col-span-3 flex justify-end">
-        <button type="submit"
-                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+        <button type="submit" class="px-4 py-2 rounded-lg transition" style="background: var(--color-primary-500); color: white;">
           <i class="fas fa-search mr-2"></i>Pesquisar
         </button>
       </div>
@@ -37,11 +36,11 @@
   </div>
 
   <!-- Tabela de Auditoria -->
-  <div class="bg-white p-5 rounded-xl shadow-md overflow-x-auto">
-    <h2 class="text-lg font-semibold text-gray-800 mb-4">Registros Recentes</h2>
+  <div class="p-5 rounded-xl shadow-md overflow-x-auto" style="background: var(--card-bg);">
+    <h2 class="text-lg font-semibold mb-4" style="color: var(--text);">Registros Recentes</h2>
     <table class="min-w-full table-auto border-collapse">
       <thead>
-        <tr class="bg-gray-100 text-gray-700 text-sm">
+        <tr class="text-sm" style="background: var(--hover); color: var(--text);">
           <th class="px-4 py-2 text-left">Data/Hora</th>
           <th class="px-4 py-2 text-left">Usuário</th>
           <th class="px-4 py-2 text-left">Ação</th>
@@ -49,36 +48,36 @@
           <th class="px-4 py-2 text-left">Status</th>
         </tr>
       </thead>
-      <tbody class="text-sm text-gray-600">
+      <tbody class="text-sm" style="color: var(--text);">
         <!-- Exemplo de registros fixos -->
-        <tr class="border-b hover:bg-gray-50">
+        <tr style="border-bottom: 1px solid var(--border);" onmouseover="this.style.background='var(--hover)'" onmouseout="this.style.background='transparent'">
           <td class="px-4 py-2">16/09/2025 14:32</td>
           <td class="px-4 py-2">admin@gmail.com</td>
           <td class="px-4 py-2">Login realizado</td>
           <td class="px-4 py-2">127.0.0.1</td>
-          <td class="px-4 py-2"><span class="px-2 py-1 bg-green-100 text-green-700 rounded-lg">Sucesso</span></td>
+          <td class="px-4 py-2"><span class="px-2 py-1 rounded-lg" style="background: rgba(34, 197, 94, 0.2); color: #16a34a;">Sucesso</span></td>
         </tr>
-        <tr class="border-b hover:bg-gray-50">
+        <tr style="border-bottom: 1px solid var(--border);" onmouseover="this.style.background='var(--hover)'" onmouseout="this.style.background='transparent'">
           <td class="px-4 py-2">16/09/2025 13:12</td>
           <td class="px-4 py-2">erick@teste.com</td>
           <td class="px-4 py-2">Tentativa de login</td>
           <td class="px-4 py-2">192.168.0.15</td>
-          <td class="px-4 py-2"><span class="px-2 py-1 bg-red-100 text-red-700 rounded-lg">Falha</span></td>
+          <td class="px-4 py-2"><span class="px-2 py-1 rounded-lg" style="background: rgba(239, 68, 68, 0.2); color: #dc2626;">Falha</span></td>
         </tr>
-        <tr class="border-b hover:bg-gray-50">
+        <tr style="border-bottom: 1px solid var(--border);" onmouseover="this.style.background='var(--hover)'" onmouseout="this.style.background='transparent'">
           <td class="px-4 py-2">15/09/2025 19:44</td>
           <td class="px-4 py-2">supervisor@empresa.com</td>
           <td class="px-4 py-2">Alteração em Tarefas</td>
           <td class="px-4 py-2">10.0.0.5</td>
-          <td class="px-4 py-2"><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg">Info</span></td>
+          <td class="px-4 py-2"><span class="px-2 py-1 rounded-lg" style="background: rgba(59, 130, 246, 0.2); color: #2563eb;">Info</span></td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <!-- Gráfico de Auditoria -->
-  <div class="bg-white p-5 rounded-xl shadow-md">
-    <h2 class="text-lg font-semibold text-gray-800 mb-4">Estatísticas de Auditoria</h2>
+  <div class="p-5 rounded-xl shadow-md" style="background: var(--card-bg);">
+    <h2 class="text-lg font-semibold mb-4" style="color: var(--text);">Estatísticas de Auditoria</h2>
     <canvas id="auditChart" height="120"></canvas>
   </div>
 

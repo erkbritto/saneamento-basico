@@ -9,10 +9,10 @@
 <div class="space-y-6">
 
   <!-- Botão de Registro -->
-  <div class="bg-white p-6 rounded-xl shadow-md flex justify-between items-center">
+  <div class="var(--card-bg) p-6 rounded-xl shadow-md flex justify-between items-center">
     <div>
-      <h2 class="text-lg font-semibold text-gray-800">Registrar Ponto</h2>
-      <p class="text-sm text-gray-600">Clique no botão abaixo para marcar entrada ou saída.</p>
+      <h2 class="text-lg font-semibold style="color: var(--text);"">Registrar Ponto</h2>
+      <p class="text-sm var(--text)">Clique no botão abaixo para marcar entrada ou saída.</p>
     </div>
     <button id="btn-ponto"
             class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
@@ -21,25 +21,25 @@
   </div>
 
   <!-- Tabela de Registros -->
-  <div class="bg-white p-5 rounded-xl shadow-md overflow-x-auto">
-    <h2 class="text-lg font-semibold text-gray-800 mb-4">Meus Registros</h2>
+  <div class="var(--card-bg) p-5 rounded-xl shadow-md overflow-x-auto">
+    <h2 class="text-lg font-semibold style="color: var(--text);" mb-4">Meus Registros</h2>
     <table class="min-w-full table-auto border-collapse">
       <thead>
-        <tr class="bg-gray-100 text-gray-700 text-sm">
+        <tr class="var(--hover) style="color: var(--text);" text-sm">
           <th class="px-4 py-2 text-left">Data</th>
           <th class="px-4 py-2 text-left">Entrada</th>
           <th class="px-4 py-2 text-left">Saída</th>
           <th class="px-4 py-2 text-left">Total de Horas</th>
         </tr>
       </thead>
-      <tbody class="text-sm text-gray-600">
-        <tr class="border-b hover:bg-gray-50">
+      <tbody class="text-sm var(--text)">
+        <tr class="border-b hover:var(--hover)">
           <td class="px-4 py-2">16/09/2025</td>
           <td class="px-4 py-2">08:02</td>
           <td class="px-4 py-2">17:11</td>
           <td class="px-4 py-2">8h 59min</td>
         </tr>
-        <tr class="border-b hover:bg-gray-50">
+        <tr class="border-b hover:var(--hover)">
           <td class="px-4 py-2">15/09/2025</td>
           <td class="px-4 py-2">08:10</td>
           <td class="px-4 py-2">17:00</td>
@@ -50,8 +50,8 @@
   </div>
 
   <!-- Gráfico de Horas -->
-  <div class="bg-white p-5 rounded-xl shadow-md">
-    <h2 class="text-lg font-semibold text-gray-800 mb-4">Horas Semanais</h2>
+  <div class="var(--card-bg) p-5 rounded-xl shadow-md">
+    <h2 class="text-lg font-semibold style="color: var(--text);" mb-4">Horas Semanais</h2>
     <canvas id="pontoChart" height="120"></canvas>
   </div>
 
