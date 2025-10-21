@@ -9,19 +9,21 @@
 <div class="space-y-6">
 
   <!-- Adicionar Tarefa -->
-  <div class="bg-white p-6 rounded-xl shadow-md">
-    <h2 class="text-lg font-semibold text-gray-800 mb-4">Adicionar Nova Tarefa</h2>
+  <div class="bg-white p-6 rounded-xl shadow-md" style="background-color: var(--card-bg);">
+    <h2 class="text-lg font-semibold mb-4" style="color: var(--text);">Adicionar Nova Tarefa</h2>
     <form class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <input type="text" placeholder="Título da tarefa"
-             class="col-span-2 px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
-      <select class="px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+             class="col-span-2 px-3 py-2 rounded-lg"
+             style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);">
+      <select class="px-3 py-2 rounded-lg"
+              style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);">
         <option value="Pendente">Pendente</option>
         <option value="Em Andamento">Em Andamento</option>
         <option value="Concluída">Concluída</option>
       </select>
       <div class="md:col-span-3 flex justify-end">
-        <button type="submit"
-                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+        <button type="submit" class="px-4 py-2 rounded-lg transition" 
+                style="background: var(--color-primary-500); color: white;">
           <i class="fas fa-plus mr-2"></i>Adicionar
         </button>
       </div>
@@ -29,27 +31,33 @@
   </div>
 
   <!-- Lista de Tarefas -->
-  <div class="bg-white p-5 rounded-xl shadow-md">
-    <h2 class="text-lg font-semibold text-gray-800 mb-4">Minhas Tarefas</h2>
+  <div class="bg-white p-5 rounded-xl shadow-md" style="background-color: var(--card-bg);">
+    <h2 class="text-lg font-semibold mb-4" style="color: var(--text);">Minhas Tarefas</h2>
     <ul class="space-y-3">
-      <li class="p-4 rounded-lg border flex justify-between items-center hover:bg-gray-50">
+      <li class="p-4 rounded-lg border flex justify-between items-center" 
+          style="border-color: var(--border); background-color: var(--card-bg);">
         <div>
-          <p class="font-medium text-gray-800">Inspeção de qualidade da água</p>
-          <span class="text-xs text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">Pendente</span>
+          <p class="font-medium" style="color: var(--text);">Inspeção de qualidade da água</p>
+          <span class="text-xs px-2 py-1 rounded-full" 
+                style="color: #b45309; background: rgba(245, 158, 11, 0.2);">Pendente</span>
         </div>
         <button class="text-blue-600 hover:text-blue-800 transition"><i class="fas fa-edit"></i></button>
       </li>
-      <li class="p-4 rounded-lg border flex justify-between items-center hover:bg-gray-50">
+      <li class="p-4 rounded-lg border flex justify-between items-center" 
+          style="border-color: var(--border); background-color: var(--card-bg);">
         <div>
-          <p class="font-medium text-gray-800">Coleta de amostras no bairro A</p>
-          <span class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Em Andamento</span>
+          <p class="font-medium" style="color: var(--text);">Coleta de amostras no bairro A</p>
+          <span class="text-xs px-2 py-1 rounded-full" 
+                style="color: #1d4ed8; background: rgba(59, 130, 246, 0.2);">Em Andamento</span>
         </div>
         <button class="text-blue-600 hover:text-blue-800 transition"><i class="fas fa-edit"></i></button>
       </li>
-      <li class="p-4 rounded-lg border flex justify-between items-center hover:bg-gray-50">
+      <li class="p-4 rounded-lg border flex justify-between items-center" 
+          style="border-color: var(--border); background-color: var(--card-bg);">
         <div>
-          <p class="font-medium text-gray-800">Relatório semanal enviado</p>
-          <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">Concluída</span>
+          <p class="font-medium" style="color: var(--text);">Relatório semanal enviado</p>
+          <span class="text-xs px-2 py-1 rounded-full" 
+                style="color: #15803d; background: rgba(34, 197, 94, 0.2);">Concluída</span>
         </div>
         <button class="text-blue-600 hover:text-blue-800 transition"><i class="fas fa-edit"></i></button>
       </li>

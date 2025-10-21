@@ -9,26 +9,26 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/face-api.js/0.22.2/face-api.min.js"></script>
 </head>
-<body class="flex items-center justify-center min-h-screen bg-gray-100 transition-colors duration-300" data-theme="light">
-  <div class="login-container bg-white p-8 rounded-xl shadow-2xl w-full max-w-md animate-fade-in">
+<body class="flex items-center justify-center min-h-screen var(--hover) transition-colors duration-300" data-theme="light">
+  <div class="login-container var(--card-bg) p-8 rounded-xl shadow-2xl w-full max-w-md animate-fade-in">
     <h2 class="text-2xl font-bold text-blue-600 mb-6 text-center flex items-center justify-center">
       <i class="fas fa-user-plus mr-2"></i> Criar Conta
     </h2>
     <form id="criarContaForm" method="POST" class="space-y-4">
       <div>
-        <label for="nome" class="block text-sm text-gray-600 mb-1">Nome</label>
+        <label for="nome" class="block text-sm var(--text) mb-1">Nome</label>
         <input type="text" id="nome" name="nome" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
       </div>
       <div>
-        <label for="email" class="block text-sm text-gray-600 mb-1">Email</label>
+        <label for="email" class="block text-sm var(--text) mb-1">Email</label>
         <input type="email" id="email" name="email" required class="w-full px-4 py-2 border srounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
       </div>
       <div>
-        <label for="senha" class="block text-sm text-gray-600 mb-1">Senha</label>
+        <label for="senha" class="block text-sm var(--text) mb-1">Senha</label>
         <input type="password" id="senha" name="senha" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
       </div>
       <div>
-        <label for="departamento" class="block text-sm text-gray-600 mb-1">Departamento</label>
+        <label for="departamento" class="block text-sm var(--text) mb-1">Departamento</label>
         <input type="text" id="departamento" name="departamento" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
       </div>
       <button type="button" id="face-btn" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-transform duration-200 flex items-center justify-center">
@@ -48,8 +48,8 @@
         <video id="video" width="320" height="240" autoplay playsinline class="rounded-lg border-4 border-blue-200 shadow-lg"></video>
         <canvas id="face-canvas" width="320" height="240" class="absolute top-0 left-0"></canvas>
       </div>
-      <p class="text-center text-gray-600 mt-2">Posicione seu rosto na área destacada</p>
-      <button id="close-camera" class="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Fechar Câmera</button>
+      <p class="text-center var(--text) mt-2">Posicione seu rosto na área destacada</p>
+      <button id="close-camera" class="mt-4 px-4 py-2 var(--hover) style="color: var(--text);" rounded-lg hover:var(--hover)">Fechar Câmera</button>
     </div>
   </div>
   <script>

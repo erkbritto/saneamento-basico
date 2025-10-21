@@ -8,116 +8,128 @@
 {% block content %}
 <!-- Filtros e Controles -->
 <div class="mb-6 flex flex-wrap gap-4 items-center">
+  <button id="add-user-btn" class="px-4 py-2 rounded-lg transition" 
+          style="background: var(--color-primary-500); color: white;">
+    <i class="fas fa-plus mr-2"></i>Novo Usuário
+  </button>
 
-  <!-- Modal de Cadastro de Usuário Unificado -->
+  <!-- Modal de Cadastro de Usuário -->
   <div id="user-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative">
-      <button id="close-user-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">&times;</button>
-      <h2 class="text-xl font-bold mb-4">Cadastrar Novo Usuário</h2>
+    <div class="rounded-lg shadow-lg p-8 w-full max-w-md relative" style="background: var(--card-bg);">
+      <button id="close-user-modal" class="absolute top-2 right-2 transition" style="color: var(--text);">&times;</button>
+      <h2 class="text-xl font-bold mb-4" style="color: var(--text);">Cadastrar Novo Usuário</h2>
       <form id="user-form">
           <div class="mb-4">
-            <label for="nome" class="block font-semibold mb-1">Nome completo</label>
-            <input type="text" id="nome" name="nome" class="input w-full" required>
+            <label class="block font-semibold mb-1" style="color: var(--text);">Nome completo</label>
+            <input type="text" id="nome" name="nome" class="w-full px-3 py-2 rounded-lg" 
+                   style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);" required>
           </div>
           <div class="mb-4">
-            <label for="email" class="block font-semibold mb-1">Email</label>
-            <input type="email" id="email" name="email" class="input w-full" required>
+            <label class="block font-semibold mb-1" style="color: var(--text);">Email</label>
+            <input type="email" id="email" name="email" class="w-full px-3 py-2 rounded-lg"
+                   style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);" required>
           </div>
           <div class="mb-4">
-            <label for="senha" class="block font-semibold mb-1">Senha</label>
-            <input type="password" id="senha" name="senha" class="input w-full" required>
+            <label class="block font-semibold mb-1" style="color: var(--text);">Senha</label>
+            <input type="password" id="senha" name="senha" class="w-full px-3 py-2 rounded-lg"
+                   style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);" required>
           </div>
           <div class="mb-4">
-            <label for="cargo" class="block font-semibold mb-1">Cargo</label>
-            <select id="cargo" name="cargo" class="input w-full" required>
+            <label class="block font-semibold mb-1" style="color: var(--text);">Cargo</label>
+            <select id="cargo" name="cargo" class="w-full px-3 py-2 rounded-lg"
+                    style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);" required>
               <option value="FUNCIONARIO">Funcionário</option>
               <option value="SUPERVISOR">Supervisor</option>
               <option value="MASTER">Master</option>
             </select>
           </div>
           <div class="mb-4">
-            <label for="departamento" class="block font-semibold mb-1">Departamento</label>
-            <input type="text" id="departamento" name="departamento" class="input w-full" required>
+            <label class="block font-semibold mb-1" style="color: var(--text);">Departamento</label>
+            <input type="text" id="departamento" name="departamento" class="w-full px-3 py-2 rounded-lg"
+                   style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);" required>
           </div>
           <div class="mb-4">
-            <label for="status" class="block font-semibold mb-1">Status</label>
-            <select id="status" name="status" class="input w-full" required>
+            <label class="block font-semibold mb-1" style="color: var(--text);">Status</label>
+            <select id="status" name="status" class="w-full px-3 py-2 rounded-lg"
+                    style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);" required>
               <option value="ATIVO">Ativo</option>
               <option value="INATIVO">Inativo</option>
               <option value="PENDENTE">Pendente</option>
             </select>
           </div>
         <div class="flex justify-end">
-          <button type="submit" class="btn btn-primary">Salvar</button>
+          <button type="submit" class="px-4 py-2 rounded-lg transition" 
+                  style="background: var(--color-primary-500); color: white;">Salvar</button>
         </div>
       </form>
     </div>
   </div>
-  <div class="card p-5 text-center">
-    <div class="text-2xl font-bold text-purple-600 mb-1">5</div>
-    <div class="text-sm text-gray-600">Supervisores</div>
-    <div class="text-xs text-gray-500 mt-1">12% do total</div>
+
+  <!-- Cards de Estatísticas -->
+  <div class="p-5 text-center rounded-xl shadow-md" style="background: var(--card-bg); border: 1px solid var(--border);">
+    <div class="text-2xl font-bold mb-1" style="color: var(--color-primary-500);">5</div>
+    <div class="text-sm" style="color: var(--text-muted);">Supervisores</div>
+    <div class="text-xs mt-1" style="color: var(--text-muted);">12% do total</div>
   </div>
   
-  <div class="card p-5 text-center">
-    <div class="text-2xl font-bold text-yellow-600 mb-1">3</div>
-    <div class="text-sm text-gray-600">Pendentes</div>
-    <div class="text-xs text-red-500 mt-1 flex items-center justify-center">
+  <div class="p-5 text-center rounded-xl shadow-md" style="background: var(--card-bg); border: 1px solid var(--border);">
+    <div class="text-2xl font-bold mb-1" style="color: #b45309;">3</div>
+    <div class="text-sm" style="color: var(--text-muted);">Pendentes</div>
+    <div class="text-xs mt-1 flex items-center justify-center" style="color: #dc2626;">
       <i class="fas fa-clock mr-1"></i> Aguardando aprovação
     </div>
   </div>
 </div>
 
 <!-- Tabela de Usuários -->
-<div class="card p-6 mb-8">
+<div class="p-6 mb-8 rounded-xl shadow-md" style="background: var(--card-bg); border: 1px solid var(--border);">
   <div class="overflow-x-auto">
     <table class="w-full">
       <thead>
-        <tr class="border-b border-gray-200">
+        <tr style="border-bottom: 1px solid var(--border);">
           <th class="pb-3 text-left">
             <label class="flex items-center">
-              <input type="checkbox" class="form-checkbox rounded text-blue-600">
-              <span class="ml-2">Usuário</span>
+              <input type="checkbox" class="rounded" style="color: var(--color-primary-500);">
+              <span class="ml-2" style="color: var(--text);">Usuário</span>
             </label>
           </th>
-          <th class="pb-3 text-left">Cargo</th>
-          <th class="pb-3 text-left">Departamento</th>
-          <th class="pb-3 text-left">Status</th>
-          <th class="pb-3 text-left">Último Acesso</th>
-          <th class="pb-3 text-right">Ações</th>
+          <th class="pb-3 text-left" style="color: var(--text);">Cargo</th>
+          <th class="pb-3 text-left" style="color: var(--text);">Departamento</th>
+          <th class="pb-3 text-left" style="color: var(--text);">Status</th>
+          <th class="pb-3 text-left" style="color: var(--text);">Último Acesso</th>
+          <th class="pb-3 text-right" style="color: var(--text);">Ações</th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-gray-200">
-          <!-- Usuários dinâmicos -->
-          <tbody id="usuarios-tbody"></tbody>
-        
+      <tbody class="divide-y" style="border-color: var(--border);">
         <tr>
           <td class="py-4">
             <label class="flex items-center">
-              <input type="checkbox" class="form-checkbox rounded text-blue-600">
+              <input type="checkbox" class="rounded" style="color: var(--color-primary-500);">
               <div class="ml-3">
-                <div class="font-medium">Carla Rodrigues</div>
-                <div class="text-sm text-gray-600">carla.rodrigues@empresa.com</div>
+                <div class="font-medium" style="color: var(--text);">Carla Rodrigues</div>
+                <div class="text-sm" style="color: var(--text-muted);">carla.rodrigues@empresa.com</div>
               </div>
             </label>
           </td>
           <td class="py-4">
-            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">FUNCIONARIO</span>
+            <span class="px-2 py-1 rounded-full text-xs" 
+                  style="background: rgba(59, 130, 246, 0.2); color: #1d4ed8;">FUNCIONARIO</span>
           </td>
-          <td class="py-4">Qualidade</td>
+          <td class="py-4" style="color: var(--text);">Qualidade</td>
           <td class="py-4">
-            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Pendente</span>
+            <span class="px-2 py-1 rounded-full text-xs" 
+                  style="background: rgba(245, 158, 11, 0.2); color: #b45309;">Pendente</span>
           </td>
-          <td class="py-4">Não acessou</td>
+          <td class="py-4" style="color: var(--text);">Não acessou</td>
           <td class="py-4 text-right">
             <div class="flex justify-end space-x-2">
-              <button class="text-blue-600 hover:text-blue-800" title="Editar">
+              <button class="transition" style="color: var(--color-primary-500);" title="Editar">
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="text-green-600 hover:text-green-800" title="Ativar">
+              <button class="transition" style="color: #16a34a;" title="Ativar">
                 <i class="fas fa-user-check"></i>
               </button>
-              <button class="text-red-600 hover:text-red-800" title="Excluir">
+              <button class="transition" style="color: #dc2626;" title="Excluir">
                 <i class="fas fa-trash"></i>
               </button>
             </div>
@@ -127,32 +139,40 @@
     </table>
   </div>
   
+  <!-- Paginação e Controles -->
   <div class="mt-6 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-    <div class="text-sm text-gray-600">Mostrando 5 de 42 usuários</div>
+    <div class="text-sm" style="color: var(--text-muted);">Mostrando 5 de 42 usuários</div>
     
     <div class="flex items-center space-x-4">
       <div class="flex items-center space-x-2">
-        <span class="text-sm text-gray-600">Ações em massa:</span>
-        <select class="text-sm border rounded-md px-2 py-1">
+        <span class="text-sm" style="color: var(--text-muted);">Ações em massa:</span>
+        <select class="text-sm px-2 py-1 rounded-md"
+                style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);">
           <option>Selecionar ação</option>
           <option>Ativar usuários</option>
           <option>Desativar usuários</option>
           <option>Excluir usuários</option>
           <option>Enviar email</option>
         </select>
-        <button class="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-md">
+        <button class="text-sm px-3 py-1 rounded-md transition" 
+                style="background: var(--card-bg); border: 1px solid var(--border); color: var(--text);">
           Aplicar
         </button>
       </div>
       
       <div class="flex space-x-2">
-        <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">
+        <button class="px-3 py-1 rounded border transition" 
+                style="border-color: var(--border); color: var(--text);">
           <i class="fas fa-chevron-left"></i>
         </button>
-        <button class="px-3 py-1 rounded bg-blue-500 text-white">1</button>
-        <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">2</button>
-        <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">3</button>
-        <button class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">
+        <button class="px-3 py-1 rounded transition" 
+                style="background: var(--color-primary-500); color: white;">1</button>
+        <button class="px-3 py-1 rounded border transition" 
+                style="border-color: var(--border); color: var(--text);">2</button>
+        <button class="px-3 py-1 rounded border transition" 
+                style="border-color: var(--border); color: var(--text);">3</button>
+        <button class="px-3 py-1 rounded border transition" 
+                style="border-color: var(--border); color: var(--text);">
           <i class="fas fa-chevron-right"></i>
         </button>
       </div>
@@ -160,73 +180,20 @@
   </div>
 </div>
 
-<!-- Modal de Adicionar Usuário (oculto por padrão) -->
-<div id="add-user-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-  <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-    <div class="p-6 border-b">
-      <h3 class="text-lg font-semibold">Adicionar Novo Usuário</h3>
-    </div>
-    
-    <div class="p-6 space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Nome completo</label>
-        <input type="text" class="input w-full" placeholder="Digite o nome completo">
-      </div>
-      
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-        <input type="email" class="input w-full" placeholder="Digite o email">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-        <input type="password" class="input w-full" placeholder="Digite a senha">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Perfil de acesso</label>
-        <select class="input w-full">
-          <option value="">Selecione um perfil</option>
-          <option value="GOVERNANTE">Governante</option>
-          <option value="SUPERVISOR">Supervisor</option>
-          <option value="FUNCIONARIO">Funcionário</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Departamento</label>
-        <select class="input w-full">
-          <option value="">Selecione um departamento</option>
-          <option value="OPERACOES">Operações</option>
-          <option value="QUALIDADE">Qualidade</option>
-          <option value="MEIO_AMBIENTE">Meio Ambiente</option>
-          <option value="ADMINISTRACAO">Administração</option>
-        </select>
-      </div>
-    </div>
-    
-    <div class="p-6 border-t flex justify-end space-x-3">
-      <button class="btn bg-gray-200 text-gray-800 hover:bg-gray-300" id="cancel-add-user">
-        Cancelar
-      </button>
-      <button class="btn btn-primary" id="save-user-btn">
-        <i class="fas fa-save mr-2"></i> Salvar Usuário
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Distribuição de Usuários -->
+<!-- Gráficos e Estatísticas -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-  <div class="card p-6">
-    <h3 class="text-lg font-semibold mb-4">Distribuição por Perfil</h3>
+  <div class="p-6 rounded-xl shadow-md" style="background: var(--card-bg); border: 1px solid var(--border);">
+    <h3 class="text-lg font-semibold mb-4" style="color: var(--text);">Distribuição por Perfil</h3>
     <div class="flex items-center justify-center">
       <div class="relative w-40 h-40">
-        <!-- Gráfico de pizza simplificado -->
-        <div class="absolute inset-0 rounded-full border-8 border-purple-500" style="clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 100%, 50% 100%);"></div>
-        <div class="absolute inset-0 rounded-full border-8 border-blue-500" style="clip-path: polygon(50% 50%, 100% 0, 100% 100%, 0 100%, 0 50%);"></div>
-        <div class="absolute inset-0 rounded-full border-8 border-gray-400" style="clip-path: polygon(50% 50%, 0 50%, 0 0, 100% 0, 100% 50%);"></div>
+        <!-- Gráfico de pizza -->
+        <div class="absolute inset-0 rounded-full border-8" style="border-color: var(--color-primary-500); clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 100%, 50% 100%);"></div>
+        <div class="absolute inset-0 rounded-full border-8" style="border-color: #8b5cf6; clip-path: polygon(50% 50%, 100% 0, 100% 100%, 0 100%, 0 50%);"></div>
+        <div class="absolute inset-0 rounded-full border-8" style="border-color: var(--border); clip-path: polygon(50% 50%, 0 50%, 0 0, 100% 0, 100% 50%);"></div>
         <div class="absolute inset-0 flex items-center justify-center">
           <div class="text-center">
-            <div class="font-bold">42</div>
-            <div class="text-xs text-gray-500">Total</div>
+            <div class="font-bold" style="color: var(--text);">42</div>
+            <div class="text-xs" style="color: var(--text-muted);">Total</div>
           </div>
         </div>
       </div>
@@ -234,68 +201,68 @@
     <div class="mt-6 space-y-2">
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <div class="w-3 h-3 rounded-full bg-purple-500 mr-2"></div>
-          <span>Governantes</span>
+          <div class="w-3 h-3 rounded-full mr-2" style="background: var(--color-primary-500);"></div>
+          <span style="color: var(--text);">Governantes</span>
         </div>
-        <span class="font-semibold">2 <span class="text-gray-500 text-sm">(5%)</span></span>
+        <span class="font-semibold" style="color: var(--text);">2 <span class="text-sm" style="color: var(--text-muted);">(5%)</span></span>
       </div>
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <div class="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
-          <span>Supervisores</span>
+          <div class="w-3 h-3 rounded-full mr-2" style="background: #8b5cf6;"></div>
+          <span style="color: var(--text);">Supervisores</span>
         </div>
-        <span class="font-semibold">5 <span class="text-gray-500 text-sm">(12%)</span></span>
+        <span class="font-semibold" style="color: var(--text);">5 <span class="text-sm" style="color: var(--text-muted);">(12%)</span></span>
       </div>
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <div class="w-3 h-3 rounded-full bg-gray-400 mr-2"></div>
-          <span>Funcionários</span>
+          <div class="w-3 h-3 rounded-full mr-2" style="background: var(--border);"></div>
+          <span style="color: var(--text);">Funcionários</span>
         </div>
-        <span class="font-semibold">35 <span class="text-gray-500 text-sm">(83%)</span></span>
+        <span class="font-semibold" style="color: var(--text);">35 <span class="text-sm" style="color: var(--text-muted);">(83%)</span></span>
       </div>
     </div>
   </div>
   
-  <div class="card p-6">
-    <h3 class="text-lg font-semibold mb-4">Distribuição por Departamento</h3>
+  <div class="p-6 rounded-xl shadow-md" style="background: var(--card-bg); border: 1px solid var(--border);">
+    <h3 class="text-lg font-semibold mb-4" style="color: var(--text);">Distribuição por Departamento</h3>
     <div class="space-y-4">
       <div>
         <div class="flex justify-between mb-1">
-          <span class="text-sm">Operações</span>
-          <span class="text-sm font-medium">18</span>
+          <span class="text-sm" style="color: var(--text);">Operações</span>
+          <span class="text-sm font-medium" style="color: var(--text);">18</span>
         </div>
-        <div class="progress-bar">
-          <div class="progress-bar-fill bg-blue-600" style="width: 43%"></div>
-        </div>
-      </div>
-      
-      <div>
-        <div class="flex justify-between mb-1">
-          <span class="text-sm">Qualidade</span>
-          <span class="text-sm font-medium">12</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-bar-fill bg-green-600" style="width: 29%"></div>
+        <div class="w-full rounded-full" style="background: var(--border); height: 8px;">
+          <div class="rounded-full h-full" style="background: var(--color-primary-500); width: 43%"></div>
         </div>
       </div>
       
       <div>
         <div class="flex justify-between mb-1">
-          <span class="text-sm">Meio Ambiente</span>
-          <span class="text-sm font-medium">7</span>
+          <span class="text-sm" style="color: var(--text);">Qualidade</span>
+          <span class="text-sm font-medium" style="color: var(--text);">12</span>
         </div>
-        <div class="progress-bar">
-          <div class="progress-bar-fill bg-purple-600" style="width: 17%"></div>
+        <div class="w-full rounded-full" style="background: var(--border); height: 8px;">
+          <div class="rounded-full h-full" style="background: #16a34a; width: 29%"></div>
         </div>
       </div>
       
       <div>
         <div class="flex justify-between mb-1">
-          <span class="text-sm">Administração</span>
-          <span class="text-sm font-medium">5</span>
+          <span class="text-sm" style="color: var(--text);">Meio Ambiente</span>
+          <span class="text-sm font-medium" style="color: var(--text);">7</span>
         </div>
-        <div class="progress-bar">
-          <div class="progress-bar-fill bg-yellow-600" style="width: 11%"></div>
+        <div class="w-full rounded-full" style="background: var(--border); height: 8px;">
+          <div class="rounded-full h-full" style="background: #8b5cf6; width: 17%"></div>
+        </div>
+      </div>
+      
+      <div>
+        <div class="flex justify-between mb-1">
+          <span class="text-sm" style="color: var(--text);">Administração</span>
+          <span class="text-sm font-medium" style="color: var(--text);">5</span>
+        </div>
+        <div class="w-full rounded-full" style="background: var(--border); height: 8px;">
+          <div class="rounded-full h-full" style="background: #d97706; width: 11%"></div>
         </div>
       </div>
     </div>
@@ -306,171 +273,28 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Inicialização dos controles da página de usuários
-  initUserControls();
-  
-  // Carregar dados de usuários
-    loadUserData();
-    // Remover pop-up de carregamento e mensagem fake
-    if (window.dashboard?.hideLoading) window.dashboard.hideLoading();
-    if (window.dashboard?.showNotification) window.dashboard.showNotification('', 'info');
-});
-
-function initUserControls() {
+  // Controles do modal de usuário
+  const userModal = document.getElementById('user-modal');
+  const closeUserModal = document.getElementById('close-user-modal');
   const addUserBtn = document.getElementById('add-user-btn');
-  const addUserModal = document.getElementById('add-user-modal');
-  const cancelAddUser = document.getElementById('cancel-add-user');
-  const saveUserBtn = document.getElementById('save-user-btn');
-  if (addUserBtn && addUserModal && cancelAddUser) {
+  
+  if (addUserBtn && userModal) {
     addUserBtn.addEventListener('click', function() {
-      addUserModal.classList.remove('hidden');
-    });
-    cancelAddUser.addEventListener('click', function() {
-      addUserModal.classList.add('hidden');
-    });
-    addUserModal.addEventListener('click', function(e) {
-      if (e.target === addUserModal) {
-        addUserModal.classList.add('hidden');
-      }
-    });
-    // Submit do modal de novo usuário
-    saveUserBtn.addEventListener('click', async function() {
-      const modal = addUserModal;
-      const nome = modal.querySelector('input[type="text"]').value;
-      const email = modal.querySelector('input[type="email"]').value;
-      const senha = modal.querySelector('input[type="password"]').value;
-      const cargo = modal.querySelector('select').value;
-      const departamento = modal.querySelectorAll('select')[1].value;
-      if (!nome || !email || !senha || !cargo || !departamento) {
-        showModalMessage('Preencha todos os campos!', 'error');
-        return;
-      }
-      showModalMessage('Cadastrando usuário...', 'info');
-      try {
-        const res = await fetch('/usuarios/cadastrar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nome, email, senha, cargo, departamento })
-        });
-        const data = await res.json();
-        if (data.success) {
-          showModalMessage('Usuário criado com sucesso!', 'success');
-          setTimeout(() => {
-            addUserModal.classList.add('hidden');
-            modal.querySelector('input[type="text"]').value = '';
-            modal.querySelector('input[type="email"]').value = '';
-            modal.querySelector('input[type="password"]').value = '';
-            modal.querySelector('select').value = '';
-            modal.querySelectorAll('select')[1].value = '';
-            location.reload();
-          }, 1200);
-        } else {
-          showModalMessage(data.error || 'Erro ao criar usuário', 'error');
-        }
-      } catch (err) {
-        showModalMessage('Erro de conexão com o servidor', 'error');
-      }
+      userModal.classList.remove('hidden');
     });
   }
   
-  // Controle de seleção de todos os checkboxes
-  const selectAllCheckbox = document.querySelector('thead input[type="checkbox"]');
-  const userCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
-  
-  if (selectAllCheckbox) {
-    selectAllCheckbox.addEventListener('change', function() {
-      userCheckboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
-      });
+  if (closeUserModal && userModal) {
+    closeUserModal.addEventListener('click', function() {
+      userModal.classList.add('hidden');
     });
   }
   
-  // Atualizar checkbox "selecionar todos" quando checkboxes individuais mudarem
-  userCheckboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-      const allChecked = Array.from(userCheckboxes).every(cb => cb.checked);
-      const someChecked = Array.from(userCheckboxes).some(cb => cb.checked);
-      
-      if (selectAllCheckbox) {
-        selectAllCheckbox.checked = allChecked;
-        selectAllCheckbox.indeterminate = someChecked && !allChecked;
+  if (userModal) {
+    userModal.addEventListener('click', function(e) {
+      if (e.target === userModal) {
+        userModal.classList.add('hidden');
       }
-    });
-  });
-}
-
-function showModalMessage(msg, type) {
-  let msgBox = document.getElementById('modal-msg-box');
-  if (!msgBox) {
-    msgBox = document.createElement('div');
-    msgBox.id = 'modal-msg-box';
-    msgBox.style.margin = '10px 0';
-    msgBox.style.textAlign = 'center';
-    document.querySelector('#add-user-modal .p-6.space-y-4').appendChild(msgBox);
-  }
-  msgBox.textContent = msg;
-  msgBox.style.color = type === 'error' ? '#dc2626' : (type === 'success' ? '#16a34a' : '#2563eb');
-  // Se mensagem for vazia, ocultar box
-  if (!msg) msgBox.style.display = 'none';
-  else msgBox.style.display = 'block';
-}
-
-async function loadUserData() {
-  // Remover loading fake
-  // ...aqui pode ser implementado fetch real de usuários...
-}
-
-// Função para editar usuário
-function editUser(userId) {
-  console.log(`Editando usuário com ID: ${userId}`);
-  // Em implementação real, abriria um modal ou redirecionaria para edição
-}
-
-// Função para redefinir senha
-function resetPassword(userId) {
-  console.log(`Redefinindo senha do usuário com ID: ${userId}`);
-  // Em implementação real, mostraria confirmação e faria requisição
-}
-
-// Função para alternar status do usuário
-function toggleUserStatus(userId, currentStatus) {
-  console.log(`Alternando status do usuário ${userId}. Status atual: ${currentStatus}`);
-  // Em implementação real, mostraria confirmação e faria requisição
-}
-
-// Filtros de busca, perfil e status
-document.addEventListener('DOMContentLoaded', function() {
-  const searchInput = document.querySelector('input[placeholder="Buscar usuários..."]');
-  const roleFilter = document.getElementById('role-filter');
-  const statusFilter = document.getElementById('status-filter');
-  const userRows = document.querySelectorAll('tbody tr');
-
-  function filterUsers() {
-    const search = searchInput.value.toLowerCase();
-    const role = roleFilter.value;
-    const status = statusFilter.value;
-    userRows.forEach(row => {
-      const name = row.querySelector('.font-medium')?.textContent.toLowerCase() || '';
-      const email = row.querySelector('.text-sm.text-gray-600')?.textContent.toLowerCase() || '';
-      const roleText = row.querySelector('td:nth-child(2) span')?.textContent || '';
-      const statusText = row.querySelector('td:nth-child(4) span')?.textContent.toLowerCase() || '';
-      let show = true;
-      if (search && !name.includes(search) && !email.includes(search)) show = false;
-      if (role !== 'all' && roleText !== role) show = false;
-      if (status !== 'all' && !statusText.includes(status)) show = false;
-      row.style.display = show ? '' : 'none';
-    });
-  }
-  searchInput.addEventListener('input', filterUsers);
-  roleFilter.addEventListener('change', filterUsers);
-  statusFilter.addEventListener('change', filterUsers);
-
-  // Novo Usuário
-  const addUserBtn = document.getElementById('add-user-btn');
-  const addUserModal = document.getElementById('add-user-modal');
-  if (addUserBtn && addUserModal) {
-    addUserBtn.addEventListener('click', function() {
-      addUserModal.classList.remove('hidden');
     });
   }
 });
