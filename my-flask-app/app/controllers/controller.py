@@ -1,307 +1,123 @@
-"""Controllers - Camada de lógica de negócio"""
+# controllers/controller.py - Controllers para todas as entidades do sistema
 
-from app.models.models import (
-    Usuario, 
-    buscar_tarefas_por_usuario,
-    registrar_ponto as model_registrar_ponto,
-    registrar_auditoria
-)
+import base64
+import cv2
+import numpy as np
 from datetime import datetime
-import json
-
+from app.models.models import Usuario, Tarefa, Ponto, Auditoria, get_db
+from app.utils.face_utils import FaceRecognitionUtils
+import hashlib
 
 class UsuarioController:
-    """Controller para operações de usuário"""
+    """Controller para operações de usuários"""
     
     @staticmethod
-    def autenticar(email, password):
-        """Autentica um usuário"""
-        # TODO: Implementar autenticação real com banco de dados
-        # Por enquanto, mantém a lógica fictícia
-        users = {
-            'admin@gmail.com': {'password': 'admin123', 'role': 'GOVERNANTE', 'name': 'Administrador'},
-            'supervisor@gmail.com': {'password': 'super123', 'role': 'SUPERVISOR', 'name': 'Supervisor'},
-            'funcionario@gmail.com': {'password': 'func123', 'role': 'FUNCIONARIO', 'name': 'Funcionário'}
-        }
-        
-        if email in users and users[email]['password'] == password:
-            return {
-                'success': True,
-                'user': users[email]
-            }
-        return {
-            'success': False,
-            'message': 'Credenciais inválidas'
-        }
-    
-    @staticmethod
-    def criar_usuario(nome, email, senha, cargo, departamento, status='ATIVO', rosto=None):
-        """Cria um novo usuário com validações"""
-        # Validações
-        if not all([nome, email, senha, cargo, departamento, status]):
-            return {'success': False, 'message': 'Preencha todos os campos obrigatórios.'}
-        
-        if cargo not in ['FUNCIONARIO', 'SUPERVISOR', 'MASTER']:
-            return {'success': False, 'message': 'Cargo inválido.'}
-        
-        if status not in ['ATIVO', 'INATIVO', 'PENDENTE']:
-            return {'success': False, 'message': 'Status inválido.'}
-        
-        if '@' not in email or '.' not in email:
-            return {'success': False, 'message': 'Email inválido.'}
-        
-        if len(senha) < 6:
-            return {'success': False, 'message': 'A senha deve ter pelo menos 6 caracteres.'}
-        
+    def criar_usuario(nome, email, senha, cargo, departamento=None, rosto=None):
+        """Cria um novo usuário com reconhecimento facial opcional"""
         try:
-            Usuario.criar(nome, email, senha, cargo, departamento, rosto)
-            return {'success': True, 'message': 'Usuário cadastrado com sucesso!'}
+            # Verifica se email já existe
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM usuario WHERE email = %s", (email,))
+            if cursor.fetchone():
+                cursor.close()
+                conn.close()
+                return {'success': False, 'message': 'Email já cadastrado. Use outro email.'}
+            
+            # Hash da senha
+            senha_hash = hashlib.sha256(senha.encode()).hexdigest()
+            
+            # Cria o usuário primeiro sem o rosto
+            cursor.execute("""
+                INSERT INTO usuario (nome, email, senha, cargo, departamento, status, criado_em)
+                VALUES (%s, %s, %s, %s, %s, 'ATIVO', NOW())
+            """, (nome, email, senha_hash, cargo, departamento))
+            conn.commit()
+            user_id = cursor.lastrowid
+            cursor.close()
+            conn.close()
+
+            # Se houver dados de rosto, processa o reconhecimento facial
+            if rosto and rosto.strip():
+                try:
+                    # Verifica se é um JSON do face-api.js ou base64
+                    if rosto.startswith('{'):
+                        # É JSON do face-api.js - converte para base64
+                        import json
+                        face_data = json.loads(rosto)
+                        # Tenta registrar o FaceID
+                        result = FaceIDController.registrar_faceid(user_id, rosto)
+                        if not result['success']:
+                            print(f"Erro ao registrar FaceID: {result['message']}")
+                    else:
+                        # É base64 direto
+                        result = FaceIDController.registrar_faceid(user_id, rosto)
+                        if not result['success']:
+                            print(f"Erro ao registrar FaceID: {result['message']}")
+                except Exception as e:
+                    print(f"Erro ao processar FaceID: {e}")
+
+            return {'success': True, 'message': 'Usuário criado com sucesso', 'user_id': user_id}
+            
         except Exception as e:
-            return {'success': False, 'message': f'Erro ao cadastrar usuário: {str(e)}'}
+            return {'success': False, 'message': f'Erro ao criar usuário: {str(e)}'}
+    
+    @staticmethod
+    def autenticar_usuario(email, senha):
+        """Autentica usuário por email e senha"""
+        try:
+            senha_hash = hashlib.sha256(senha.encode()).hexdigest()
+            conn = get_db()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("""
+                SELECT * FROM usuario 
+                WHERE email = %s AND senha = %s AND status = 'ATIVO'
+            """, (email, senha_hash))
+            user = cursor.fetchone()
+            cursor.close()
+            conn.close()
+            
+            if user:
+                # Atualiza último acesso
+                Usuario.atualizar(user['id'], ultimo_acesso=datetime.now())
+                return {'success': True, 'user': user}
+            else:
+                return {'success': False, 'message': 'Email ou senha incorretos'}
+                
+        except Exception as e:
+            return {'success': False, 'message': f'Erro ao autenticar: {str(e)}'}
+    
+    @staticmethod
+    def buscar_usuario_por_id(user_id):
+        """Busca usuário por ID"""
+        try:
+            return Usuario.buscar_por_id(user_id)
+        except Exception as e:
+            return None
+    
+    @staticmethod
+    def atualizar_usuario(user_id, **kwargs):
+        """Atualiza dados do usuário"""
+        try:
+            Usuario.atualizar(user_id, **kwargs)
+            return {'success': True, 'message': 'Usuário atualizado com sucesso'}
+        except Exception as e:
+            return {'success': False, 'message': f'Erro ao atualizar: {str(e)}'}
     
     @staticmethod
     def listar_usuarios():
         """Lista todos os usuários"""
         try:
-            conn = Usuario.get_db()
-            if not conn:
-                return {'success': False, 'usuarios': [], 'message': 'Falha na conexão com o banco de dados.'}
-            
+            conn = get_db()
             cursor = conn.cursor(dictionary=True)
-            cursor.execute("SELECT id, nome, cargo, departamento FROM usuario")
+            cursor.execute("SELECT id, nome, email, cargo, departamento, status FROM usuario ORDER BY nome")
             usuarios = cursor.fetchall()
             cursor.close()
             conn.close()
-            
-            return {'success': True, 'usuarios': usuarios}
+            return usuarios
         except Exception as e:
-            return {'success': False, 'usuarios': [], 'message': f'Erro ao listar usuários: {str(e)}'}
-    
-    @staticmethod
-    def atualizar_usuario(id, **kwargs):
-        """Atualiza um usuário"""
-        try:
-            Usuario.atualizar(id, **kwargs)
-            return {'success': True, 'message': 'Usuário atualizado com sucesso!'}
-        except Exception as e:
-            return {'success': False, 'message': f'Erro ao atualizar usuário: {str(e)}'}
-    
-    @staticmethod
-    def deletar_usuario(id):
-        """Deleta um usuário"""
-        try:
-            Usuario.deletar(id)
-            return {'success': True, 'message': 'Usuário deletado com sucesso!'}
-        except Exception as e:
-            return {'success': False, 'message': f'Erro ao deletar usuário: {str(e)}'}
-
-
-class TarefaController:
-    """Controller para operações de tarefas"""
-    
-    @staticmethod
-    def listar_tarefas_usuario(usuario_id):
-        """Lista tarefas de um usuário específico"""
-        if not usuario_id:
-            return {'success': False, 'message': 'usuario_id é obrigatório.'}
-        
-        try:
-            conn = Usuario.get_db()
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute("""
-                SELECT t.id, t.titulo, t.status, t.data_criacao, t.data_conclusao
-                FROM tarefa t
-                JOIN funcionario_tarefa ft ON t.id = ft.tarefa_id
-                WHERE ft.funcionario_id = %s
-                ORDER BY t.data_criacao DESC
-            """, (usuario_id,))
-            tarefas = cursor.fetchall()
-            cursor.close()
-            conn.close()
-            
-            return {'success': True, 'tarefas': tarefas}
-        except Exception as e:
-            return {'success': False, 'message': f'Erro ao buscar tarefas: {str(e)}'}
-
-
-class PontoController:
-    """Controller para operações de ponto eletrônico"""
-    
-    @staticmethod
-    def listar_historico(usuario_id):
-        """Lista histórico de ponto de um usuário"""
-        if not usuario_id:
-            return {'success': False, 'message': 'usuario_id é obrigatório.'}
-        
-        try:
-            conn = Usuario.get_db()
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute(
-                "SELECT id, data, hora_entrada, hora_saida, total_horas, status "
-                "FROM ponto WHERE usuario_id=%s ORDER BY data DESC",
-                (usuario_id,)
-            )
-            pontos = cursor.fetchall()
-            cursor.close()
-            conn.close()
-            
-            return {'success': True, 'historico': pontos}
-        except Exception as e:
-            return {'success': False, 'message': f'Erro ao buscar histórico: {str(e)}'}
-    
-    @staticmethod
-    def registrar_ponto(usuario_id, data_ponto, hora_entrada, localizacao=None):
-        """Registra ponto eletrônico"""
-        if not all([usuario_id, data_ponto, hora_entrada]):
-            return {'success': False, 'message': 'Campos obrigatórios ausentes.'}
-        
-        try:
-            conn = Usuario.get_db()
-            cursor = conn.cursor(dictionary=True)
-            
-            # Verifica duplicidade
-            cursor.execute(
-                "SELECT id FROM ponto WHERE usuario_id=%s AND data=%s",
-                (usuario_id, data_ponto)
-            )
-            if cursor.fetchone():
-                cursor.close()
-                conn.close()
-                return {'success': False, 'message': 'Ponto já registrado para este usuário e data.'}
-            
-            # Insere registro de ponto
-            cursor.execute(
-                "INSERT INTO ponto (usuario_id, data, hora_entrada, status) VALUES (%s, %s, %s, 'REGISTRADO')",
-                (usuario_id, data_ponto, hora_entrada)
-            )
-            conn.commit()
-            cursor.close()
-            conn.close()
-            
-            return {'success': True, 'message': 'Ponto registrado com sucesso.'}
-        except Exception as e:
-            return {'success': False, 'message': f'Erro ao registrar ponto: {str(e)}'}
-
-
-class DashboardController:
-    """Controller para dados do dashboard"""
-    
-    @staticmethod
-    def obter_dados_dashboard(user_role):
-        """Retorna dados do dashboard baseado no papel do usuário"""
-        import time
-        
-        # Dados base para todos os usuários
-        data = {
-            'activeUsers': 42,
-            'efficiency': 87,
-            'timestamp': time.time()
-        }
-        
-        # Dados adicionais para GOVERNANTE e SUPERVISOR
-        if user_role in ['GOVERNANTE', 'SUPERVISOR']:
-            data.update({
-                'environmentImpact': 76,
-                'criticalAlerts': 3
-            })
-        
-        # Dados específicos para GOVERNANTE
-        if user_role == 'GOVERNANTE':
-            data.update({
-                'airQuality': 85,
-                'waterQuality': 92,
-                'wasteManagement': 78,
-                'greenCoverage': 65
-            })
-        
-        return data
-
-
-class RelatorioController:
-    """Controller para geração de relatórios"""
-    
-    @staticmethod
-    def gerar_relatorio(period='week', start=None, end=None):
-        """Gera relatório de tarefas por período"""
-        from datetime import datetime, timedelta
-        
-        now = datetime.now()
-        
-        # Definir intervalo de datas
-        if period == 'today':
-            start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            end_date = now
-        elif period == 'week':
-            start_date = now - timedelta(days=now.weekday())
-            end_date = now
-        elif period == 'month':
-            start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-            end_date = now
-        elif period == 'year':
-            start_date = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
-            end_date = now
-        elif period == 'custom' and start and end:
-            start_date = datetime.strptime(start, '%Y-%m-%d')
-            end_date = datetime.strptime(end, '%Y-%m-%d')
-        else:
-            start_date = now - timedelta(days=7)
-            end_date = now
-        
-        try:
-            conn = Usuario.get_db()
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute("""
-                SELECT t.id, t.titulo, t.status, t.data_criacao, t.data_conclusao, u.nome as gerente
-                FROM tarefa t
-                LEFT JOIN usuario u ON t.gerente_id = u.id
-                WHERE t.data_criacao >= %s AND t.data_criacao <= %s
-            """, (start_date, end_date))
-            tarefas = cursor.fetchall()
-            cursor.close()
-            conn.close()
-            
-            return {'success': True, 'tarefas': tarefas}
-        except Exception as e:
-            return {'success': False, 'message': f'Erro ao gerar relatório: {str(e)}'}
-
-
-class AuditoriaController:
-    """Controller para auditoria"""
-    
-    @staticmethod
-    def listar_registros(usuario=None, data_inicial=None, data_final=None):
-        """Lista registros de auditoria com filtros"""
-        # TODO: Implementar consulta real ao banco
-        registros = [
-            {
-                'data_hora': '2025-09-26 14:32',
-                'usuario': 'admin@gmail.com',
-                'acao': 'Login realizado',
-                'ip': '127.0.0.1',
-                'status': 'Sucesso'
-            },
-            {
-                'data_hora': '2025-09-26 13:12',
-                'usuario': 'erick@teste.com',
-                'acao': 'Tentativa de login',
-                'ip': '192.168.0.15',
-                'status': 'Falha'
-            },
-            {
-                'data_hora': '2025-09-25 19:44',
-                'usuario': 'supervisor@empresa.com',
-                'acao': 'Alteração em Tarefas',
-                'ip': '10.0.0.5',
-                'status': 'Info'
-            }
-        ]
-        
-        # Filtros simulados
-        if usuario:
-            registros = [r for r in registros if usuario.lower() in r['usuario'].lower()]
-        
-        return {'success': True, 'registros': registros}
-
+            print(f"Erro ao listar usuários: {e}")
+            return []
 
 class FaceIDController:
     """Controller para operações de reconhecimento facial"""
@@ -318,13 +134,30 @@ class FaceIDController:
             return {'success': False, 'message': 'Usuário não encontrado'}
         
         try:
-            # TODO: Implementar sistema de reconhecimento facial
-            # from app.utils.face_recognition_utils import face_system
-            # result = face_system.register_face(image_base64)
+            # Decodifica a imagem base64
+            if ',' in image_base64:
+                image_base64 = image_base64.split(',')[1]
             
-            # Por enquanto, retorna sucesso simulado
-            # Usuario.atualizar_face_encoding(user_id, result['encoding'])
+            img_data = base64.b64decode(image_base64)
+            nparr = np.frombuffer(img_data, np.uint8)
+            frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            
+            if frame is None:
+                return {'success': False, 'message': 'Erro ao processar a imagem'}
+            
+            # Usa FaceRecognitionUtils para registrar o rosto
+            face_utils = FaceRecognitionUtils()
+            encoding = face_utils.extract_face_encoding(frame)
+            
+            if encoding is None:
+                return {'success': False, 'message': 'Nenhum rosto detectado na imagem'}
+            
+            # Salva o encoding no banco de dados
+            encoding_str = base64.b64encode(encoding.tobytes()).decode('utf-8')
+            Usuario.atualizar_face_encoding(user_id, encoding_str)
+            
             return {'success': True, 'message': 'FaceID cadastrado com sucesso!'}
+            
         except Exception as e:
             return {'success': False, 'message': f'Erro no servidor: {str(e)}'}
     
@@ -335,33 +168,69 @@ class FaceIDController:
             return {'success': False, 'message': 'Imagem é obrigatória'}
         
         try:
+            # Decodifica a imagem base64
+            if ',' in image_base64:
+                image_base64 = image_base64.split(',')[1]
+            
+            img_data = base64.b64decode(image_base64)
+            nparr = np.frombuffer(img_data, np.uint8)
+            frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            
+            if frame is None:
+                return {'success': False, 'message': 'Erro ao processar a imagem'}
+            
+            # Usa FaceRecognitionUtils para autenticar contra qualquer rosto conhecido
+            face_utils = FaceRecognitionUtils()
+            
+            # Carrega todos os rostos cadastrados do banco
             users_with_faceid = Usuario.buscar_usuarios_com_faceid()
-            
             if not users_with_faceid:
-                return {
-                    'success': False,
-                    'message': 'Nenhum usuário com FaceID cadastrado. Use login tradicional.'
-                }
+                return {'success': False, 'message': 'Nenhum usuário com FaceID cadastrado'}
             
-            # TODO: Implementar reconhecimento facial real
-            # from app.utils.face_recognition_utils import face_system
-            # best_match = None
-            # best_confidence = 0
-            # 
-            # for user in users_with_faceid:
-            #     result = face_system.authenticate_face(image_base64, user['rosto'])
-            #     if result['success'] and result['confidence'] > best_confidence:
-            #         best_confidence = result['confidence']
-            #         best_match = user
+            print(f"DEBUG: Encontrados {len(users_with_faceid)} usuários com FaceID")
             
-            # Por enquanto, retorna erro
-            return {
-                'success': False,
-                'message': 'Rosto não reconhecido. Tente novamente ou use login tradicional.'
-            }
+            # Registra todos os rostos conhecidos no sistema
+            for user in users_with_faceid:
+                if user.get('rosto'):
+                    try:
+                        # Decodifica o encoding salvo
+                        saved_encoding_bytes = base64.b64decode(user['rosto'])
+                        saved_encoding = np.frombuffer(saved_encoding_bytes, dtype=np.float64)
+                        
+                        # Adiciona ao sistema de reconhecimento
+                        face_utils.known_face_encodings.append(saved_encoding)
+                        face_utils.known_face_ids.append(user['id'])
+                        print(f"DEBUG: Rosto do usuário {user['id']} - {user['nome']} carregado")
+                    except Exception as e:
+                        print(f"DEBUG: Erro ao carregar rosto do usuário {user['id']}: {e}")
+                        continue  # Pula usuários com encoding inválido
+            
+            print(f"DEBUG: Total de {len(face_utils.known_face_encodings)} rostos carregados para comparação")
+            
+            # Tenta autenticar contra qualquer rosto conhecido
+            success, user_id, message = face_utils.authenticate_any_face(frame)
+            print(f"DEBUG: Resultado da autenticação - Success: {success}, User ID: {user_id}, Message: {message}")
+            
+            if success and user_id:
+                # Busca dados do usuário autenticado
+                for user in users_with_faceid:
+                    if user['id'] == user_id:
+                        return {
+                            'success': True,
+                            'message': 'Autenticação por reconhecimento facial realizada com sucesso!',
+                            'user': {
+                                'id': user['id'],
+                                'nome': user['nome'],
+                                'email': user['email'],
+                                'cargo': user['cargo']
+                            }
+                        }
+            
+            return {'success': False, 'message': 'Rosto não reconhecido. Tente novamente ou use login tradicional.'}
+            
         except Exception as e:
             return {'success': False, 'message': f'Erro no servidor: {str(e)}'}
-    
+
     @staticmethod
     def verificar_faceid_cadastrado(user_id):
         """Verifica se usuário tem FaceID cadastrado"""
@@ -370,3 +239,124 @@ class FaceIDController:
             return {'success': True, 'has_faceid': has_faceid}
         except Exception as e:
             return {'success': False, 'message': str(e)}
+
+class TarefaController:
+    """Controller para operações de tarefas"""
+    
+    @staticmethod
+    def listar_tarefas_usuario(usuario_id):
+        """Lista todas as tarefas de um usuário"""
+        try:
+            return Tarefa.buscar_por_usuario(usuario_id)
+        except Exception as e:
+            print(f"Erro ao listar tarefas: {e}")
+            return []
+    
+    @staticmethod
+    def criar_tarefa(titulo, descricao, gerente_id=None):
+        """Cria uma nova tarefa"""
+        try:
+            Tarefa.criar(titulo, descricao, gerente_id)
+            return {'success': True, 'message': 'Tarefa criada com sucesso'}
+        except Exception as e:
+            return {'success': False, 'message': f'Erro ao criar tarefa: {str(e)}'}
+    
+    @staticmethod
+    def listar_todas_tarefas():
+        """Lista todas as tarefas do sistema"""
+        try:
+            return Tarefa.buscar_todas()
+        except Exception as e:
+            print(f"Erro ao listar tarefas: {e}")
+            return []
+
+class PontoController:
+    """Controller para operações de ponto"""
+    
+    @staticmethod
+    def registrar_ponto(usuario_id, data, hora_entrada=None, hora_saida=None, total_horas=None, status='REGISTRADO'):
+        """Registra ponto do usuário"""
+        try:
+            Ponto.registrar(usuario_id, data, hora_entrada, hora_saida, total_horas, status)
+            return {'success': True, 'message': 'Ponto registrado com sucesso'}
+        except Exception as e:
+            return {'success': False, 'message': f'Erro ao registrar ponto: {str(e)}'}
+    
+    @staticmethod
+    def listar_pontos_usuario(usuario_id, data_inicio=None, data_fim=None):
+        """Lista pontos de um usuário"""
+        try:
+            return Ponto.buscar_por_usuario(usuario_id, data_inicio, data_fim)
+        except Exception as e:
+            print(f"Erro ao listar pontos: {e}")
+            return []
+
+class DashboardController:
+    """Controller para operações do dashboard"""
+    
+    @staticmethod
+    def obter_dados_dashboard(usuario_id):
+        """Obtém dados para o dashboard do usuário"""
+        try:
+            # Obter tarefas do usuário
+            tarefas = Tarefa.buscar_por_usuario(usuario_id)
+            
+            # Obter pontos do usuário
+            pontos = Ponto.buscar_por_usuario(usuario_id)
+            
+            # Obter auditorias recentes
+            auditorias = Auditoria.buscar(usuario_id)
+            
+            return {
+                'tarefas': tarefas,
+                'pontos': pontos,
+                'auditorias': auditorias[:10]  # Últimas 10 auditorias
+            }
+        except Exception as e:
+            print(f"Erro ao obter dados do dashboard: {e}")
+            return {'tarefas': [], 'pontos': [], 'auditorias': []}
+
+class AuditoriaController:
+    """Controller para operações de auditoria"""
+    
+    @staticmethod
+    def registrar_auditoria(usuario_id, acao, ip=None, status='SUCESSO', detalhes=None):
+        """Registra uma ação de auditoria"""
+        try:
+            Auditoria.registrar(usuario_id, acao, ip, status, detalhes)
+            return {'success': True}
+        except Exception as e:
+            print(f"Erro ao registrar auditoria: {e}")
+            return {'success': False}
+    
+    @staticmethod
+    def listar_auditoria(usuario_id=None, data_inicio=None, data_fim=None):
+        """Lista registros de auditoria"""
+        try:
+            return Auditoria.buscar(usuario_id, data_inicio, data_fim)
+        except Exception as e:
+            print(f"Erro ao listar auditoria: {e}")
+            return []
+
+class RelatorioController:
+    """Controller para operações de relatórios"""
+    
+    @staticmethod
+    def gerar_relatorio_pontos(usuario_id, data_inicio, data_fim):
+        """Gera relatório de pontos no período"""
+        try:
+            pontos = Ponto.buscar_por_usuario(usuario_id, data_inicio, data_fim)
+            return {'success': True, 'data': pontos}
+        except Exception as e:
+            return {'success': False, 'message': f'Erro ao gerar relatório: {str(e)}'}
+    
+    @staticmethod
+    def gerar_relatorio_tarefas(usuario_id, status=None):
+        """Gera relatório de tarefas"""
+        try:
+            tarefas = Tarefa.buscar_por_usuario(usuario_id)
+            if status:
+                tarefas = [t for t in tarefas if t['status'] == status]
+            return {'success': True, 'data': tarefas}
+        except Exception as e:
+            return {'success': False, 'message': f'Erro ao gerar relatório: {str(e)}'}

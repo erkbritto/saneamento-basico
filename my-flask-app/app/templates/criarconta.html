@@ -7,10 +7,20 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/face-api.js/0.22.2/face-api.min.js"></script>
-</head>
+  </head>
 <body class="flex items-center justify-center min-h-screen var(--hover) transition-colors duration-300" data-theme="light">
   <div class="login-container var(--card-bg) p-8 rounded-xl shadow-2xl w-full max-w-md animate-fade-in">
+    <!-- Mensagens Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="mb-4 p-3 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700 border border-red-300{% else %}bg-green-100 text-green-700 border border-green-300{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
     <h2 class="text-2xl font-bold text-blue-600 mb-6 text-center flex items-center justify-center">
       <i class="fas fa-user-plus mr-2"></i> Criar Conta
     </h2>
@@ -31,11 +41,17 @@
         <label for="departamento" class="block text-sm var(--text) mb-1">Departamento</label>
         <input type="text" id="departamento" name="departamento" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
       </div>
-      <button type="button" id="face-btn" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-transform duration-200 flex items-center justify-center">
-        <i class="fas fa-camera mr-2"></i> Capturar Rosto
-      </button>
-      <input type="hidden" id="rosto" name="rosto">
-      <div id="face-status" class="text-center text-sm mt-2"></div>
+      <div class="flex items-center space-x-3">
+        <input type="checkbox" id="usar-faceid" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
+        <label for="usar-faceid" class="text-sm var(--text)">Deseja adicionar reconhecimento facial à sua conta?</label>
+      </div>
+      <div id="faceid-section" class="hidden space-y-3">
+        <button type="button" id="face-btn" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-transform duration-200 flex items-center justify-center">
+          <i class="fas fa-camera mr-2"></i> Capturar Rosto
+        </button>
+        <input type="hidden" id="rosto" name="rosto">
+        <div id="face-status" class="text-center text-sm"></div>
+      </div>
       <button type="submit" id="criar-btn" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-transform duration-200 flex items-center justify-center mt-2">
         <i class="fas fa-user-plus mr-2"></i> Criar Conta
       </button>
@@ -44,82 +60,109 @@
       <a href="/login" class="text-blue-600 hover:underline text-sm">Já tem conta? Entrar</a>
     </div>
     <div id="camera-container" class="mt-6 hidden flex flex-col items-center justify-center">
-      <div class="w-full flex flex-col items-center">
+      <div class="w-full flex flex-col items-center relative">
         <video id="video" width="320" height="240" autoplay playsinline class="rounded-lg border-4 border-blue-200 shadow-lg"></video>
-        <canvas id="face-canvas" width="320" height="240" class="absolute top-0 left-0"></canvas>
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div class="w-32 h-32 border-4 border-green-400 rounded-full animate-pulse"></div>
+        </div>
+        <p class="text-center var(--text) mt-2">Posicione seu rosto no círculo verde</p>
+        <button id="close-camera" class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-transform duration-200">
+          <i class="fas fa-times mr-2"></i> Cancelar
+        </button>
       </div>
-      <p class="text-center var(--text) mt-2">Posicione seu rosto na área destacada</p>
-      <button id="close-camera" class="mt-4 px-4 py-2 var(--hover) style="color: var(--text);" rounded-lg hover:var(--hover)">Fechar Câmera</button>
     </div>
   </div>
   <script>
-    // Reconhecimento facial detalhado e responsivo
-    document.addEventListener('DOMContentLoaded', async () => {
-      await faceapi.nets.ssdMobilenetv1.loadFromUri('/static/models');
+    // Simplified FaceID capture without face-api.js dependency
+    document.addEventListener('DOMContentLoaded', () => {
+      const usarFaceid = document.getElementById('usar-faceid');
+      const faceidSection = document.getElementById('faceid-section');
       const faceBtn = document.getElementById('face-btn');
       const cameraContainer = document.getElementById('camera-container');
       const video = document.getElementById('video');
-      const canvas = document.getElementById('face-canvas');
       const rostoInput = document.getElementById('rosto');
       const closeCameraBtn = document.getElementById('close-camera');
       const faceStatus = document.getElementById('face-status');
       let stream = null;
+      let countdownInterval = null;
+
+      // Mostrar/esconder seção de FaceID
+      usarFaceid.addEventListener('change', () => {
+        if (usarFaceid.checked) {
+          faceidSection.classList.remove('hidden');
+        } else {
+          faceidSection.classList.add('hidden');
+          // Limpa os dados do rosto se desmarcado
+          rostoInput.value = '';
+          faceStatus.textContent = '';
+        }
+      });
 
       faceBtn.addEventListener('click', async () => {
-        faceStatus.textContent = '';
+        faceStatus.textContent = 'Iniciando câmera...';
+        faceStatus.style.color = '#3b82f6';
+        
         cameraContainer.classList.remove('hidden');
         try {
           stream = await navigator.mediaDevices.getUserMedia({ video: true });
           video.srcObject = stream;
-          canvas.style.display = 'block';
+          
+          // Inicia contagem regressiva automática
+          let countdown = 3;
+          faceStatus.textContent = `Posicione seu rosto. Captura automática em ${countdown}...`;
+          faceStatus.style.color = '#16a34a';
+          
+          countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+              faceStatus.textContent = `Posicione seu rosto. Captura automática em ${countdown}...`;
+            } else {
+              faceStatus.textContent = 'Capturando...';
+              captureFace();
+            }
+          }, 1000);
+          
         } catch (err) {
           faceStatus.textContent = 'Permissão de câmera negada.';
           faceStatus.style.color = '#dc2626';
+          cameraContainer.classList.add('hidden');
           return;
         }
-        // Desenhar box do rosto em tempo real
-        const drawFace = async () => {
-          const result = await faceapi.detectSingleFace(video);
-          const ctx = canvas.getContext('2d');
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          if (result) {
-            const { x, y, width, height } = result.box;
-            ctx.strokeStyle = '#2563eb';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(x, y, width, height);
-            faceStatus.textContent = 'Rosto detectado!';
-            faceStatus.style.color = '#16a34a';
-          } else {
-            faceStatus.textContent = 'Nenhum rosto detectado.';
-            faceStatus.style.color = '#dc2626';
-          }
-          if (!cameraContainer.classList.contains('hidden')) {
-            requestAnimationFrame(drawFace);
-          }
-        };
-        drawFace();
-        // Captura automática após 5s
-        setTimeout(async () => {
-          const detection = await faceapi.detectSingleFace(video);
-          if (detection) {
-            rostoInput.value = JSON.stringify(detection.box);
-            faceStatus.textContent = 'Rosto capturado com sucesso!';
-            faceStatus.style.color = '#16a34a';
-            cameraContainer.classList.add('hidden');
-            canvas.style.display = 'none';
-            if (stream) stream.getTracks().forEach(track => track.stop());
-          } else {
-            faceStatus.textContent = 'Nenhum rosto detectado. Tente novamente.';
-            faceStatus.style.color = '#dc2626';
-          }
-        }, 5000);
       });
+
+      function captureFace() {
+        clearInterval(countdownInterval);
+        
+        // Captura o frame atual do vídeo
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = video.videoWidth;
+        tempCanvas.height = video.videoHeight;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(video, 0, 0);
+
+        // Converte para base64
+        const base64Image = tempCanvas.toDataURL('image/jpeg');
+        
+        // Salva no input hidden
+        rostoInput.value = base64Image;
+        
+        faceStatus.textContent = '✓ Rosto capturado com sucesso!';
+        faceStatus.style.color = '#16a34a';
+        
+        // Fecha a câmera após um breve delay
+        setTimeout(() => {
+          cameraContainer.classList.add('hidden');
+          if (stream) stream.getTracks().forEach(track => track.stop());
+        }, 1000);
+      }
+
       closeCameraBtn.addEventListener('click', () => {
+        clearInterval(countdownInterval);
         cameraContainer.classList.add('hidden');
-        canvas.style.display = 'none';
         if (stream) stream.getTracks().forEach(track => track.stop());
+        faceStatus.textContent = 'Captura de rosto cancelada';
+        faceStatus.style.color = '#6b7280';
       });
-      // O submit do formulário será tratado pelo Flask via POST padrão
     });
   </script>
 </body>

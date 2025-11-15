@@ -31,12 +31,12 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        result = UsuarioController.autenticar(email, password)
+        result = UsuarioController.autenticar_usuario(email, password)
         
         if result['success']:
             user_data = result['user']
-            session['user'] = user_data['name']
-            session['user_role'] = user_data['role']
+            session['user'] = user_data['nome']
+            session['user_role'] = user_data['cargo']
             session['user_email'] = email
             flash('Login realizado com sucesso!', 'success')
             return redirect(url_for('main.dashboard'))
@@ -367,21 +367,70 @@ def faceid_register():
 @main.route('/api/faceid/login', methods=['POST'])
 def faceid_login():
     """Autentica usuário via FaceID"""
-    data = request.get_json()
-    image_base64 = data.get('image')
-    
-    result = FaceIDController.autenticar_faceid(image_base64)
-    
-    if result['success']:
-        # Cria sessão (implementar quando FaceID estiver funcional)
-        # session['user'] = result['user']['nome']
-        # session['user_id'] = result['user']['id']
-        # session['user_role'] = result['user']['cargo']
-        # session['user_email'] = result['user']['email']
-        return jsonify(result), 200
-    
-    status_code = 401 if 'não reconhecido' in result['message'] else 400
-    return jsonify(result), status_code
+    try:
+        if not request.is_json:
+            return jsonify({'success': False, 'message': 'Content-Type deve ser application/json'}), 400
+            
+        data = request.get_json()
+        if not data or 'image' not in data:
+            return jsonify({'success': False, 'message': 'Imagem não fornecida'}), 400
+            
+        image_base64 = data.get('image')
+        
+        # Chama o controlador para autenticar
+        result = FaceIDController.autenticar_faceid(image_base64)
+        
+        if result.get('success') and 'user' in result:
+            # Cria a sessão do usuário
+            user = result['user']
+            session['user'] = user['nome']
+            session['user_id'] = user['id']
+            session['user_role'] = user['cargo']
+            session['user_email'] = user['email']
+            
+            # Registra o login na auditoria
+            AuditoriaController.registrar_auditoria(
+                user_id=user['id'],
+                acao='LOGIN_FACEID',
+                ip=request.remote_addr,
+                status='SUCESSO'
+            )
+            
+            return jsonify({
+                'success': True,
+                'message': 'Autenticação por reconhecimento facial realizada com sucesso!',
+                'redirect': url_for('main.dashboard')
+            }), 200
+        else:
+            # Registra tentativa falha na auditoria
+            if 'user' in result and 'id' in result['user']:
+                AuditoriaController.registrar_auditoria(
+                    user_id=result['user']['id'],
+                    acao='LOGIN_FACEID',
+                    ip=request.remote_addr,
+                    status='FALHA',
+                    detalhes=result.get('message', 'Falha na autenticação')
+                )
+            
+            status_code = 401 if 'não reconhecido' in result.get('message', '') else 400
+            return jsonify({
+                'success': False,
+                'message': result.get('message', 'Falha na autenticação')
+            }), status_code
+    except Exception as e:
+        # Registra erro na auditoria
+        AuditoriaController.registrar_auditoria(
+            user_id=None,
+            acao='LOGIN_FACEID',
+            ip=request.remote_addr,
+            status='ERRO',
+            detalhes=str(e)
+        )
+        
+        return jsonify({
+            'success': False,
+            'message': 'Erro interno no servidor durante a autenticação'
+        }), 500
 
 
 @main.route('/api/faceid/check/<int:user_id>', methods=['GET'])
