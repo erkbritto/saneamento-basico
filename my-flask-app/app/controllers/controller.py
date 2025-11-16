@@ -12,6 +12,32 @@ class UsuarioController:
     """Controller para operações de usuários"""
     
     @staticmethod
+    def listar_usuarios_com_rosto():
+        """Lista todos os usuários que possuem rosto cadastrado"""
+        try:
+            conn = get_db()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("""
+                SELECT id, nome, email, cargo, departamento, rosto, status, criado_em
+                FROM usuario 
+                WHERE rosto IS NOT NULL AND rosto != '' AND status = 'ATIVO'
+                ORDER BY nome
+            """)
+            usuarios = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            print(f"DEBUG: {len(usuarios)} usuários com rosto encontrado")
+            for usuario in usuarios:
+                print(f"DEBUG: Usuário {usuario['nome']} tem rosto: {'Sim' if usuario['rosto'] else 'Não'}")
+            
+            return usuarios
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao listar usuários com rosto: {e}")
+            return []
+    
+    @staticmethod
     def criar_usuario(nome, email, senha, cargo, departamento=None, rosto=None):
         """Cria um novo usuário com reconhecimento facial opcional"""
         try:
@@ -179,23 +205,23 @@ class FaceIDController:
             print(f"DEBUG: Total de {len(face_utils.known_face_encodings)} rostos carregados para comparação")
             
             # Tenta autenticar contra qualquer rosto conhecido
-            success, user_id, message = face_utils.authenticate_any_face(frame)
-            print(f"DEBUG: Resultado da autenticação - Success: {success}, User ID: {user_id}, Message: {message}")
+            result = face_utils.authenticate_any_face(frame)
+            print(f"DEBUG: Resultado da autenticação - {result}")
             
-            if success and user_id:
-                # Busca dados do usuário autenticado
-                for user in users_with_faceid:
-                    if user['id'] == user_id:
-                        return {
-                            'success': True,
-                            'message': 'Autenticação por reconhecimento facial realizada com sucesso!',
-                            'user': {
-                                'id': user['id'],
-                                'nome': user['nome'],
-                                'email': user['email'],
-                                'cargo': user['cargo']
-                            }
+            # Verifica se o resultado é um dicionário com a chave 'success'
+            if isinstance(result, dict) and result.get('success'):
+                user = result.get('user')
+                if user:
+                    return {
+                        'success': True,
+                        'message': 'Autenticação por reconhecimento facial realizada com sucesso!',
+                        'user': {
+                            'id': user['id'],
+                            'nome': user['nome'],
+                            'email': user['email'],
+                            'cargo': user.get('cargo', 'FUNCIONARIO')
                         }
+                    }
             
             return {'success': False, 'message': 'Rosto não reconhecido. Tente novamente ou use login tradicional.'}
             

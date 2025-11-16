@@ -212,10 +212,6 @@
                             Posicione seu rosto no círculo verde
                         </p>
                         <div class="flex gap-3 justify-center">
-                            <button id="capture-manual" type="button" disabled
-                                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                                <i class="fas fa-camera mr-2"></i> Capturar
-                            </button>
                             <button id="cancel-camera" type="button"
                                     class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
                                 <i class="fas fa-times mr-2"></i> Cancelar
@@ -300,7 +296,6 @@
             const cameraContainer = document.getElementById('camera-container');
             const video = document.getElementById('video');
             const cameraOverlay = document.getElementById('camera-overlay');
-            const captureManualBtn = document.getElementById('capture-manual');
             const cancelCameraBtn = document.getElementById('cancel-camera');
             const previewContainer = document.getElementById('preview-container');
             const previewImage = document.getElementById('preview-image');
@@ -391,7 +386,6 @@
                 cameraOverlay.classList.add('preparing');
                 cameraStatus.textContent = 'Prepare-se para capturar... Posicione seu rosto';
                 cameraStatus.className = 'text-sm font-medium text-yellow-600 mb-3';
-                captureManualBtn.disabled = true;
                 
                 let preparationTime = 5;
                 
@@ -422,13 +416,6 @@
                     }
                 }, 1000);
             }
-            
-            // Captura manual
-            captureManualBtn.addEventListener('click', () => {
-                if (!captureManualBtn.disabled) {
-                    captureFace();
-                }
-            });
             
             // Capturar rosto
             function captureFace() {
@@ -494,7 +481,6 @@
                 clearInterval(countdownInterval);
                 clearTimeout(preparationTimeout);
                 countdownCircle.classList.add('hidden');
-                captureManualBtn.disabled = true;
                 cameraOverlay.classList.remove('preparing', 'ready');
             }
             

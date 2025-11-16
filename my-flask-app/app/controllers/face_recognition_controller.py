@@ -47,7 +47,12 @@ class AntiSpoofingDetector:
         
     def detect_eyes(self, frame, face_rect):
         """Detecta olhos na região do rosto"""
-        x, y, w, h = face_rect
+        # Verifica se tem 4 coordenadas
+        if isinstance(face_rect, (tuple, list)) and len(face_rect) == 4:
+            x, y, w, h = face_rect
+        else:
+            print(f"DEBUG: Formato inesperado de face_rect em detect_eyes: {face_rect}")
+            return False
         roi_gray = frame[y:y+h, x:x+w]
         roi_color = frame[y:y+h, x:x+w]
         
@@ -77,7 +82,12 @@ class AntiSpoofingDetector:
     
     def detect_face_quality(self, frame, face_rect):
         """Verifica a qualidade do rosto detectado"""
-        x, y, w, h = face_rect
+        # Verifica se tem 4 coordenadas
+        if isinstance(face_rect, (tuple, list)) and len(face_rect) == 4:
+            x, y, w, h = face_rect
+        else:
+            print(f"DEBUG: Formato inesperado de face_rect em detect_face_quality: {face_rect}")
+            return False, "Formato de coordenadas inválido"
         face_region = frame[y:y+h, x:x+w]
         
         # Verifica se a região do rosto tem tamanho suficiente
@@ -121,7 +131,13 @@ class FaceRecognitionSystem:
             return False, "Nenhum rosto detectado na imagem"
         
         # Pega o maior rosto
-        x, y, w, h = max(faces, key=lambda rect: rect[2] * rect[3])
+        largest_face = max(faces, key=lambda rect: rect[2] * rect[3])
+        # Verifica se é uma tupla/lista com 4 elementos
+        if isinstance(largest_face, (tuple, list)) and len(largest_face) == 4:
+            x, y, w, h = largest_face
+        else:
+            print(f"DEBUG: Formato inesperado de rosto: {largest_face}, tipo: {type(largest_face)}")
+            return False, "Formato de dados de rosto inválido"
         
         # Verifica se o rosto é grande o suficiente
         if w < self.min_face_size or h < self.min_face_size:
@@ -213,7 +229,13 @@ class FaceRecognitionSystem:
             return False, "Nenhum rosto detectado na imagem"
             
         # Pega o maior rosto
-        x, y, w, h = max(faces, key=lambda rect: rect[2] * rect[3])
+        largest_face = max(faces, key=lambda rect: rect[2] * rect[3])
+        # Verifica se é uma tupla/lista com 4 elementos
+        if isinstance(largest_face, (tuple, list)) and len(largest_face) == 4:
+            x, y, w, h = largest_face
+        else:
+            print(f"DEBUG: Formato inesperado de rosto: {largest_face}, tipo: {type(largest_face)}")
+            return False, "Formato de dados de rosto inválido"
         
         # Extrai a região do rosto com uma margem
         margin = self.face_margin
