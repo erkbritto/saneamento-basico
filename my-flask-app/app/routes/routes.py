@@ -36,6 +36,7 @@ def login():
         if result['success']:
             user_data = result['user']
             session['user'] = user_data['nome']
+            session['user_id'] = user_data['id']
             session['user_role'] = user_data['cargo']
             session['user_email'] = email
             flash('Login realizado com sucesso!', 'success')
@@ -64,6 +65,11 @@ def criarconta():
         departamento = request.form.get('departamento')
         rosto = request.form.get('rosto')
         cargo = 'FUNCIONARIO'
+        
+        # Validação obrigatória do FaceID
+        if not rosto or rosto.strip() == '':
+            flash('O reconhecimento facial é obrigatório para criar uma conta. Por favor, capture seu rosto.', 'error')
+            return render_template('criarconta.html')
         
         result = UsuarioController.criar_usuario(nome, email, senha, cargo, departamento, rosto=rosto)
         
@@ -347,22 +353,6 @@ def api_auditoria():
 
 
 # ==================== API - FACEID ====================
-
-@main.route('/api/faceid/register', methods=['POST'])
-def faceid_register():
-    """Registra FaceID de um usuário"""
-    data = request.get_json()
-    user_id = data.get('user_id')
-    image_base64 = data.get('image')
-    
-    result = FaceIDController.registrar_faceid(user_id, image_base64)
-    
-    if result['success']:
-        return jsonify(result), 200
-    
-    status_code = 404 if 'não encontrado' in result['message'] else 400
-    return jsonify(result), status_code
-
 
 @main.route('/api/faceid/login', methods=['POST'])
 def faceid_login():

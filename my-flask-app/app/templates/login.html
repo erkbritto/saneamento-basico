@@ -1,265 +1,508 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Saneamento</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-  <style>
-    /* Dark Mode */
-    body[data-theme="dark"] {
-      background-color: #111827 !important;
-      color: #f3f4f6 !important;
-    }
-    
-    body[data-theme="dark"] .bg-white {
-      background-color: #1f2937 !important;
-    }
-    
-    body[data-theme="dark"] .bg-gray-100 {
-      background-color: #111827 !important;
-    }
-    
-    body[data-theme="dark"] .text-gray-600,
-    body[data-theme="dark"] .text-gray-700,
-    body[data-theme="dark"] .text-gray-800 {
-      color: #d1d5db !important;
-    }
-    
-    body[data-theme="dark"] input {
-      background-color: #374151 !important;
-      color: #f3f4f6 !important;
-      border-color: #4b5563 !important;
-    }
-    
-    body[data-theme="dark"] .border-gray-300 {
-      border-color: #4b5563 !important;
-    }
-    
-    body[data-theme="dark"] .bg-blue-50 {
-      background-color: #1e3a5f !important;
-    }
-    
-    body[data-theme="dark"] .text-blue-800 {
-      color: #93c5fd !important;
-    }
-    
-    body[data-theme="dark"] .bg-gray-50 {
-      background-color: #374151 !important;
-    }
-
-    /* FaceID Button */
-    .faceid-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      transition: all 0.3s ease;
-    }
-    .faceid-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-    }
-    
-    /* Modal Camera */
-    #faceid-camera-modal video {
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-      max-height: 400px;
-      object-fit: cover;
-    }
-    
-    .face-detection-overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 180px;
-      height: 220px;
-      border: 3px dashed #667eea;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { opacity: 0.5; }
-      50% { opacity: 1; }
-    }
-    
-    /* Mobile Responsiveness */
-    @media (max-width: 640px) {
-      .login-container {
-        padding: 1.5rem !important;
-        margin: 1rem !important;
-        max-width: 95% !important;
-      }
-      
-      h2 {
-        font-size: 1.5rem !important;
-      }
-      
-      .faceid-btn {
-        font-size: 1rem !important;
-        padding: 0.875rem 1.5rem !important;
-      }
-      
-      #faceid-camera-modal .bg-white {
-        padding: 1rem !important;
-        margin: 0.5rem !important;
-      }
-      
-      #faceid-camera-modal h3 {
-        font-size: 1.25rem !important;
-      }
-      
-      #faceid-camera-modal video {
-        max-height: 300px !important;
-      }
-      
-      .face-detection-overlay {
-        width: 140px !important;
-        height: 180px !important;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Saneamento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --text: #1f2937;
+            --border: #e5e7eb;
+        }
+        
+        [data-theme="dark"] {
+            --bg-primary: #1f2937;
+            --bg-secondary: #111827;
+            --text: #f9fafb;
+            --border: #374151;
+        }
+        
+        body {
+            background-color: var(--bg-secondary);
+            color: var(--text);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .card {
+            background-color: var(--bg-primary);
+            border-color: var(--border);
+        }
+        
+        .input-field {
+            background-color: var(--bg-primary);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        
+        .method-card {
+            background-color: var(--bg-primary);
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .method-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .camera-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            border: 4px solid #ef4444;
+            border-radius: 50%;
+            pointer-events: none;
+            transition: border-color 0.3s;
+        }
+        
+        .camera-overlay.preparing {
+            border-color: #eab308;
+        }
+        
+        .camera-overlay.ready {
+            border-color: #22c55e;
+        }
+        
+        .face-guide {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 70%;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+        
+        .countdown-circle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 10;
+        }
+        
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
-<body class="flex items-center justify-center min-h-screen bg-gray-100 transition-colors duration-300" data-theme="light">
-  <!-- Toggle Dark Mode -->
-  <button id="theme-toggle" class="fixed top-4 right-4 p-3 rounded-full bg-gray-200 hover:bg-gray-300 transition-all z-50">
-    <i class="fas fa-moon text-gray-800"></i>
-  </button>
+<body class="flex items-center justify-center min-h-screen var(--hover) transition-colors duration-300" data-theme="light">
+    <div class="login-container var(--card-bg) p-8 rounded-xl shadow-2xl w-full max-w-md animate-fade-in">
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-3 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700 border border-red-300{% else %}bg-green-100 text-green-700 border border-green-300{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-  <div class="login-container bg-white p-8 rounded-xl shadow-2xl w-full max-w-md animate-fade-in">
-    <h2 class="text-3xl font-bold text-blue-600 mb-6 text-center flex items-center justify-center">
-      <i class="fas fa-lock mr-2"></i> Login
-    </h2>
-    
-    <!-- Mensagens flash -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <p class="text-center mb-4 {{ 'text-red-500' if category == 'error' else 'text-green-500' }}">{{ message }}</p>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <!-- FACEID LOGIN (PRIORITÁRIO) -->
-    <div id="faceid-section" class="mb-6">
-      <button id="faceid-login-btn" class="faceid-btn w-full px-6 py-4 text-white rounded-lg font-bold text-lg flex items-center justify-center">
-        <i class="fas fa-user-circle mr-3 text-2xl"></i> 
-        Entrar com FaceID
-      </button>
-      <p class="text-center text-xs text-gray-500 mt-2">Rápido, seguro e sem senha</p>
-    </div>
-
-    <!-- Divisor -->
-    <div class="flex items-center my-6">
-      <div class="flex-1 border-t border-gray-300"></div>
-      <button id="toggle-traditional-login" class="px-4 text-sm text-gray-600 hover:text-blue-600 transition">
-        Não possui FaceID?
-      </button>
-      <div class="flex-1 border-t border-gray-300"></div>
-    </div>
-
-    <!-- LOGIN TRADICIONAL (FALLBACK - OCULTO INICIALMENTE) -->
-    <div id="traditional-login-section" class="hidden">
-      <form id="loginForm" method="POST" class="space-y-4">
-        <div>
-          <label for="email" class="block text-sm text-gray-600 mb-1">Email</label>
-          <input type="email" id="email" name="email" placeholder="seu@email.com" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+        <!-- Cabeçalho -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                <i class="fas fa-sign-in-alt text-blue-600 text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Bem-vindo</h1>
+            <p class="text-gray-600">Escolha como deseja entrar</p>
         </div>
-        <div>
-          <label for="password" class="block text-sm text-gray-600 mb-1">Senha</label>
-          <input type="password" id="password" name="password" placeholder="********" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+
+        <!-- Seleção de Método de Login -->
+        <div id="method-selection" class="space-y-4">
+            <div class="method-card p-6 rounded-xl cursor-pointer" onclick="selectLoginMethod('faceid')">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user-circle text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Face ID</h3>
+                            <p class="text-sm text-gray-600">Rápido, seguro e sem senha</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+            </div>
+
+            <div class="method-card p-6 rounded-xl cursor-pointer" onclick="selectLoginMethod('email')">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-envelope text-blue-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">E-mail e Senha</h3>
+                            <p class="text-sm text-gray-600">Login tradicional</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+            </div>
         </div>
-        <button type="submit" id="login-btn" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-transform duration-200 flex items-center justify-center">
-          <i class="fas fa-sign-in-alt mr-2"></i> Entrar com Email
-        </button>
-      </form>
-      
-      <div class="mt-4 text-center space-y-2">
-        <a href="#" id="forgot-password" class="text-blue-600 hover:underline text-sm">Esqueci a Senha?</a>
-        <br>
-        <a href="/criarconta" class="text-blue-600 hover:underline text-sm">Criar Conta</a>
-      </div>
+
+        <!-- Login com Face ID -->
+        <div id="faceid-login" class="hidden space-y-4">
+            <button type="button" onclick="goBack()" class="mb-4 text-blue-600 hover:text-blue-800 flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Voltar
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                    <i class="fas fa-user-circle text-green-600 text-2xl"></i>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-900 mb-2">Login com Face ID</h2>
+                <p class="text-gray-600 text-sm">Posicione seu rosto para autenticar</p>
+            </div>
+
+            <!-- Container da Câmera -->
+            <div id="camera-container" class="hidden">
+                <div class="relative w-full flex flex-col items-center">
+                    <video id="video" width="320" height="240" autoplay playsinline 
+                           class="rounded-lg border-4 border-gray-200 shadow-lg"></video>
+                    <div class="camera-overlay" id="camera-overlay">
+                        <div class="face-guide"></div>
+                    </div>
+                    <div class="grid-overlay"></div>
+                    <div id="countdown-circle" class="countdown-circle hidden">3</div>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <p id="camera-status" class="text-sm font-medium text-gray-700 mb-3">
+                        Posicione seu rosto no círculo verde
+                    </p>
+                    <div class="flex gap-3 justify-center">
+                        <button id="capture-manual" type="button" disabled
+                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fas fa-camera mr-2"></i> Capturar
+                        </button>
+                        <button id="cancel-camera" type="button"
+                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                            <i class="fas fa-times mr-2"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão para iniciar câmera -->
+            <button id="start-camera" type="button" 
+                    class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 flex items-center justify-center font-medium">
+                <i class="fas fa-camera mr-2"></i> Iniciar Reconhecimento Facial
+            </button>
+
+            <!-- Status de autenticação -->
+            <div id="auth-status" class="hidden">
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full mb-3">
+                        <i class="fas fa-spinner fa-spin text-2xl"></i>
+                    </div>
+                    <p class="text-sm text-gray-600">Autenticando...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login com E-mail e Senha -->
+        <div id="email-login" class="hidden space-y-4">
+            <button type="button" onclick="goBack()" class="mb-4 text-blue-600 hover:text-blue-800 flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Voltar
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                    <i class="fas fa-envelope text-blue-600 text-2xl"></i>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-900 mb-2">Login com E-mail</h2>
+                <p class="text-gray-600 text-sm">Digite suas credenciais</p>
+            </div>
+
+            <form id="loginForm" method="POST" class="space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="seu@email.com" required 
+                           class="input-field w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                    <input type="password" id="password" name="password" placeholder="********" required 
+                           class="input-field w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                </div>
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500">
+                        <span class="ml-2 text-sm text-gray-600">Lembrar-me</span>
+                    </label>
+                    <a href="#" onclick="showForgotPassword()" class="text-sm text-blue-600 hover:text-blue-800">Esqueceu a senha?</a>
+                </div>
+                <button type="submit" id="login-btn" 
+                        class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center justify-center font-medium">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Entrar
+                </button>
+            </form>
+        </div>
+
+        <!-- Link para Criar Conta -->
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-600">Não tem conta? 
+                <a href="/criarconta" class="text-blue-600 hover:underline font-medium">Criar conta</a>
+            </p>
+        </div>
     </div>
-  </div>
 
-  <!-- Modal FaceID Camera -->
-  <div id="faceid-camera-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-2xl p-8 max-w-2xl w-full mx-4">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-bold text-gray-800">
-          <i class="fas fa-camera text-blue-600"></i> Reconhecimento Facial
-        </h3>
-        <button id="close-faceid-modal" class="text-gray-500 hover:text-red-600 text-2xl">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-
-      <!-- Status -->
-      <div id="faceid-status" class="mb-4 p-3 rounded-lg bg-blue-50 text-blue-800 text-center">
-        <i class="fas fa-spinner fa-spin mr-2"></i> Inicializando câmera...
-      </div>
-
-      <!-- Câmera -->
-      <div class="relative mb-6">
-        <video id="faceid-video" autoplay playsinline class="w-full"></video>
-        <div class="face-detection-overlay"></div>
-        <canvas id="faceid-canvas" class="hidden"></canvas>
-      </div>
-
-      <!-- Instruções -->
-      <div class="bg-gray-50 rounded-lg p-4">
-        <p class="text-sm text-gray-700 text-center">
-          <i class="fas fa-info-circle text-blue-600"></i>
-          Posicione seu rosto no centro e aguarde o reconhecimento automático
-        </p>
-      </div>
+    <!-- Modal Esqueci Senha -->
+    <div id="forgot-password-modal" class="preview-modal">
+        <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+            <h3 class="text-lg font-semibold mb-4">Recuperar Senha</h3>
+            <p class="text-sm text-gray-600 mb-4">Digite seu e-mail para receber instruções de recuperação.</p>
+            <input type="email" placeholder="seu@email.com" 
+                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 mb-4">
+            <div class="flex gap-3">
+                <button onclick="hideForgotPassword()" 
+                        class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                    Cancelar
+                </button>
+                <button onclick="sendPasswordReset()" 
+                        class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    Enviar
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Modal para Esqueci Senha -->
-  <div id="forgot-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
-    <div class="bg-white p-6 rounded-lg text-center max-w-sm w-full">
-      <h3 class="text-lg font-bold mb-4">Recuperar Senha</h3>
-      <input type="email" placeholder="seu@email.com" class="w-full px-4 py-2 border rounded-lg mb-4">
-      <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Enviar</button>
-      <button id="close-modal" class="mt-2 text-gray-600 hover:underline">Fechar</button>
-    </div>
-  </div>
-
-  <script src="{{ url_for('static', filename='js/login.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/faceid_login.js') }}"></script>
-  
-  <script>
-    // Dark Mode Toggle
-    const themeToggle = document.getElementById('theme-toggle');
-    const body = document.body;
-    const icon = themeToggle.querySelector('i');
-    
-    // Carrega tema salvo
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    body.setAttribute('data-theme', savedTheme);
-    updateIcon(savedTheme);
-    
-    themeToggle.addEventListener('click', () => {
-      const currentTheme = body.getAttribute('data-theme');
-      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-      
-      body.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      updateIcon(newTheme);
-    });
-    
-    function updateIcon(theme) {
-      if (theme === 'dark') {
-        icon.className = 'fas fa-sun text-yellow-400';
-        themeToggle.className = 'fixed top-4 right-4 p-3 rounded-full bg-gray-700 hover:bg-gray-600 transition-all z-50';
-      } else {
-        icon.className = 'fas fa-moon text-gray-800';
-        themeToggle.className = 'fixed top-4 right-4 p-3 rounded-full bg-gray-200 hover:bg-gray-300 transition-all z-50';
-      }
-    }
-  </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elementos do Face ID
+            const startCameraBtn = document.getElementById('start-camera');
+            const cameraContainer = document.getElementById('camera-container');
+            const video = document.getElementById('video');
+            const cameraOverlay = document.getElementById('camera-overlay');
+            const captureManualBtn = document.getElementById('capture-manual');
+            const cancelCameraBtn = document.getElementById('cancel-camera');
+            const cameraStatus = document.getElementById('camera-status');
+            const countdownCircle = document.getElementById('countdown-circle');
+            const authStatus = document.getElementById('auth-status');
+            
+            let stream = null;
+            let countdownInterval = null;
+            let preparationTimeout = null;
+            
+            // Selecionar método de login
+            window.selectLoginMethod = function(method) {
+                document.getElementById('method-selection').classList.add('hidden');
+                
+                if (method === 'faceid') {
+                    document.getElementById('faceid-login').classList.remove('hidden');
+                } else {
+                    document.getElementById('email-login').classList.remove('hidden');
+                }
+            };
+            
+            // Voltar para seleção
+            window.goBack = function() {
+                document.getElementById('method-selection').classList.remove('hidden');
+                document.getElementById('faceid-login').classList.add('hidden');
+                document.getElementById('email-login').classList.add('hidden');
+                stopCamera();
+            };
+            
+            // Iniciar câmera para Face ID
+            startCameraBtn.addEventListener('click', async () => {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { 
+                            width: { ideal: 640 },
+                            height: { ideal: 480 }
+                        } 
+                    });
+                    video.srcObject = stream;
+                    
+                    startCameraBtn.classList.add('hidden');
+                    cameraContainer.classList.remove('hidden');
+                    
+                    // Iniciar fase de preparação (5 segundos)
+                    startPreparationPhase();
+                    
+                } catch (err) {
+                    alert('Não foi possível acessar a câmera. Verifique as permissões.');
+                    console.error('Erro ao acessar câmera:', err);
+                }
+            });
+            
+            // Fase de preparação
+            function startPreparationPhase() {
+                cameraOverlay.classList.add('preparing');
+                cameraStatus.textContent = 'Prepare-se para capturar... Posicione seu rosto';
+                cameraStatus.className = 'text-sm font-medium text-yellow-600 mb-3';
+                captureManualBtn.disabled = true;
+                
+                let preparationTime = 5;
+                
+                preparationTimeout = setTimeout(() => {
+                    startCountdownPhase();
+                }, preparationTime * 1000);
+            }
+            
+            // Fase de contagem regressiva
+            function startCountdownPhase() {
+                cameraOverlay.classList.remove('preparing');
+                cameraOverlay.classList.add('ready');
+                cameraStatus.textContent = 'Mantenha-se parado... Captura automática em';
+                cameraStatus.className = 'text-sm font-medium text-green-600 mb-3';
+                
+                let countdown = 3;
+                countdownCircle.textContent = countdown;
+                countdownCircle.classList.remove('hidden');
+                
+                countdownInterval = setInterval(() => {
+                    countdown--;
+                    countdownCircle.textContent = countdown;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        countdownCircle.classList.add('hidden');
+                        captureFace();
+                    }
+                }, 1000);
+            }
+            
+            // Captura manual
+            captureManualBtn.addEventListener('click', () => {
+                if (!captureManualBtn.disabled) {
+                    captureFace();
+                }
+            });
+            
+            // Capturar rosto para autenticação
+            function captureFace() {
+                clearInterval(countdownInterval);
+                clearTimeout(preparationTimeout);
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+                
+                const base64Image = canvas.toDataURL('image/jpeg', 0.9);
+                
+                // Mostrar status de autenticação
+                cameraContainer.classList.add('hidden');
+                authStatus.classList.remove('hidden');
+                
+                // Enviar para API
+                authenticateFace(base64Image);
+            }
+            
+            // Autenticar com Face ID
+            async function authenticateFace(image) {
+                try {
+                    const response = await fetch('/api/faceid/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ image: image })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Redirecionar para dashboard
+                        window.location.href = result.redirect || '/dashboard';
+                    } else {
+                        // Mostrar erro e tentar novamente
+                        authStatus.classList.add('hidden');
+                        alert(result.message || 'Falha na autenticação. Tente novamente.');
+                        cameraContainer.classList.remove('hidden');
+                        startPreparationPhase();
+                    }
+                } catch (error) {
+                    console.error('Erro na autenticação:', error);
+                    authStatus.classList.add('hidden');
+                    alert('Erro de conexão. Tente novamente.');
+                    cameraContainer.classList.remove('hidden');
+                    startPreparationPhase();
+                }
+            }
+            
+            // Cancelar câmera
+            cancelCameraBtn.addEventListener('click', () => {
+                stopCamera();
+                cameraContainer.classList.add('hidden');
+                startCameraBtn.classList.remove('hidden');
+                cameraOverlay.classList.remove('preparing', 'ready');
+            });
+            
+            // Parar câmera
+            function stopCamera() {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+                clearInterval(countdownInterval);
+                clearTimeout(preparationTimeout);
+                countdownCircle.classList.add('hidden');
+                captureManualBtn.disabled = true;
+                cameraOverlay.classList.remove('preparing', 'ready');
+                authStatus.classList.add('hidden');
+            }
+            
+            // Modal de esqueci senha
+            window.showForgotPassword = function() {
+                document.getElementById('forgot-password-modal').style.display = 'flex';
+            };
+            
+            window.hideForgotPassword = function() {
+                document.getElementById('forgot-password-modal').style.display = 'none';
+            };
+            
+            window.sendPasswordReset = function() {
+                // Simulação - implementar lógica real
+                alert('Instruções de recuperação enviadas para seu e-mail.');
+                hideForgotPassword();
+            };
+        });
+    </script>
 </body>
 </html>

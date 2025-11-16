@@ -2,9 +2,20 @@ from flask import Flask, send_from_directory
 from app.routes.routes import main
 from app.routes.face_routes import face_bp
 import os
+from dotenv import load_dotenv
+
+# Carrega variáveis de ambiente
+load_dotenv()
 
 app = Flask(__name__, template_folder='app/templates', static_folder='app/static')
 app.secret_key = 'sua-chave-secreta-aqui'  # Necessário para sessões e flash
+
+# Configurações do banco de dados
+os.environ.setdefault('DB_HOST', 'localhost')
+os.environ.setdefault('DB_PORT', '3306')
+os.environ.setdefault('DB_USER', 'root')
+os.environ.setdefault('DB_PASSWORD', '0511')
+os.environ.setdefault('DB_DATABASE', 'saneamento')
 
 # Configurações de upload
 UPLOAD_FOLDER = os.path.join('app', 'static', 'uploads')

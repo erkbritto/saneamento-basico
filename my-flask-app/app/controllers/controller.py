@@ -27,36 +27,46 @@ class UsuarioController:
             # Hash da senha
             senha_hash = hashlib.sha256(senha.encode()).hexdigest()
             
-            # Cria o usuário primeiro sem o rosto
+            # Processa o rosto - extrai encoding facial em vez de armazenar imagem completa
+            rosto_encoding = ''
+            if rosto and rosto.strip():
+                try:
+                    # Se for base64 de imagem, remove o prefixo data:image
+                    if ',' in rosto:
+                        rosto = rosto.split(',')[1]
+                    
+                    # Decodifica o base64 para bytes
+                    rosto_bytes = base64.b64decode(rosto)
+                    nparr = np.frombuffer(rosto_bytes, np.uint8)
+                    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+                    
+                    if frame is not None:
+                        # Extrai encoding facial (muito menor que a imagem)
+                        face_utils = FaceRecognitionUtils()
+                        encoding = face_utils.extract_face_encoding(frame)
+                        
+                        if encoding is not None:
+                            # Converte encoding para base64 (muito menor)
+                            rosto_encoding = base64.b64encode(encoding.tobytes()).decode('utf-8')
+                        else:
+                            print("Nenhum rosto detectado na imagem")
+                    else:
+                        print("Erro ao decodificar imagem")
+                        
+                except Exception as e:
+                    print(f"Erro ao processar imagem: {e}")
+                    rosto_encoding = ''  # Se falhar, usa vazio
+            
+            # Cria o usuário com todos os campos incluindo o rosto
             cursor.execute("""
-                INSERT INTO usuario (nome, email, senha, cargo, departamento, status, criado_em)
-                VALUES (%s, %s, %s, %s, %s, 'ATIVO', NOW())
-            """, (nome, email, senha_hash, cargo, departamento))
+                INSERT INTO usuario (nome, email, senha, cargo, departamento, rosto, status, criado_em)
+                VALUES (%s, %s, %s, %s, %s, %s, 'ATIVO', NOW())
+            """, (nome, email, senha_hash, cargo, departamento, rosto_encoding))
             conn.commit()
             user_id = cursor.lastrowid
             cursor.close()
             conn.close()
-
-            # Se houver dados de rosto, processa o reconhecimento facial
-            if rosto and rosto.strip():
-                try:
-                    # Verifica se é um JSON do face-api.js ou base64
-                    if rosto.startswith('{'):
-                        # É JSON do face-api.js - converte para base64
-                        import json
-                        face_data = json.loads(rosto)
-                        # Tenta registrar o FaceID
-                        result = FaceIDController.registrar_faceid(user_id, rosto)
-                        if not result['success']:
-                            print(f"Erro ao registrar FaceID: {result['message']}")
-                    else:
-                        # É base64 direto
-                        result = FaceIDController.registrar_faceid(user_id, rosto)
-                        if not result['success']:
-                            print(f"Erro ao registrar FaceID: {result['message']}")
-                except Exception as e:
-                    print(f"Erro ao processar FaceID: {e}")
-
+            
             return {'success': True, 'message': 'Usuário criado com sucesso', 'user_id': user_id}
             
         except Exception as e:
@@ -121,45 +131,6 @@ class UsuarioController:
 
 class FaceIDController:
     """Controller para operações de reconhecimento facial"""
-    
-    @staticmethod
-    def registrar_faceid(user_id, image_base64):
-        """Registra FaceID de um usuário"""
-        if not user_id or not image_base64:
-            return {'success': False, 'message': 'user_id e image são obrigatórios'}
-        
-        # Verifica se usuário existe
-        user = Usuario.buscar_por_id(user_id)
-        if not user:
-            return {'success': False, 'message': 'Usuário não encontrado'}
-        
-        try:
-            # Decodifica a imagem base64
-            if ',' in image_base64:
-                image_base64 = image_base64.split(',')[1]
-            
-            img_data = base64.b64decode(image_base64)
-            nparr = np.frombuffer(img_data, np.uint8)
-            frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            
-            if frame is None:
-                return {'success': False, 'message': 'Erro ao processar a imagem'}
-            
-            # Usa FaceRecognitionUtils para registrar o rosto
-            face_utils = FaceRecognitionUtils()
-            encoding = face_utils.extract_face_encoding(frame)
-            
-            if encoding is None:
-                return {'success': False, 'message': 'Nenhum rosto detectado na imagem'}
-            
-            # Salva o encoding no banco de dados
-            encoding_str = base64.b64encode(encoding.tobytes()).decode('utf-8')
-            Usuario.atualizar_face_encoding(user_id, encoding_str)
-            
-            return {'success': True, 'message': 'FaceID cadastrado com sucesso!'}
-            
-        except Exception as e:
-            return {'success': False, 'message': f'Erro no servidor: {str(e)}'}
     
     @staticmethod
     def autenticar_faceid(image_base64):

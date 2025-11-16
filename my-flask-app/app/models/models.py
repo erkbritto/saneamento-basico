@@ -41,9 +41,15 @@ class Usuario:
     def criar(nome, email, senha, cargo, departamento=None, rosto=None):
         conn = get_db()
         cursor = conn.cursor()
+        
+        # Se rosto não for fornecido, cria um valor padrão (blob vazio)
+        if rosto is None or rosto == '':
+            # Cria um blob vazio como valor padrão
+            rosto = b''
+        
         cursor.execute("""
-            INSERT INTO usuario (nome, email, senha, cargo, departamento, rosto, status)
-            VALUES (%s, %s, %s, %s, %s, %s, 'ATIVO')
+            INSERT INTO usuario (nome, email, senha, cargo, departamento, rosto, status, criado_em)
+            VALUES (%s, %s, %s, %s, %s, %s, 'ATIVO', NOW())
         """, (nome, email, senha, cargo, departamento, rosto))
         conn.commit()
         cursor.close()
