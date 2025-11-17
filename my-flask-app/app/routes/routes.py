@@ -380,7 +380,7 @@ def faceid_login():
             
             # Registra o login na auditoria
             AuditoriaController.registrar_auditoria(
-                user_id=user['id'],
+                usuario_id=user['id'],
                 acao='LOGIN_FACEID',
                 ip=request.remote_addr,
                 status='SUCESSO'
@@ -395,7 +395,7 @@ def faceid_login():
             # Registra tentativa falha na auditoria
             if 'user' in result and 'id' in result['user']:
                 AuditoriaController.registrar_auditoria(
-                    user_id=result['user']['id'],
+                    usuario_id=result['user']['id'],
                     acao='LOGIN_FACEID',
                     ip=request.remote_addr,
                     status='FALHA',
@@ -410,7 +410,7 @@ def faceid_login():
     except Exception as e:
         # Registra erro na auditoria
         AuditoriaController.registrar_auditoria(
-            user_id=None,
+            usuario_id=None,
             acao='LOGIN_FACEID',
             ip=request.remote_addr,
             status='ERRO',

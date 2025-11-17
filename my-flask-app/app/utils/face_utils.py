@@ -22,25 +22,49 @@ class FaceRecognitionUtils:
                 print("DEBUG: Encoding vazio")
                 return None
             
-            # Se for bytes (BLOB do banco)
+            # Se for bytes (BLOB do banco) - pode ser string base64 em bytes
             if isinstance(encoding_data, bytes):
                 print(f"DEBUG: Decodificando {len(encoding_data)} bytes do banco")
-                # Tenta decodificar como pickle primeiro
+                
+                # Tenta decodificar como string UTF-8 primeiro (caso seja base64 string)
+                try:
+                    encoding_str = encoding_data.decode('utf-8')
+                    print(f"DEBUG: Bytes decodificados como string: {encoding_str[:50]}...")
+                    
+                    # Remove prefix se existir
+                    if ',' in encoding_str:
+                        encoding_str = encoding_str.split(',')[1]
+                    
+                    # Decodifica de base64 para bytes
+                    encoding_bytes = base64.b64decode(encoding_str)
+                    print(f"DEBUG: Base64 decodificado: {len(encoding_bytes)} bytes")
+                    
+                    # Converte para numpy array
+                    encoding = np.frombuffer(encoding_bytes, dtype=np.float64)
+                    print(f"DEBUG: Encoding recuperado: {len(encoding)} características")
+                    return encoding
+                    
+                except Exception as e:
+                    print(f"DEBUG: Falha em decodificar como string base64: {e}")
+                
+                # Tenta direto como numpy array (encoding.tobytes())
+                try:
+                    encoding = np.frombuffer(encoding_data, dtype=np.float64)
+                    print(f"DEBUG: Encoding decodificado via numpy direto: {len(encoding)} características")
+                    return encoding
+                except Exception as e:
+                    print(f"DEBUG: Falha em numpy direto: {e}")
+                
+                # Tenta decodificar como pickle
                 try:
                     encoding = pickle.loads(encoding_data)
                     print(f"DEBUG: Encoding decodificado via pickle: {len(encoding)} características")
                     return encoding
-                except:
-                    # Se falhar, tenta como base64
-                    try:
-                        encoding_str = base64.b64encode(encoding_data).decode('utf-8')
-                        encoding_bytes = base64.b64decode(encoding_str)
-                        encoding = np.frombuffer(encoding_bytes, dtype=np.float64)
-                        print(f"DEBUG: Encoding decodificado via base64: {len(encoding)} características")
-                        return encoding
-                    except:
-                        print("DEBUG: Falha em todas as tentativas de decodificação")
-                        return None
+                except Exception as e:
+                    print(f"DEBUG: Falha em pickle: {e}")
+                
+                print("DEBUG: Falha em todas as tentativas de decodificação")
+                return None
             
             # Se for string base64
             elif isinstance(encoding_data, str):
