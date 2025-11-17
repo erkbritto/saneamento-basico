@@ -501,7 +501,7 @@ class FaceRecognitionUtils:
             print(f"DEBUG: {len(encodings)} encodings extraídos para robustez")
             
             # Busca todos os usuários com rosto cadastrado
-            from app.controllers.controller import UsuarioController
+            from ..controllers.controller import UsuarioController
             usuarios = UsuarioController.listar_usuarios_com_rosto()
             print(f"DEBUG: Usuários com rosto cadastrado: {len(usuarios)}")
             

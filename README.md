@@ -48,7 +48,7 @@ FLUSH PRIVILEGES;
 ```
 
 ### 4. Configure as variáveis de ambiente
-Crie o arquivo `.env` na pasta `my-flask-app/`:
+Crie o arquivo `.env` na raiz do projeto:
 ```env
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -59,8 +59,7 @@ DB_DATABASE=saneamento
 
 ### 5. Inicie o servidor
 ```bash
-cd my-flask-app
-python Main.py
+python app.py
 ```
 
 O servidor estará disponível em: `http://localhost:5000`
@@ -98,40 +97,74 @@ O servidor estará disponível em: `http://localhost:5000`
 APS/
 ├── requirements.txt              # Dependências Python
 ├── README.md                    # Este arquivo
-├── my-flask-app/               # Aplicação principal
-│   ├── Main.py                 # Ponto de entrada
-│   ├── .env                    # Variáveis de ambiente
-│   ├── app/
-│   │   ├── controllers/        # Lógica de negócio
-│   │   ├── models/            # Modelos de dados
-│   │   ├── routes/            # Rotas da API
-│   │   ├── utils/             # Utilitários
-│   │   ├── templates/         # Páginas HTML
-│   │   └── static/            # CSS, JS, imagens
-│   └── database/              # Scripts do banco
-├── reconhecimento.py           # Sistema de reconhecimento facial
-└── test_*.py                  # Testes e validações
+├── .env                         # Variáveis de ambiente
+├── .gitignore                   # Arquivos ignorados pelo Git
+├── app.py                       # Ponto de entrada da aplicação
+├── run.py                       # Script alternativo de execução
+├── app/                         # Aplicação principal
+│   ├── __init__.py              # Factory da aplicação Flask
+│   ├── controllers/             # Lógica de negócio
+│   │   ├── controller.py        # Controlador principal
+│   │   └── face_recognition_controller.py # Controller de reconhecimento
+│   ├── models/                  # Modelos de dados
+│   │   └── models.py            # Modelos do banco de dados
+│   ├── routes/                  # Rotas da API
+│   │   ├── routes.py            # Rotas principais
+│   │   └── face_routes.py       # Rotas de reconhecimento facial
+│   ├── utils/                   # Utilitários
+│   │   ├── __init__.py
+│   │   ├── face_utils.py        # Sistema de reconhecimento facial
+│   │   └── face_api_converter.py # Conversor de API
+│   ├── templates/               # Páginas HTML
+│   │   ├── base.html            # Template base
+│   │   ├── index.html           # Página inicial
+│   │   ├── login.html           # Login
+│   │   ├── criarconta.html      # Cadastro
+│   │   ├── usuarios.html        # Gestão de usuários
+│   │   ├── tarefas.html         # Gestão de tarefas
+│   │   ├── ponto_eletronico.html # Ponto eletrônico
+│   │   ├── relatorios.html      # Relatórios
+│   │   ├── analises.html        # Análises
+│   │   ├── auditoria.html       # Auditoria
+│   │   ├── meio_ambiente.html   # Meio ambiente
+│   │   └── faceid_register.html # Cadastro facial
+│   └── static/                  # Recursos estáticos
+│       ├── css/
+│       │   └── index.css        # Estilos principais
+│       └── js/
+│           ├── index.js         # JavaScript principal
+│           ├── mobile-menu.js   # Menu mobile
+│           ├── theme.js         # Tema visual
+│           └── faceid_login.js  # Login facial
+├── src/                         # Código fonte adicional
+│   └── reconhecimento.py        # Sistema de reconhecimento facial
+└── scripts/                     # Scripts utilitários
+    └── recadastrar_faces.py     # Recadastro facial
 ```
 
-## 🧪 Testes
+## 🚀 Inicialização Rápida
 
-### Testar Reconhecimento Facial
+### 1. Instale as dependências
 ```bash
-cd my-flask-app
-python test_face_recognition.py
+pip install -r requirements.txt
 ```
 
-### Testar API
-```bash
-cd my-flask-app
-python test_faceid_api.py
+### 2. Configure o ambiente
+Copie ou crie o arquivo `.env`:
+```env
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=APS
+DB_PASSWORD=0511
+DB_DATABASE=saneamento
 ```
 
-### Validar Conexão com Banco
+### 3. Inicie a aplicação
 ```bash
-cd my-flask-app/database
-python db_connection.py
+python app.py
 ```
+
+Acesse em: `http://localhost:5000`
 
 ## 🔒 Segurança
 
@@ -141,23 +174,6 @@ python db_connection.py
 - **Anti-Spoofing**: Detecção de fotos e vídeos
 - **Audit Trail**: Registro completo de atividades
 
-## 🐛 Troubleshooting
-
-### Webcam não funciona
-- Verifique se a webcam está conectada
-- Confira se outro aplicativo não está usando a câmera
-- Teste com `python test_face_recognition.py`
-
-### Erro de conexão com MySQL
-- Verifique se o MySQL está rodando
-- Confirme as credenciais no arquivo `.env`
-- Teste conexão com `python database/db_connection.py`
-
-### Reconhecimento facial não funciona
-- Verifique a iluminação do ambiente
-- Posicione o rosto centralizado na câmera
-- Garanta boa qualidade da imagem (sem movimento, foco nítido)
-
 ## 📊 Performance
 
 - **Tempo de Reconhecimento**: < 2 segundos
@@ -165,13 +181,18 @@ python db_connection.py
 - **Suporte Simultâneo**: Múltiplos usuários
 - **Banco de Dados**: Otimizado para consultas rápidas
 
-## 🔄 Atualizações Futuras
+## 🔄 Manutenção
 
-- [ ] Reconhecimento com deep learning
-- [ ] Aplicativo mobile
-- [ ] Integração com sistemas de RH
-- [ ] Dashboard em tempo real
-- [ ] Notificações por email/SMS
+### Recadastrar Faces
+Se necessário atualizar os dados faciais:
+```bash
+python scripts/recadastrar_faces.py
+```
+
+### Backup do Banco
+```bash
+mysqldump -u APS -p saneamento > backup.sql
+```
 
 ## 👥 Desenvolvedores
 
