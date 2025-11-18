@@ -233,12 +233,8 @@
                         <p class="text-sm text-green-600 font-medium mt-2">Rosto capturado!</p>
                     </div>
                     <div class="flex gap-3">
-                        <button id="confirm-photo" type="button"
-                                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                            <i class="fas fa-check mr-2"></i> Confirmar
-                        </button>
                         <button id="retry-photo" type="button"
-                                class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+                                class="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
                             <i class="fas fa-redo mr-2"></i> Tentar Novamente
                         </button>
                     </div>
@@ -299,7 +295,6 @@
             const cancelCameraBtn = document.getElementById('cancel-camera');
             const previewContainer = document.getElementById('preview-container');
             const previewImage = document.getElementById('preview-image');
-            const confirmPhotoBtn = document.getElementById('confirm-photo');
             const retryPhotoBtn = document.getElementById('retry-photo');
             const rostoInput = document.getElementById('rosto');
             const cameraStatus = document.getElementById('camera-status');
@@ -458,11 +453,6 @@
                 cameraContainer.classList.add('hidden');
                 startCameraBtn.classList.remove('hidden');
                 cameraOverlay.classList.remove('preparing', 'ready');
-            });
-            
-            // Confirmar foto (botão do container)
-            confirmPhotoBtn.addEventListener('click', () => {
-                submitBtn.disabled = false;
             });
             
             // Tentar novamente (botão do container)
