@@ -100,7 +100,6 @@ APS/
 ├── .env                         # Variáveis de ambiente
 ├── .gitignore                   # Arquivos ignorados pelo Git
 ├── app.py                       # Ponto de entrada da aplicação
-├── run.py                       # Script alternativo de execução
 ├── app/                         # Aplicação principal
 │   ├── __init__.py              # Factory da aplicação Flask
 │   ├── controllers/             # Lógica de negócio
