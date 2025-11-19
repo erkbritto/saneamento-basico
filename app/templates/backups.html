@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-header">
+  <h1>Backup do Sistema</h1>
+  <p class="text-gray-600 dark:text-gray-400">Gerenciamento completo de backups e restauração</p>
+</div>
+
+<!-- Status do Backup -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-green-100 text-sm font-medium">Último Backup</p>
+        <p class="text-2xl font-bold mt-2">2 horas atrás</p>
+        <p class="text-green-100 text-sm mt-2">19/11/2025 15:30</p>
+      </div>
+      <div class="bg-white/20 rounded-full p-3">
+        <i class="fas fa-check-circle text-2xl"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-blue-100 text-sm font-medium">Total de Backups</p>
+        <p class="text-2xl font-bold mt-2">47</p>
+        <p class="text-blue-100 text-sm mt-2">15.2 GB armazenados</p>
+      </div>
+      <div class="bg-white/20 rounded-full p-3">
+        <i class="fas fa-database text-2xl"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-purple-100 text-sm font-medium">Próximo Backup</p>
+        <p class="text-2xl font-bold mt-2">22 horas</p>
+        <p class="text-purple-100 text-sm mt-2">Agendado automático</p>
+      </div>
+      <div class="bg-white/20 rounded-full p-3">
+        <i class="fas fa-clock text-2xl"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ações Rápidas -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 mb-6">
+  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Ações Rápidas</h3>
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <button onclick="createBackup()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+      <i class="fas fa-download mr-2"></i>
+      Backup Completo
+    </button>
+    <button onclick="createIncrementalBackup()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+      <i class="fas fa-plus mr-2"></i>
+      Backup Incremental
+    </button>
+    <button class="bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+      <i class="fas fa-upload mr-2"></i>
+      Restaurar Backup
+    </button>
+    <button class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+      <i class="fas fa-cog mr-2"></i>
+      Configurar Agendamento
+    </button>
+  </div>
+</div>
+
+<!-- Configurações de Backup -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 mb-6">
+  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Configurações de Backup</h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tipo de Backup</label>
+      <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+        <option value="full">Completo</option>
+        <option value="incremental">Incremental</option>
+        <option value="differential">Diferencial</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Frequência</label>
+      <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+        <option value="daily">Diário</option>
+        <option value="weekly">Semanal</option>
+        <option value="monthly">Mensal</option>
+        <option value="manual">Manual</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Local de Armazenamento</label>
+      <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+        <option value="local">Servidor Local</option>
+        <option value="cloud">Cloud Storage</option>
+        <option value="both">Ambos</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Retenção (dias)</label>
+      <input type="number" value="30" min="1" max="365" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+    </div>
+  </div>
+  <div class="mt-4">
+    <label class="flex items-center">
+      <input type="checkbox" checked class="mr-2">
+      <span class="text-sm text-gray-700 dark:text-gray-300">Compactar backups</span>
+    </label>
+    <label class="flex items-center mt-2">
+      <input type="checkbox" checked class="mr-2">
+      <span class="text-sm text-gray-700 dark:text-gray-300">Criptografar backups</span>
+    </label>
+    <label class="flex items-center mt-2">
+      <input type="checkbox" checked class="mr-2">
+      <span class="text-sm text-gray-700 dark:text-gray-300">Enviar notificação por email</span>
+    </label>
+  </div>
+  <div class="flex justify-end mt-4">
+    <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+      <i class="fas fa-save mr-2"></i>Salvar Configurações
+    </button>
+  </div>
+</div>
+
+<!-- Histórico de Backups -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+  <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Histórico de Backups</h3>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <tr>
+          <th class="px-6 py-3">ID</th>
+          <th class="px-6 py-3">Data/Hora</th>
+          <th class="px-6 py-3">Tipo</th>
+          <th class="px-6 py-3">Tamanho</th>
+          <th class="px-6 py-3">Status</th>
+          <th class="px-6 py-3">Local</th>
+          <th class="px-6 py-3">Criado por</th>
+          <th class="px-6 py-3">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">#BKP-047</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">19/11/2025 15:30:00</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">Completo</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">342.5 MB</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Sucesso</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Local + Cloud</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Sistema</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm">
+            <button class="text-blue-600 dark:text-blue-400 hover:underline mr-3">Download</button>
+            <button class="text-green-600 dark:text-green-400 hover:underline mr-3">Restaurar</button>
+            <button class="text-red-600 dark:text-red-400 hover:underline">Excluir</button>
+          </td>
+        </tr>
+        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">#BKP-046</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">18/11/2025 15:30:00</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">Completo</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">338.2 MB</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Sucesso</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Local + Cloud</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Sistema</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm">
+            <button class="text-blue-600 dark:text-blue-400 hover:underline mr-3">Download</button>
+            <button class="text-green-600 dark:text-green-400 hover:underline mr-3">Restaurar</button>
+            <button class="text-red-600 dark:text-red-400 hover:underline">Excluir</button>
+          </td>
+        </tr>
+        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">#BKP-045</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">17/11/2025 15:30:00</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Incremental</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">45.7 MB</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Sucesso</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Local</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">admin@gmail.com</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm">
+            <button class="text-blue-600 dark:text-blue-400 hover:underline mr-3">Download</button>
+            <button class="text-green-600 dark:text-green-400 hover:underline mr-3">Restaurar</button>
+            <button class="text-red-600 dark:text-red-400 hover:underline">Excluir</button>
+          </td>
+        </tr>
+        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">#BKP-044</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">16/11/2025 15:30:00</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">Completo</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">335.8 MB</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Sucesso</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Local + Cloud</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Sistema</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm">
+            <button class="text-blue-600 dark:text-blue-400 hover:underline mr-3">Download</button>
+            <button class="text-green-600 dark:text-green-400 hover:underline mr-3">Restaurar</button>
+            <button class="text-red-600 dark:text-red-400 hover:underline">Excluir</button>
+          </td>
+        </tr>
+        <tr class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">#BKP-043</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">15/11/2025 14:15:00</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">Manual</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">328.4 MB</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Sucesso</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Local</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">admin@gmail.com</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm">
+            <button class="text-blue-600 dark:text-blue-400 hover:underline mr-3">Download</button>
+            <button class="text-green-600 dark:text-green-400 hover:underline mr-3">Restaurar</button>
+            <button class="text-red-600 dark:text-red-400 hover:underline">Excluir</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+    <div class="flex items-center justify-between">
+      <span class="text-sm text-gray-700 dark:text-gray-400">
+        Mostrando 1 a 5 de 47 backups
+      </span>
+      <div class="flex space-x-2">
+        <button class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600">
+          Anterior
+        </button>
+        <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded">1</button>
+        <button class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600">
+          2
+        </button>
+        <button class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600">
+          3
+        </button>
+        <button class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600">
+          Próximo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmação -->
+<div id="backupModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Confirmar Backup</h3>
+    </div>
+    <div class="px-6 py-4">
+      <p class="text-gray-700 dark:text-gray-300">Tem certeza que deseja iniciar um backup completo do sistema?</p>
+      <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+        <p class="text-sm text-yellow-800 dark:text-yellow-300">
+          <i class="fas fa-exclamation-triangle mr-2"></i>
+          Esta operação pode levar alguns minutos e pode afetar o desempenho do sistema durante o processo.
+        </p>
+      </div>
+    </div>
+    <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+      <button onclick="closeBackupModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+        Cancelar
+      </button>
+      <button onclick="confirmBackup()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+        Iniciar Backup
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Progresso do Backup -->
+<div id="backupProgress" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Backup em Andamento</h3>
+    </div>
+    <div class="px-6 py-4">
+      <div class="flex items-center justify-center mb-4">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+      <p class="text-center text-gray-700 dark:text-gray-300 mb-4">Realizando backup do sistema...</p>
+      <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+        <div id="progressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+      <p class="text-center text-sm text-gray-600 dark:text-gray-400 mt-2">
+        <span id="progressText">0%</span> concluído
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+function createBackup() {
+  document.getElementById('backupModal').classList.remove('hidden');
+}
+
+function createIncrementalBackup() {
+  alert('Backup incremental iniciado. Esta funcionalidade será implementada.');
+}
+
+function closeBackupModal() {
+  document.getElementById('backupModal').classList.add('hidden');
+}
+
+function confirmBackup() {
+  closeBackupModal();
+  document.getElementById('backupProgress').classList.remove('hidden');
+  
+  // Simular progresso do backup
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += Math.random() * 15;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      setTimeout(() => {
+        document.getElementById('backupProgress').classList.add('hidden');
+        alert('Backup concluído com sucesso!');
+        location.reload();
+      }, 1000);
+    }
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('progressText').textContent = Math.round(progress) + '%';
+  }, 500);
+}
+</script>
+{% endblock %}

@@ -42,7 +42,7 @@ def login():
             flash('Login realizado com sucesso!', 'success')
             return redirect(url_for('main.dashboard'))
         else:
-            flash('Credenciais inválidas. Tente: admin@gmail.com/admin123, supervisor@gmail.com/super123 ou funcionario@gmail.com/func123', 'error')
+            flash('Credenciais inválidas. Verifique seu email e senha.', 'error')
     
     return render_template('login.html')
 
@@ -99,7 +99,7 @@ def ponto_eletronico():
     """Página de ponto eletrônico"""
     if 'user' not in session:
         return redirect(url_for('main.login'))
-    if session.get('user_role') not in ['SUPERVISOR', 'FUNCIONARIO']:
+    if session.get('user_role') not in ['MASTER','SUPERVISOR','FUNCIONARIO']:
         flash('Acesso não autorizado', 'error')
         return redirect(url_for('main.dashboard'))
     return render_template('ponto_eletronico.html')
@@ -110,7 +110,7 @@ def tarefas():
     """Página de tarefas"""
     if 'user' not in session:
         return redirect(url_for('main.login'))
-    if session.get('user_role') not in ['SUPERVISOR', 'FUNCIONARIO']:
+    if session.get('user_role') not in ['MASTER','SUPERVISOR','FUNCIONARIO']:
         flash('Acesso não autorizado', 'error')
         return redirect(url_for('main.dashboard'))
     return render_template('tarefas.html')
@@ -121,7 +121,7 @@ def relatorios():
     """Página de relatórios"""
     if 'user' not in session:
         return redirect(url_for('main.login'))
-    if session.get('user_role') not in ['GOVERNANTE', 'SUPERVISOR']:
+    if session.get('user_role') not in ['MASTER','SUPERVISOR']:
         flash('Acesso não autorizado', 'error')
         return redirect(url_for('main.dashboard'))
     return render_template('relatorios.html')
@@ -132,7 +132,7 @@ def analises():
     """Página de análises"""
     if 'user' not in session:
         return redirect(url_for('main.login'))
-    if session.get('user_role') not in ['GOVERNANTE', 'SUPERVISOR']:
+    if session.get('user_role') not in ['MASTER','SUPERVISOR']:
         flash('Acesso não autorizado', 'error')
         return redirect(url_for('main.dashboard'))
     return render_template('analises.html')
@@ -165,10 +165,65 @@ def auditoria():
     """Página de auditoria"""
     if 'user' not in session:
         return redirect(url_for('main.login'))
-    if session.get('user_role') != 'GOVERNANTE':
+    if session.get('user_role') != 'MASTER':
         flash('Acesso não autorizado', 'error')
         return redirect(url_for('main.dashboard'))
     return render_template('auditoria.html')
+
+
+@main.route('/configuracoes')
+def configuracoes():
+    """Página de configurações do sistema"""
+    if 'user' not in session:
+        return redirect(url_for('main.login'))
+    if session.get('user_role') != 'MASTER':
+        flash('Acesso não autorizado', 'error')
+        return redirect(url_for('main.dashboard'))
+    return render_template('configuracoes.html')
+
+
+@main.route('/estatisticas')
+def estatisticas():
+    """Página de estatísticas do sistema"""
+    if 'user' not in session:
+        return redirect(url_for('main.login'))
+    if session.get('user_role') != 'MASTER':
+        flash('Acesso não autorizado', 'error')
+        return redirect(url_for('main.dashboard'))
+    return render_template('estatisticas.html')
+
+
+@main.route('/logs')
+def logs():
+    """Página de logs do sistema"""
+    if 'user' not in session:
+        return redirect(url_for('main.login'))
+    if session.get('user_role') != 'MASTER':
+        flash('Acesso não autorizado', 'error')
+        return redirect(url_for('main.dashboard'))
+    return render_template('logs.html')
+
+
+@main.route('/backups')
+def backups():
+    """Página de backups do sistema"""
+    if 'user' not in session:
+        return redirect(url_for('main.login'))
+    if session.get('user_role') != 'MASTER':
+        flash('Acesso não autorizado', 'error')
+        return redirect(url_for('main.dashboard'))
+    return render_template('backups.html')
+
+
+@main.route('/monitoramento')
+def monitoramento():
+    """Página de monitoramento do sistema"""
+    if 'user' not in session:
+        return redirect(url_for('main.login'))
+    if session.get('user_role') != 'MASTER':
+        flash('Acesso não autorizado', 'error')
+        return redirect(url_for('main.dashboard'))
+    return render_template('monitoramento.html')
 
 
 @main.route('/faceid-setup')

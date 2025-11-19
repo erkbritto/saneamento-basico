@@ -45,8 +45,13 @@
           </div>
           <div class="mb-4">
             <label class="block font-semibold mb-1" style="color: var(--text);">Departamento</label>
-            <input type="text" id="departamento" name="departamento" class="w-full px-3 py-2 rounded-lg"
-                   style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);" required>
+            <select id="departamento" name="departamento" class="w-full px-3 py-2 rounded-lg"
+                    style="border: 1px solid var(--border); background: var(--card-bg); color: var(--text);" required>
+              <option value="">Selecione um departamento...</option>
+              <option value="TI">Tecnologia da Informação (TI)</option>
+              <option value="AMBIENTAL">Meio Ambiente e Sustentabilidade</option>
+              <option value="DIRETORIA">Diretoria Executiva</option>
+            </select>
           </div>
           <div class="mb-4">
             <label class="block font-semibold mb-1" style="color: var(--text);">Status</label>

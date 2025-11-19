@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const userRole = "{{ session.get('user_role', 'FUNCIONARIO') }}"; // Você precisa definir isso na sessão
   
   // Esconder/mostrar elementos baseados no papel do usuário
-  if (userRole !== 'GOVERNANTE' && userRole !== 'SUPERVISOR') {
+  if (userRole !== 'MASTER' && userRole !== 'SUPERVISOR') {
     document.getElementById('environment-impact-container').classList.add('hidden');
     document.getElementById('critical-alerts-container').classList.add('hidden');
     document.getElementById('environment-section').classList.add('hidden');

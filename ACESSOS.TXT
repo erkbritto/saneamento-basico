@@ -1,0 +1,54 @@
+═══════════════════════════════════════════════════════════════
+                    CREDENCIAIS DE ACESSO AO SISTEMA
+═══════════════════════════════════════════════════════════════
+
+📋 USUÁRIOS DISPONÍVEIS PARA TESTE:
+
+──────────────────────────────────────────────────────────────────────
+👑 ADMINISTRADOR MASTER
+──────────────────────────────────────────────────────────────────────
+Email:    admin@gmail.com
+Senha:    admin123
+Cargo:    MASTER
+Departamento: DIRETORIA
+Acessos:  Controle total do sistema
+
+──────────────────────────────────────────────────────────────────────
+👨‍💼 SUPERVISOR
+──────────────────────────────────────────────────────────────────────
+Email:    supervisor@gmail.com
+Senha:    super123
+Cargo:    SUPERVISOR
+Departamento: TI
+Acessos:  Gestão de equipes e relatórios
+
+──────────────────────────────────────────────────────────────────────
+👨‍💻 FUNCIONÁRIO
+──────────────────────────────────────────────────────────────────────
+Email:    funcionario@gmail.com
+Senha:    func123
+Cargo:    FUNCIONARIO
+Departamento: AMBIENTAL
+Acessos:  Acesso básico ao sistema
+
+═══════════════════════════════════════════════════════════════
+
+🔐 INSTRUÇÕES DE ACESSO:
+
+1. Abra o sistema no navegador: http://localhost:5000
+2. Use qualquer uma das credenciais acima
+3. Clique em "Entrar"
+4. Explore as funcionalidades disponíveis para cada nível de acesso
+
+═══════════════════════════════════════════════════════════════
+
+⚠️  IMPORTANTE:
+- Estas são credenciais de teste para desenvolvimento
+- Em produção, use senhas seguras e únicas
+- O administrador pode criar novos usuários pelo menu "Usuários"
+
+═══════════════════════════════════════════════════════════════
+
+🚀 SISTEMA DE GERENCIAMENTO - APS 6º SEMESTRE
+Versão: 1.0
+Desenvolvido para fins acadêmicos

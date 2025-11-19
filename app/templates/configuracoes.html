@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-header">
+  <h1>Configurações do Sistema</h1>
+  <p class="text-gray-600 dark:text-gray-400">Gerencie as configurações globais do sistema</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <!-- Configurações Gerais -->
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+    <div class="flex items-center mb-4">
+      <i class="fas fa-cogs text-blue-500 text-2xl mr-3"></i>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Configurações Gerais</h3>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nome do Sistema</label>
+        <input type="text" value="Saneamento Basico" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Versão</label>
+        <input type="text" value="1.0.0" readonly class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-900 dark:text-white">
+      </div>
+    </div>
+  </div>
+
+  <!-- Configurações de Segurança -->
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+    <div class="flex items-center mb-4">
+      <i class="fas fa-shield-alt text-green-500 text-2xl mr-3"></i>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Segurança</h3>
+    </div>
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-700 dark:text-gray-300">Login com FaceID</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" checked class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+        </label>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-700 dark:text-gray-300">Exigir FaceID</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+        </label>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tempo de Sessão (min)</label>
+        <input type="number" value="30" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+      </div>
+    </div>
+  </div>
+
+  <!-- Configurações de Notificação -->
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+    <div class="flex items-center mb-4">
+      <i class="fas fa-bell text-yellow-500 text-2xl mr-3"></i>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Notificações</h3>
+    </div>
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-700 dark:text-gray-300">Alertas de Sistema</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" checked class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+        </label>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-700 dark:text-gray-300">Relatórios Diários</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" checked class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+        </label>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-700 dark:text-gray-300">Alertas Ambientais</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" checked class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backup e Restauração -->
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+    <div class="flex items-center mb-4">
+      <i class="fas fa-database text-purple-500 text-2xl mr-3"></i>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Backup e Restauração</h3>
+    </div>
+    <div class="space-y-4">
+      <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+        <i class="fas fa-download mr-2"></i>Fazer Backup Agora
+      </button>
+      <button class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+        <i class="fas fa-upload mr-2"></i>Restaurar Backup
+      </button>
+      <div class="text-sm text-gray-600 dark:text-gray-400">
+        <p>Último backup: 19/11/2025 17:30</p>
+        <p>Próximo backup: 20/11/2025 17:30</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logs do Sistema -->
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+    <div class="flex items-center mb-4">
+      <i class="fas fa-file-alt text-red-500 text-2xl mr-3"></i>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Logs do Sistema</h3>
+    </div>
+    <div class="space-y-4">
+      <button class="w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+        <i class="fas fa-eye mr-2"></i>Ver Logs
+      </button>
+      <button class="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+        <i class="fas fa-trash mr-2"></i>Limpar Logs
+      </button>
+      <div class="text-sm text-gray-600 dark:text-gray-400">
+        <p>Tamanho dos logs: 2.4 MB</p>
+        <p>Última atualização: 19/11/2025 17:35</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manutenção -->
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+    <div class="flex items-center mb-4">
+      <i class="fas fa-tools text-indigo-500 text-2xl mr-3"></i>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Manutenção</h3>
+    </div>
+    <div class="space-y-4">
+      <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+        <i class="fas fa-broom mr-2"></i>Limpar Cache
+      </button>
+      <button class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+        <i class="fas fa-sync mr-2"></i>Otimizar Banco
+      </button>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-700 dark:text-gray-300">Modo Manutenção</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-6 flex justify-end space-x-4">
+  <button class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+    <i class="fas fa-times mr-2"></i>Cancelar
+  </button>
+  <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+    <i class="fas fa-save mr-2"></i>Salvar Configurações
+  </button>
+</div>
+{% endblock %}
